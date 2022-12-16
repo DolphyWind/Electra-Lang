@@ -1,11 +1,16 @@
 #include "Current.hpp"
 
-Current::Current()
+void Current::setDirection(Direction direction)
 {
-
+    m_direction = direction;
 }
 
-Current::~Current()
+void Current::setPosition(Position position)
+{
+    m_position = position;
+}
+
+void Current::iterate()
 {
 
 }
