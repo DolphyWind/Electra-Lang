@@ -7,9 +7,9 @@
 
 class Cable : public Component
 {
-    std::vector<Direction> m_directions;
+    
 public:
-    Cable(std::vector<Direction> directions) : Component(), m_directions(directions) {};
+    Cable(std::vector<Direction> directions) : Component(directions) {};
     ~Cable();
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

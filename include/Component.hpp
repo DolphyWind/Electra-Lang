@@ -8,11 +8,12 @@
 
 class Component
 {
-private:
+protected:
+    std::vector<Direction> m_directions;
 public:
-    Component() {};
+    Component(std::vector<Direction> directions): m_directions(directions) {};
     ~Component() {};
-    virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) = 0;
+    virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector);
 };
 
 typedef std::shared_ptr<Component> ComponentPtr;
