@@ -1,7 +1,7 @@
 #include "Electra.hpp"
+#define _VARIADIC_MAX INT_MAX
 
-
-Electra::Electra(const std::string& filename)
+Electra::Electra(const std::string& filename): m_filename(filename)
 {
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
     m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
@@ -16,7 +16,15 @@ Electra::Electra(const std::string& filename)
     m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
 
 
-    m_filename = filename;
+    m_generatorDirectionMap['>'] = {{Direction::EAST}, {}};
+    m_generatorDirectionMap['^'] = {{Direction::NORTH}, {}};
+    m_generatorDirectionMap['<'] = {{Direction::WEST}, {}};
+    m_generatorDirectionMap['v'] = {{Direction::SOUTH}, {}};
+    m_generatorDirectionMap['~'] = {{Direction::EAST, Direction::WEST}, {Direction::NORTH, Direction::SOUTH} };
+    m_generatorDirectionMap['S'] = {{Direction::NORTH, Direction::SOUTH}, {Direction::EAST, Direction::WEST} };
+
+    for(auto &p : m_generatorDirectionMap)
+        m_generatorChars.push_back(p.first);
 }
 
 Electra::~Electra()
@@ -31,7 +39,7 @@ Electra::~Electra()
 void Electra::run()
 {
     readSourceCode();
-    
+    createGenerators();
 }
 
 std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
@@ -62,28 +70,12 @@ void Electra::readSourceCode()
 
         if(fileData.find('\t') != std::string::npos) 
         {
-            std::cout << "ERROR: Source code contains tab!" << std::endl;
+            std::cerr << "ERROR: Source code contains tab!" << std::endl;
             file.close();
             std::exit(1);
         }
 
-        std::vector lines = split(fileData, "\n");
-        std::size_t height = lines.size();
-        std::size_t width = 0;
-        for(auto &s : lines)
-        {
-            if(s.length() > width) width = s.length();
-        }
-        
-        m_sourceCode = std::vector<std::vector<char>>(lines.size(), std::vector<char>(width, ' '));
-
-        for(int i = 0; i < height; i++)
-        {
-            for(int j = 0; j < lines[i].length(); j++)
-            {
-                m_sourceCode[i][j] = lines[i][j];
-            }
-        }
+        m_sourceCode = split(fileData, "\n");
     }
     else
     {
@@ -92,5 +84,39 @@ void Electra::readSourceCode()
     }
 
     file.close();
+}
+
+void Electra::createGenerators()
+{
+    for(int y = 0; y < m_sourceCode.size(); y++)
+    {
+        for(int x = 0; x < m_sourceCode[y].size(); x++)
+        {
+            char currentChar;
+            try
+            {
+                currentChar = m_sourceCode.at(y).at(x);
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << std::endl;
+                std::exit(1);
+            }
+            
+            for(auto &c : m_generatorChars)
+            {
+                if(c == currentChar)
+                {
+                    m_generators.push_back( std::make_shared<Generator>( 
+                        m_generatorDirectionMap[c].first,
+                        Position(x, y),
+                        m_generatorDirectionMap[c].second,
+                        true,
+                        0
+                    ) );
+                }
+            }
+        }
+    }
 }
 
