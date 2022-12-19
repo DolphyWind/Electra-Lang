@@ -3,6 +3,7 @@
 #include <vector>
 #include <Current.hpp>
 #include <Component.hpp>
+#include <Generator.hpp>
 #include <Cable.hpp>
 #include <memory>
 #include <map>
@@ -11,7 +12,10 @@
 
 class Electra
 {
+    // Maps some chars to corresponding components
     std::map<char, Component*> m_components;
+    std::vector<GeneratorPtr> m_generators;
+
     std::string m_filename;
     std::vector<std::vector<char>> m_sourceCode;
     // std::vector<Component*> m_components;

@@ -3,12 +3,6 @@
 #include <direction.hpp>
 #include <memory>
 
-struct Position
-{
-    int x = 0;
-    int y = 0;
-};
-
 class Current
 {
 private:

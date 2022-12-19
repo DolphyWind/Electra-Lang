@@ -11,3 +11,11 @@ enum class Direction
     SOUTH = 6,
     SOUTHEAST = 7
 };
+
+struct Position
+{
+    int x = 0;
+    int y = 0;
+};
+
+Position directionToPosition(Direction direction);

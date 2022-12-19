@@ -5,10 +5,16 @@ Electra::Electra(const std::string& filename)
 {
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
     m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
-    // m_components['/'] = new Cable( {Direction::SOUTHWEST, Direction::NORTHEAST} );
-    // m_components['\\'] = new Cable( {Direction::SOUTHEAST, Direction::NORTHWEST} );
+
+    m_components['/'] = new Cable( {Direction::SOUTHWEST, Direction::NORTHEAST} );
+    m_components['\\'] = new Cable( {Direction::SOUTHEAST, Direction::NORTHWEST} );
+
     m_components['+'] = new Cable( {Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
-    // m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
+    m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
+
+    m_components['✱'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
+    m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
+
 
     m_filename = filename;
 }
@@ -16,10 +22,10 @@ Electra::Electra(const std::string& filename)
 Electra::~Electra()
 {
     for(auto& p : m_components)
-    {
         delete p.second;
-    }
+
     m_components.clear();
+    m_generators.clear();
 }
 
 void Electra::run()
