@@ -12,8 +12,11 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 
     Direction currentDir = current->getDirection();
     Position currentPos = current->getPosition();
-    m_directions.erase(std::remove(m_directions.begin(), m_directions.end(), currentDir), m_directions.end());
-    for(auto &dir : m_directions)
+
+    std::vector<Direction> copyDirections = m_directions;
+    copyDirections.erase(std::remove(copyDirections.begin(), copyDirections.end(), currentDir), copyDirections.end());
+    copyDirections.erase(std::remove(copyDirections.begin(), copyDirections.end(), invertDirection(currentDir)), copyDirections.end());
+    for(auto &dir : copyDirections)
         currentVector->push_back(std::make_shared<Current>(dir, currentPos));
     
     return true;

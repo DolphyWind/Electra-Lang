@@ -40,6 +40,7 @@ void Electra::run()
 {
     readSourceCode();
     createGenerators();
+    mainLoop();
 }
 
 std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
@@ -55,6 +56,93 @@ std::vector<std::string> Electra::split(const std::string& str, const std::strin
         prev = pos + delim.length();
     } while (pos < str.length() && prev < str.length());
     return tokens;
+}
+
+void Electra::mainLoop()
+{
+    do
+    {
+        debugPrint("---------");
+        // Generate currents
+        for(auto &gen : m_generators)
+        {
+            gen->update(&m_currents);
+        }
+
+        std::vector<std::size_t> deadCurrentIndexes;
+        std::vector<CurrentPtr> newCurrents;
+
+        // Let currents do their work
+        for(std::size_t i = 0; i < m_currents.size(); i++)
+        {
+            auto &cur = m_currents[i];
+            Position curPos = cur->getPosition();
+
+            // Out of bounds check
+            if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
+            {
+                deadCurrentIndexes.push_back(i);
+                debugPrint("Removing (Y coordinate out of bounds) index: ", '\0');
+                debugPrint(i);
+                continue;
+            }
+            if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
+            {
+                deadCurrentIndexes.push_back(i);
+                debugPrint("Removing (X coordinate out of bounds) index: ", '\0');
+                debugPrint(i);
+                continue;
+            }
+
+            char currentChar = m_sourceCode[curPos.y][curPos.x];
+            try
+            {
+                auto &comp = m_components.at(currentChar);
+                if(!comp->work(cur, &newCurrents))
+                {
+                    deadCurrentIndexes.push_back(i);
+                    debugPrint("Removing (Component does not support) index: ", '\0');
+                    debugPrint(i);
+                }
+            }
+            catch(const std::exception& e)
+            {
+                for(auto &gen : m_generators)
+                {
+                    if(gen->checkToggle(cur))
+                    {
+                        deadCurrentIndexes.push_back(i);
+                        debugPrint("Removing (Generator does not support) index: ", '\0');
+                        debugPrint(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Remove unnecessary currents
+        std::sort(deadCurrentIndexes.begin(), deadCurrentIndexes.end(), std::greater<>());
+        for(auto &i : deadCurrentIndexes)
+        {
+            m_currents.erase(m_currents.begin() + i);
+        }
+
+        // Move existing currents
+        for(auto &cur : m_currents)
+        {
+            cur->iterate();
+        }
+
+        // Create new currents
+        for(auto &cur : newCurrents)
+        {
+            m_currents.push_back(cur);
+            debugPrint("Generated new current!");
+        }
+        debugPrint("Current size: ", '\0');
+        debugPrint(m_currents.size());
+        std::cout << std::flush;
+    }while (!m_currents.empty());
 }
 
 void Electra::readSourceCode()
@@ -120,3 +208,30 @@ void Electra::createGenerators()
     }
 }
 
+void Electra::debugPrint(const std::string& text, const char& end)
+{
+#ifdef _ELECTRA_DEBUG_
+    std::cout << text << end;
+#endif
+}
+
+void Electra::debugPrint(const int& number, const char& end)
+{
+#ifdef _ELECTRA_DEBUG_
+    std::cout << number << end;
+#endif
+}
+
+void Electra::debugPrint(const std::size_t& number, const char& end)
+{
+#ifdef _ELECTRA_DEBUG_
+    std::cout << number << end;
+#endif
+}
+
+void Electra::debugPrint(const double& number, const char& end)
+{
+#ifdef _ELECTRA_DEBUG_
+    std::cout << number << end;
+#endif
+}

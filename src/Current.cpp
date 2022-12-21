@@ -12,5 +12,7 @@ void Current::setPosition(Position position)
 
 void Current::iterate()
 {
-
+    Position deltaPos = directionToPosition(m_direction);
+    m_position.x += deltaPos.x;
+    m_position.y += deltaPos.y;
 }

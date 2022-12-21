@@ -1,5 +1,15 @@
 #include <direction.hpp>
 
+bool Position::operator==(Position& right)
+{
+    return this->x == right.x && this->y == right.y;
+}
+
+bool Position::operator!=(Position& right)
+{
+    return !operator==(right);
+}
+
 Position directionToPosition(Direction direction)
 {
     // -1 on y coordinate mean up since the origin of the array is on the top left corner.
@@ -31,4 +41,10 @@ Position directionToPosition(Direction direction)
         return {1, 1};
         break;
     }
+}
+
+Direction invertDirection(Direction direction)
+{
+    int dirAsInt = (int)direction;
+    return (Direction)((dirAsInt + 4) % 8);
 }

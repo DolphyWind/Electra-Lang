@@ -34,3 +34,19 @@ bool Generator::isActive()
     if(m_tickDelay == 0) return !m_generatedOnce;
     return true;
 }
+
+bool Generator::checkToggle(CurrentPtr current)
+{
+    if(m_position != current->getPosition()) return false;
+
+    Direction dir = current->getDirection();
+    for(auto &d : m_togglerDirections)
+    {
+        if(d == dir)
+        {
+            m_isEnabled = !m_isEnabled;
+            return true;
+        }
+    }
+    return false;
+}

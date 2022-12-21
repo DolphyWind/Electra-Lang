@@ -29,6 +29,7 @@ public:
     inline void setEnabled(bool enabled) {m_isEnabled = enabled;}
     inline bool getEnabled() {return m_isEnabled;}
     void update(std::vector<CurrentPtr> *currentVector);
+    bool checkToggle(CurrentPtr current);
 };
 
 typedef std::shared_ptr<Generator> GeneratorPtr;
