@@ -18,8 +18,7 @@ void Generator::update(std::vector<CurrentPtr> *currentVector)
         Direction dir = m_directions[m_directionIndex];
         Position deltaPos = directionToPosition(dir);
         Position resultPos = {0, 0};
-        resultPos.x = m_position.x + deltaPos.x;
-        resultPos.y = m_position.y + deltaPos.y;
+        resultPos = m_position + deltaPos;
 
         currentVector->push_back(std::make_shared<Current>(dir, resultPos));
 

@@ -10,6 +10,11 @@ bool Position::operator!=(Position& right)
     return !operator==(right);
 }
 
+Position Position::operator+(Position& right)
+{
+    return {this->x + right.x, this->y + right.y};
+}
+
 Position directionToPosition(Direction direction)
 {
     // -1 on y coordinate mean up since the origin of the array is on the top left corner.
