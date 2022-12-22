@@ -1,7 +1,7 @@
 #include "Electra.hpp"
 #define _VARIADIC_MAX INT_MAX
 
-Electra::Electra(const std::string& filename): m_filename(filename)
+Electra::Electra(const std::string& filename): m_filename(filename), m_logger(std::string(__DATE__) + " " + std::string(__TIME__) + ".log")
 {
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
     m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
@@ -60,9 +60,11 @@ std::vector<std::string> Electra::split(const std::string& str, const std::strin
 
 void Electra::mainLoop()
 {
+    int tickCount = 0;
     do
     {
-        debugPrint("---------");
+        m_logger.log(LogType::INFO, "Tick: " + std::to_string(tickCount));
+
         // Generate currents
         for(auto &gen : m_generators)
         {
@@ -82,15 +84,13 @@ void Electra::mainLoop()
             if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
             {
                 deadCurrentIndexes.push_back(i);
-                debugPrint("Removing (Y coordinate out of bounds) index: ", '\0');
-                debugPrint(i);
+                m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Y coordinate out of bounds)");
                 continue;
             }
             if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
             {
                 deadCurrentIndexes.push_back(i);
-                debugPrint("Removing (X coordinate out of bounds) index: ", '\0');
-                debugPrint(i);
+                m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (X coordinate out of bounds)");
                 continue;
             }
 
@@ -101,8 +101,7 @@ void Electra::mainLoop()
                 if(!comp->work(cur, &newCurrents))
                 {
                     deadCurrentIndexes.push_back(i);
-                    debugPrint("Removing (Component does not support) index: ", '\0');
-                    debugPrint(i);
+                    m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Component does not support current\'s direction.)");
                 }
             }
             catch(const std::exception& e)
@@ -112,8 +111,7 @@ void Electra::mainLoop()
                     if(gen->checkToggle(cur))
                     {
                         deadCurrentIndexes.push_back(i);
-                        debugPrint("Removing (Generator does not support) index: ", '\0');
-                        debugPrint(i);
+                        m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Generator does not support current\'s direction.)");
                         break;
                     }
                 }
@@ -137,11 +135,11 @@ void Electra::mainLoop()
         for(auto &cur : newCurrents)
         {
             m_currents.push_back(cur);
-            debugPrint("Generated new current!");
         }
-        debugPrint("Current size: ", '\0');
-        debugPrint(m_currents.size());
-        std::cout << std::flush;
+        if(newCurrents.size())
+            m_logger.log(LogType::INFO, "Generated " + std::to_string(newCurrents.size()) + " current(s)!");
+
+        tickCount ++;
     }while (!m_currents.empty());
 }
 
@@ -206,32 +204,4 @@ void Electra::createGenerators()
             }
         }
     }
-}
-
-void Electra::debugPrint(const std::string& text, const char& end)
-{
-#ifdef _ELECTRA_DEBUG_
-    std::cout << text << end;
-#endif
-}
-
-void Electra::debugPrint(const int& number, const char& end)
-{
-#ifdef _ELECTRA_DEBUG_
-    std::cout << number << end;
-#endif
-}
-
-void Electra::debugPrint(const std::size_t& number, const char& end)
-{
-#ifdef _ELECTRA_DEBUG_
-    std::cout << number << end;
-#endif
-}
-
-void Electra::debugPrint(const double& number, const char& end)
-{
-#ifdef _ELECTRA_DEBUG_
-    std::cout << number << end;
-#endif
 }

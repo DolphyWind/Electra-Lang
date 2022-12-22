@@ -10,10 +10,9 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#define _ELECTRA_DEBUG_
+#include <Logger.hpp>
 
 typedef std::pair<std::vector<Direction>, std::vector<Direction>> DirectionPair;
-
 
 class Electra
 {
@@ -30,7 +29,8 @@ class Electra
     std::string m_filename;
     std::vector<std::string> m_sourceCode;
 
-    // std::vector<Component*> m_components;
+    // Logger
+    Logger m_logger;
 public:
     Electra(const std::string& filename);
     ~Electra();
@@ -40,9 +40,4 @@ public:
     void readSourceCode();
     void createGenerators();
     void mainLoop();
-    
-    void debugPrint(const std::string& text, const char& end='\n');
-    void debugPrint(const int& number, const char& end='\n');
-    void debugPrint(const std::size_t& number, const char& end='\n');
-    void debugPrint(const double& number, const char& end='\n');
 };
