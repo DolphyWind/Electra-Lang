@@ -5,24 +5,25 @@
 #include <Current.hpp>
 #include <memory>
 
-// I'll remove tick based approach and make generators generate a current when the one they generated died.
+// Generates currents.
+// Can be enabled or disabled with a current whose direction is in m_togglerDirections
 class Generator
 {
 private:
-    std::uint32_t m_currentTick = 0;
     std::uint32_t m_directionIndex = 0;
     bool m_generatedOnce = false;
-    Position m_position;
+    bool m_workOnce = true;
     bool m_isEnabled = true;
+    Position m_position;
+    CurrentPtr m_child = nullptr;
 protected:
     // Generator generates a current every m_tickDelay ticks (or once if m_tickDelay is equals to 0) in one of these directions.
     std::vector<Direction> m_directions; 
 
     // A current that comes from those directions toggles m_isEnabled.
     std::vector<Direction> m_togglerDirections;
-    std::uint32_t m_tickDelay = 0;
 public:
-    Generator(std::vector<Direction> directions, Position position, std::vector<Direction> togglerDirections = {}, bool enabled = true, std::uint32_t tickDelay = 0): m_directions(directions), m_position(position), m_togglerDirections(togglerDirections), m_isEnabled(enabled), m_tickDelay(tickDelay) {};
+    Generator(std::vector<Direction> directions, Position position, std::vector<Direction> togglerDirections = {}, bool enabled = true, bool workOnce = true): m_directions(directions), m_position(position), m_togglerDirections(togglerDirections), m_isEnabled(enabled), m_workOnce(workOnce) {};
     ~Generator();
     
     bool isActive();

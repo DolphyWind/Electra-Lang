@@ -122,6 +122,8 @@ void Electra::mainLoop()
         std::sort(deadCurrentIndexes.begin(), deadCurrentIndexes.end(), std::greater<>());
         for(auto &i : deadCurrentIndexes)
         {
+            m_currents[i]->setDestroyed(true);
+            m_currents[i] = nullptr;
             m_currents.erase(m_currents.begin() + i);
         }
 
@@ -141,6 +143,8 @@ void Electra::mainLoop()
 
         tickCount ++;
     }while (!m_currents.empty());
+
+    m_logger.log(LogType::INFO, "Program finished. Total ticks: " + std::to_string(tickCount));
 }
 
 void Electra::readSourceCode()
@@ -198,7 +202,7 @@ void Electra::createGenerators()
                         Position(x, y),
                         m_generatorDirectionMap[c].second,
                         true,
-                        0
+                        true
                     ) );
                 }
             }

@@ -9,28 +9,29 @@ void Generator::update(std::vector<CurrentPtr> *currentVector)
 {
     if(m_directions.empty()) return;
     if(!isActive()) return;
-    m_generatedOnce = true;
-    m_currentTick ++;
-
-    if(m_currentTick >= m_tickDelay)
+    if(m_child != nullptr)
     {
-        m_currentTick = 0;
-        Direction dir = m_directions[m_directionIndex];
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = {0, 0};
-        resultPos = m_position + deltaPos;
-
-        currentVector->push_back(std::make_shared<Current>(dir, resultPos));
-
-        m_directionIndex ++;
-        if(m_directionIndex >= m_directions.size()) m_directionIndex = 0;
+        if(!m_child->getDestroyed()) return;
     }
+    m_generatedOnce = true;
+
+    Direction dir = m_directions[m_directionIndex];
+    Position deltaPos = directionToPosition(dir);
+    Position resultPos = {0, 0};
+    resultPos = m_position + deltaPos;
+
+    m_child = std::make_shared<Current>(dir, resultPos);
+    currentVector->push_back(m_child);
+
+    m_directionIndex ++;
+    if(m_directionIndex >= m_directions.size()) m_directionIndex = 0;
+    
 }
 
 bool Generator::isActive()
 {
     if(!m_isEnabled) return false;
-    if(m_tickDelay == 0) return !m_generatedOnce;
+    if(m_generatedOnce && m_workOnce) return false;
     return true;
 }
 
