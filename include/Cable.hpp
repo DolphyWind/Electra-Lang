@@ -10,6 +10,6 @@ class Cable : public Component
     
 public:
     Cable(std::vector<Direction> directions) : Component(directions) {};
-    ~Cable();
+    ~Cable() {};
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

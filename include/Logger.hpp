@@ -22,3 +22,5 @@ public:
 
     void log(LogType logType, std::string message);
 };
+
+extern Logger defaultLogger;

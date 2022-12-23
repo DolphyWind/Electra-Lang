@@ -6,5 +6,6 @@ bool Component::work(CurrentPtr current, std::vector<CurrentPtr> *currentPtr)
     {
         if(d == current->getDirection()) return true;
     }
+    std::cout << (int) current->getDirection() << std::endl;
     return false;
 }

@@ -31,3 +31,5 @@ void Logger::log(LogType logType, std::string message)
     // Write out logtype with item
     m_writer << "[" << logTypeStr << "] " << message << "\n";
 }
+
+Logger defaultLogger = Logger(std::string(__DATE__) + " " + std::string(__TIME__) + ".log");

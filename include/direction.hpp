@@ -21,7 +21,7 @@ struct Position
     Position(int _x = 0, int _y = 0): x(_x), y(_y) {};
     bool operator==(Position& right);
     bool operator!=(Position& right);
-    Position operator+(Position &right);
+    Position operator+(const Position &right);
 };
 
 Position directionToPosition(Direction direction);

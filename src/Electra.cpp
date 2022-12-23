@@ -1,29 +1,32 @@
 #include "Electra.hpp"
 #define _VARIADIC_MAX INT_MAX
 
-Electra::Electra(const std::string& filename): m_filename(filename), m_logger(std::string(__DATE__) + " " + std::string(__TIME__) + ".log")
+/*
+Initializes components, generators etc.
+Takes source code filename as parameter
+*/
+Electra::Electra(const std::string& filename): m_filename(filename)
 {
+    // Initializes cables
+    // I'll add unicode characters as cables in the future
+    // I am not sure about Windows compatability though
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
     m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
-
     m_components['/'] = new Cable( {Direction::SOUTHWEST, Direction::NORTHEAST} );
     m_components['\\'] = new Cable( {Direction::SOUTHEAST, Direction::NORTHWEST} );
-
     m_components['+'] = new Cable( {Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
     m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
-
     m_components['✱'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
     m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
 
-
-    m_generatorDirectionMap['>'] = {{Direction::EAST}, {}};
-    m_generatorDirectionMap['^'] = {{Direction::NORTH}, {}};
-    m_generatorDirectionMap['<'] = {{Direction::WEST}, {}};
-    m_generatorDirectionMap['v'] = {{Direction::SOUTH}, {}};
-    m_generatorDirectionMap['~'] = {{Direction::EAST, Direction::WEST}, {Direction::NORTH, Direction::SOUTH} };
-    m_generatorDirectionMap['S'] = {{Direction::NORTH, Direction::SOUTH}, {Direction::EAST, Direction::WEST} };
-
-    for(auto &p : m_generatorDirectionMap)
+    // Saves generator characters and their directions and toggler directions in a map
+    m_generatorDataMap['>'] = {{Direction::EAST}};
+    m_generatorDataMap['^'] = {{Direction::NORTH}};
+    m_generatorDataMap['<'] = {{Direction::WEST}};
+    m_generatorDataMap['v'] = {{Direction::SOUTH}};
+    
+    // Saves generator chars seperately
+    for(auto &p : m_generatorDataMap)
         m_generatorChars.push_back(p.first);
 }
 
@@ -36,6 +39,7 @@ Electra::~Electra()
     m_generators.clear();
 }
 
+// Parses source code, creates generators and runs the code
 void Electra::run()
 {
     readSourceCode();
@@ -43,6 +47,7 @@ void Electra::run()
     mainLoop();
 }
 
+// Splits a string based on a given delimiter
 std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
 {
     std::vector<std::string> tokens;
@@ -58,95 +63,36 @@ std::vector<std::string> Electra::split(const std::string& str, const std::strin
     return tokens;
 }
 
+/*
+The part that runs source code.
+First it generates new currents with generators
+And then it briefly does these in order on every loop:
+- Makes components work
+- Moves existing currents
+- Removes currents that should be removed
+- Creates new currents (For multi-directioned components)
+*/
 void Electra::mainLoop()
 {
     int tickCount = 0;
+    generateGenerators();
+
     do
     {
-        m_logger.log(LogType::INFO, "Tick: " + std::to_string(tickCount));
-
-        // Generate currents
-        for(auto &gen : m_generators)
-        {
-            gen->update(&m_currents);
-        }
-
-        std::vector<std::size_t> deadCurrentIndexes;
-        std::vector<CurrentPtr> newCurrents;
-
-        // Let currents do their work
-        for(std::size_t i = 0; i < m_currents.size(); i++)
-        {
-            auto &cur = m_currents[i];
-            Position curPos = cur->getPosition();
-
-            // Out of bounds check
-            if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
-            {
-                deadCurrentIndexes.push_back(i);
-                m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Y coordinate out of bounds)");
-                continue;
-            }
-            if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
-            {
-                deadCurrentIndexes.push_back(i);
-                m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (X coordinate out of bounds)");
-                continue;
-            }
-
-            char currentChar = m_sourceCode[curPos.y][curPos.x];
-            try
-            {
-                auto &comp = m_components.at(currentChar);
-                if(!comp->work(cur, &newCurrents))
-                {
-                    deadCurrentIndexes.push_back(i);
-                    m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Component does not support current\'s direction.)");
-                }
-            }
-            catch(const std::exception& e)
-            {
-                for(auto &gen : m_generators)
-                {
-                    if(gen->checkToggle(cur))
-                    {
-                        deadCurrentIndexes.push_back(i);
-                        m_logger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Generator does not support current\'s direction.)");
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Remove unnecessary currents
-        std::sort(deadCurrentIndexes.begin(), deadCurrentIndexes.end(), std::greater<>());
-        for(auto &i : deadCurrentIndexes)
-        {
-            m_currents[i]->setDestroyed(true);
-            m_currents[i] = nullptr;
-            m_currents.erase(m_currents.begin() + i);
-        }
-
-        // Move existing currents
-        for(auto &cur : m_currents)
-        {
-            cur->iterate();
-        }
-
-        // Create new currents
-        for(auto &cur : newCurrents)
-        {
-            m_currents.push_back(cur);
-        }
-        if(newCurrents.size())
-            m_logger.log(LogType::INFO, "Generated " + std::to_string(newCurrents.size()) + " current(s)!");
+        defaultLogger.log(LogType::INFO, "Tick: " + std::to_string(tickCount));
+        
+        interpreteCurrents();
+        moveCurrents();
+        removeCurrents();    
+        createCurrents();
 
         tickCount ++;
     }while (!m_currents.empty());
 
-    m_logger.log(LogType::INFO, "Program finished. Total ticks: " + std::to_string(tickCount));
+    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: " + std::to_string(tickCount));
 }
 
+// Reads source code and saves it into m_sourceCode
 void Electra::readSourceCode()
 {
     std::ifstream file(m_filename);
@@ -176,6 +122,7 @@ void Electra::readSourceCode()
     file.close();
 }
 
+// Creates generators
 void Electra::createGenerators()
 {
     for(int y = 0; y < m_sourceCode.size(); y++)
@@ -189,6 +136,7 @@ void Electra::createGenerators()
             }
             catch(const std::exception& e)
             {
+                defaultLogger.log(LogType::ERROR, "Can\'t get character at (" + std::to_string(x) + "," + std::to_string(y) + ") in source code. Exiting.");
                 std::cerr << e.what() << std::endl;
                 std::exit(1);
             }
@@ -197,15 +145,104 @@ void Electra::createGenerators()
             {
                 if(c == currentChar)
                 {
+                    GeneratorData* genData = &m_generatorDataMap[c];
+
                     m_generators.push_back( std::make_shared<Generator>( 
-                        m_generatorDirectionMap[c].first,
-                        Position(x, y),
-                        m_generatorDirectionMap[c].second,
-                        true,
-                        true
+                        std::get<0>(*genData),
+                        Position(x, y)
                     ) );
                 }
             }
         }
     }
+}
+
+/*
+Updates generators.
+Generators will generate new current if they can.
+*/
+void Electra::generateGenerators()
+{
+    for(auto &gen : m_generators)
+        gen->generate(&m_currents);
+}
+
+/*
+Makes currents go one step further
+*/
+void Electra::moveCurrents()
+{
+    for(auto &cur : m_currents)
+        cur->iterate();
+}
+
+/*
+Make components work and also decides what currents to remove and create.
+*/
+void Electra::interpreteCurrents()
+{
+    for(std::size_t i = 0; i < m_currents.size(); i++)
+    {
+        auto &cur = m_currents[i];
+        Position curPos = cur->getPosition();
+
+        // Out of bounds check
+        if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
+        {
+            m_deadCurrentIndexes.push_back(i);
+            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Y coordinate out of bounds)");
+            continue;
+        }
+        if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
+        {
+            m_deadCurrentIndexes.push_back(i);
+            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (X coordinate out of bounds)");
+            continue;
+        }
+
+        // Main part that determines functionality of the current
+        char currentChar = m_sourceCode[curPos.y][curPos.x];
+        try
+        {
+            // throws an error if currentChar is not a key of m_components
+            auto &comp = m_components.at(currentChar);
+            if(!comp->work(cur, &m_newCurrents))
+            {
+                m_deadCurrentIndexes.push_back(i);
+                defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Component does not support current\'s direction.)");
+            }
+        }
+        catch(const std::exception& e)
+        {
+            m_deadCurrentIndexes.push_back(i);
+            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Not a component.)");
+        }
+    }
+}
+
+// Removes currents
+void Electra::removeCurrents()
+{
+    std::sort(m_deadCurrentIndexes.begin(), m_deadCurrentIndexes.end(), std::greater<>());
+    for(auto &i : m_deadCurrentIndexes)
+    {
+        m_currents[i] = nullptr;
+        m_currents.erase(m_currents.begin() + i);
+    }
+    m_deadCurrentIndexes.clear();
+}
+
+// Creates currents
+void Electra::createCurrents()
+{
+    for(auto &cur : m_newCurrents)
+    {
+        Position curPos = cur->getPosition();
+        defaultLogger.log(LogType::INFO, "Created new current at (" + std::to_string(curPos.x) + "," + std::to_string(curPos.y) + ")");
+        m_currents.push_back(cur);
+    }
+    
+    m_newCurrents.clear();
+
+    defaultLogger.log(LogType::INFO, "Total current count: " + std::to_string(m_currents.size()));
 }

@@ -10,7 +10,7 @@ bool Position::operator!=(Position& right)
     return !operator==(right);
 }
 
-Position Position::operator+(Position& right)
+Position Position::operator+(const Position& right)
 {
     return {this->x + right.x, this->y + right.y};
 }
