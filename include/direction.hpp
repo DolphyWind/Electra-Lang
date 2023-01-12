@@ -11,6 +11,7 @@ enum class Direction
     SOUTHWEST = 5,
     SOUTH = 6,
     SOUTHEAST = 7,
+    NONE = 8,
 };
 
 struct Position

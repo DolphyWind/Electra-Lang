@@ -45,11 +45,15 @@ Position directionToPosition(Direction direction)
     case Direction::SOUTHEAST:
         return {1, 1};
         break;
+    default:
+        return {0, 0};
+        break;
     }
 }
 
 Direction invertDirection(Direction direction)
 {
+    if(direction == Direction::NONE) return Direction::NONE;
     int dirAsInt = (int)direction;
     return (Direction)((dirAsInt + 4) % 8);
 }
