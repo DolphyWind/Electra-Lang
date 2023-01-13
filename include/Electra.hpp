@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <Logger.hpp>
 #include <tuple>
+#include <Printer.hpp>
+#include <stack>
 
 typedef std::tuple<std::vector<Direction>> GeneratorData;
 
@@ -35,6 +37,10 @@ class Electra
     std::vector<std::size_t> m_deadCurrentIndexes;
     // Currents that are going to be created via components.
     std::vector<CurrentPtr> m_newCurrents;
+
+    // Main stacks that language will use
+    std::stack<std::uint32_t> m_stackA;
+    std::stack<std::uint32_t> m_stackB;
     
 public:
     Electra(const std::string& filename);

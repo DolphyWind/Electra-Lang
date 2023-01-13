@@ -18,7 +18,13 @@ Electra::Electra(const std::string& filename): m_filename(filename)
     m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
     m_components['✱'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
     m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
-
+    
+    // Initializes Printers
+    m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST}, &m_stackA, false);
+    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST}, &m_stackA, true);
+    m_components['M'] = new Printer( {Direction::SOUTH, Direction::NORTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stackB, false);
+    m_components['R'] = new Printer( {Direction::NORTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST}, &m_stackB, true);
+    
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {{Direction::EAST}};
     m_generatorDataMap['^'] = {{Direction::NORTH}};
