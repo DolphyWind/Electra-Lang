@@ -14,6 +14,10 @@
 #include <tuple>
 #include <Printer.hpp>
 #include <stack>
+#include <ArithmeticalUnit.hpp>
+#include <cmath>
+#include <ConstantAdder.hpp>
+#include <Cloner.hpp>
 
 typedef std::tuple<std::vector<Direction>> GeneratorData;
 
@@ -38,9 +42,8 @@ class Electra
     // Currents that are going to be created via components.
     std::vector<CurrentPtr> m_newCurrents;
 
-    // Main stacks that language will use
-    std::stack<std::uint32_t> m_stackA;
-    std::stack<std::uint32_t> m_stackB;
+    // Main stack that language will use
+    std::stack<var_t> m_stack;
     
 public:
     Electra(const std::string& filename);

@@ -20,11 +20,22 @@ Electra::Electra(const std::string& filename): m_filename(filename)
     m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
     
     // Initializes Printers
-    m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST}, &m_stackA, false);
-    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST}, &m_stackA, true);
-    m_components['M'] = new Printer( {Direction::SOUTH, Direction::NORTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stackB, false);
-    m_components['R'] = new Printer( {Direction::NORTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST}, &m_stackB, true);
+    m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
+    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
     
+    // Initializes Arithmatical Units
+    m_components['A'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return x + y;} );
+    m_components['S'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack, [](var_t x, var_t y){return x - y;} );
+    m_components['M'] = new ArithmeticalUnit( {Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::EAST, Direction::WEST}, &m_stack, [](var_t x, var_t y){return x * y;} );
+    m_components['Q'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::WEST, Direction::EAST, Direction::SOUTHEAST}, &m_stack, [](var_t x, var_t y){return x / y;} );
+
+    // Initializes constant adders
+    m_components['I'] = new ConstantAdder( {Direction::NORTH, Direction::SOUTH}, &m_stack, 1);
+    m_components['D'] = new ConstantAdder( {Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST}, &m_stack, -1);
+    
+    // Initializes cloner
+    m_components['#'] = new Cloner( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST}, &m_stack);
+
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {{Direction::EAST}};
     m_generatorDataMap['^'] = {{Direction::NORTH}};
@@ -244,7 +255,9 @@ void Electra::createCurrents()
     for(auto &cur : m_newCurrents)
     {
         Position curPos = cur->getPosition();
-        defaultLogger.log(LogType::INFO, "Created new current at (" + std::to_string(curPos.x) + "," + std::to_string(curPos.y) + ")");
+        defaultLogger.log(LogType::INFO, "Created new current at (" + std::to_string(curPos.x) + "," + std::to_string(curPos.y) + ")"\
+                                          " with direction " + std::to_string((int)cur->getDirection()) + "."
+        );
         m_currents.push_back(cur);
     }
     

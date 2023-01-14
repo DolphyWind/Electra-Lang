@@ -4,13 +4,15 @@
 #include <stack>
 #include <direction.hpp>
 
+// Pops the value on top of the stack and prints it on screen as number. If m_printAsAscii is true it prints it as a char.
+
 class Printer : public Cable
 {
 private:
-    std::stack<std::uint32_t> *m_stackPtr;
+    StackPtr m_stackPtr;
     bool m_printAsAscii = false;
 public:
-    Printer(std::vector<Direction> directions, std::stack<std::uint32_t> *stackPtr, bool printAsAscii):
+    Printer(std::vector<Direction> directions, StackPtr stackPtr, bool printAsAscii):
         Cable(directions), m_stackPtr(stackPtr), m_printAsAscii(printAsAscii)
     {
 

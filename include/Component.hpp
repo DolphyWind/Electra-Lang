@@ -3,6 +3,9 @@
 #include <vector>
 #include <memory>
 #include <Current.hpp>
+#include <stack>
+#include <GlobalFunctions.hpp>
+#include <Logger.hpp>
 
 // Electrical components
 

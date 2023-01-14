@@ -16,7 +16,6 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         Position deltaPos = directionToPosition(dir);
         currentVector->push_back(std::make_shared<Current>(dir, currentPos + deltaPos));
     }
-        
     
     return true;
 }

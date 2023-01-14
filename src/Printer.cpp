@@ -5,18 +5,20 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(!Cable::work(current, currentVector))
         return false;
     
-    std::uint32_t top = 0;
-
-    if(!m_stackPtr->empty())
-    {
-        top = m_stackPtr->top();
-        m_stackPtr->pop();
-    }
+    var_t top = popStack(m_stackPtr);
 
     if(m_printAsAscii)
+    {
         std::cout << (unsigned char) top;
+        defaultLogger.log(LogType::INFO, "Printed " + std::to_string((unsigned char)top) + " to screen.");
+    }
     else
+    {
         std::cout << top;
+        defaultLogger.log(LogType::INFO, "Printed " + std::to_string(top) + " to screen.");
+    }
+        
+
 
     return true;
 }
