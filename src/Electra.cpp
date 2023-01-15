@@ -28,6 +28,7 @@ Electra::Electra(const std::string& filename): m_filename(filename)
     m_components['S'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack, [](var_t x, var_t y){return x - y;} );
     m_components['M'] = new ArithmeticalUnit( {Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::EAST, Direction::WEST}, &m_stack, [](var_t x, var_t y){return x * y;} );
     m_components['Q'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::WEST, Direction::EAST, Direction::SOUTHEAST}, &m_stack, [](var_t x, var_t y){return x / y;} );
+    m_components['%'] = new ArithmeticalUnit( {Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return std::fmod(x, y);} );
 
     // Initializes constant adders
     m_components['I'] = new ConstantAdder( {Direction::NORTH, Direction::SOUTH}, &m_stack, 1);
@@ -38,8 +39,11 @@ Electra::Electra(const std::string& filename): m_filename(filename)
 
     // Initializes constant pushers
     m_components['O'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stack, false, false, 0);
-    m_components['%'] = new ConstantPusher( {Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, true, false, 0);
+    m_components['@'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true, false, 0);
     m_components['&'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, true, true, 0);
+
+    // Initializes swapper
+    m_components['$'] = new Swapper( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack);
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {{Direction::EAST}};
