@@ -9,6 +9,6 @@ void Generator::generate(std::vector<CurrentPtr> *currentVector)
         Position resultPos = m_position + deltaPos;
 
         currentVector->push_back(std::make_shared<Current>(dir, resultPos));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at (" + std::to_string(m_position.x) + "," + std::to_string(m_position.y) + ")");
+        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{})", {m_position.x, m_position.y});
     }
 }

@@ -96,7 +96,7 @@ void Electra::mainLoop()
 
     do
     {
-        defaultLogger.log(LogType::INFO, "Tick: " + std::to_string(tickCount));
+        defaultLogger.log(LogType::INFO, "Tick: {}", {tickCount});
         
         interpreteCurrents();
         moveCurrents();
@@ -106,7 +106,7 @@ void Electra::mainLoop()
         tickCount ++;
     }while (!m_currents.empty());
 
-    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: " + std::to_string(tickCount));
+    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", {tickCount});
 }
 
 // Reads source code and saves it into m_sourceCode
@@ -153,7 +153,7 @@ void Electra::createGenerators()
             }
             catch(const std::exception& e)
             {
-                defaultLogger.log(LogType::ERROR, "Can\'t get character at (" + std::to_string(x) + "," + std::to_string(y) + ") in source code. Exiting.");
+                defaultLogger.log(LogType::ERROR, "Can\'t get character at ({},{}) in source code. Exiting.", {x, y});
                 std::cerr << e.what() << std::endl;
                 std::exit(1);
             }
@@ -207,13 +207,13 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Y coordinate out of bounds)");
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Y coordinate out of bounds)", {curPos.x, curPos.y, int(i)});
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (X coordinate out of bounds)");
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (X coordinate out of bounds)", {curPos.x, curPos.y, int(i)});
             continue;
         }
 
@@ -226,13 +226,13 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Component does not support current\'s direction.)");
+                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Component does not support current\'s direction.)", {curPos.x, curPos.y, int(i)});
             }
         }
         catch(const std::exception& e)
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at index " + std::to_string(i) + " (Not a component.)");
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Not a component.)", {curPos.x, curPos.y, int(i)});
         }
     }
 }
@@ -255,13 +255,11 @@ void Electra::createCurrents()
     for(auto &cur : m_newCurrents)
     {
         Position curPos = cur->getPosition();
-        defaultLogger.log(LogType::INFO, "Created new current at (" + std::to_string(curPos.x) + "," + std::to_string(curPos.y) + ")"\
-                                          " with direction " + std::to_string((int)cur->getDirection()) + "."
-        );
+        defaultLogger.log(LogType::INFO, "Created new current at ({},{}) with direction {}", {curPos.x, curPos.y, (int)cur->getDirection()});
         m_currents.push_back(cur);
     }
     
     m_newCurrents.clear();
 
-    defaultLogger.log(LogType::INFO, "Total current count: " + std::to_string(m_currents.size()));
+    defaultLogger.log(LogType::INFO, "Total current count: {}", {(int)m_currents.size()});
 }
