@@ -5,11 +5,8 @@ bool Cloner::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(!Cable::work(current, currentVector))
         return false;
     
-    if(m_stackPtr->empty())
-    {
-        m_stackPtr->push(0);
-        return true;
-    }
+    if(m_stackPtr->empty()) return true;
+    
     var_t top = m_stackPtr->top();
     m_stackPtr->push(top);
 

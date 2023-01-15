@@ -1,7 +1,7 @@
 #pragma once
 #include <Cable.hpp>
 // Pops the top value of the stack and pushes it back onto stack.
-// If there is no top value it pushes zero to the stack
+// If there is no top value it does nothing
 
 class Cloner : public Cable
 {

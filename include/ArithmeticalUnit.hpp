@@ -4,6 +4,9 @@
 #include <functional>
 #include <stack>
 
+// Pops 2 values from stack and passes them into m_func. Then pushes result back to stack.
+// If there is no two values on stack, it does nothing.
+
 typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
 
 class ArithmeticalUnit : public Cable

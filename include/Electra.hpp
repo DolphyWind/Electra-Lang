@@ -18,6 +18,7 @@
 #include <cmath>
 #include <ConstantAdder.hpp>
 #include <Cloner.hpp>
+#include <ConstantPusher.hpp>
 
 typedef std::tuple<std::vector<Direction>> GeneratorData;
 

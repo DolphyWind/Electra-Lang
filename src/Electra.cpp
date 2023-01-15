@@ -31,10 +31,15 @@ Electra::Electra(const std::string& filename): m_filename(filename)
 
     // Initializes constant adders
     m_components['I'] = new ConstantAdder( {Direction::NORTH, Direction::SOUTH}, &m_stack, 1);
-    m_components['D'] = new ConstantAdder( {Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST}, &m_stack, -1);
+    m_components['D'] = new ConstantAdder( {Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::NORTH, Direction::SOUTH}, &m_stack, -1);
     
     // Initializes cloner
     m_components['#'] = new Cloner( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST}, &m_stack);
+
+    // Initializes constant pushers
+    m_components['O'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stack, false, false, 0);
+    m_components['%'] = new ConstantPusher( {Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, true, false, 0);
+    m_components['&'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, true, true, 0);
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {{Direction::EAST}};

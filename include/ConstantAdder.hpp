@@ -2,7 +2,7 @@
 #include <Cable.hpp>
 
 // Pops the value on top of the stack adds m_constant to it and pushes it back to the stack.
-// If there is no value on the stack, it pushes m_constant to stack.
+// If there is no value on the stack, it does nothing.
 
 class ConstantAdder : public Cable
 {
