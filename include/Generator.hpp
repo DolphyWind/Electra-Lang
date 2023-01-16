@@ -22,6 +22,8 @@ public:
     /// @brief Generates new current if it can
     /// @param currentVector Pushes the new current in this vector
     void generate(std::vector<CurrentPtr> *currentVector);
+
+    std::vector<Direction> getDirections();
 };
 
 typedef std::shared_ptr<Generator> GeneratorPtr;

@@ -20,9 +20,10 @@
 #include <Cloner.hpp>
 #include <ConstantPusher.hpp>
 #include <Swapper.hpp>
+#include <ConditionalUnit.hpp>
 #include <csignal>
 
-typedef std::tuple<std::vector<Direction>> GeneratorData;
+typedef std::vector<Direction> GeneratorData;
 
 class Electra
 {

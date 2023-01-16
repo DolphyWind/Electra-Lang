@@ -12,3 +12,8 @@ void Generator::generate(std::vector<CurrentPtr> *currentVector)
         defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{})", {m_position.x, m_position.y});
     }
 }
+
+std::vector<Direction> Generator::getDirections()
+{
+    return m_directions;
+}
