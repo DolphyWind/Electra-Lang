@@ -20,6 +20,7 @@
 #include <Cloner.hpp>
 #include <ConstantPusher.hpp>
 #include <Swapper.hpp>
+#include <csignal>
 
 typedef std::tuple<std::vector<Direction>> GeneratorData;
 
@@ -46,6 +47,10 @@ class Electra
 
     // Main stack that language will use
     std::stack<var_t> m_stack;
+
+    // Signal handling.
+    static bool m_isRunning;
+    static void sigHandler(int signal);
     
 public:
     Electra(const std::string& filename);

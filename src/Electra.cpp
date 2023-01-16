@@ -1,6 +1,8 @@
 #include "Electra.hpp"
 #define _VARIADIC_MAX INT_MAX
 
+bool Electra::m_isRunning = true;
+
 /*
 Initializes components, generators etc.
 Takes source code filename as parameter
@@ -54,6 +56,12 @@ Electra::Electra(const std::string& filename): m_filename(filename)
     // Saves generator chars seperately
     for(auto &p : m_generatorDataMap)
         m_generatorChars.push_back(p.first);
+    
+    signal(SIGTERM, &Electra::sigHandler);
+    signal(SIGINT, &Electra::sigHandler);
+    signal(SIGQUIT, &Electra::sigHandler);
+    signal(SIGKILL, &Electra::sigHandler);
+    signal(SIGHUP, &Electra::sigHandler);
 }
 
 Electra::~Electra()
@@ -113,7 +121,7 @@ void Electra::mainLoop()
         createCurrents();
 
         tickCount ++;
-    }while (!m_currents.empty());
+    }while (!m_currents.empty() && Electra::m_isRunning);
 
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", {tickCount});
 }
@@ -271,4 +279,9 @@ void Electra::createCurrents()
     m_newCurrents.clear();
 
     defaultLogger.log(LogType::INFO, "Total current count: {}", {(int)m_currents.size()});
+}
+
+void Electra::sigHandler(int signal)
+{
+    Electra::m_isRunning = false;
 }
