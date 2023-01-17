@@ -21,10 +21,12 @@ private:
     std::string m_filename;
     std::ofstream m_writer;
     std::string replaceString(std::string& originalStr, const std::string& lookFor, const std::string& replaceWith);
+    bool m_fileOpened = false;
 public:
     Logger();
     ~Logger();
 
+    bool loggingEnabled = true;
     void log(LogType logType, std::string message, std::vector<int> args = {});
 };
 

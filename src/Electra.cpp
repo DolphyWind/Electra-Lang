@@ -7,8 +7,17 @@ bool Electra::m_isRunning = true;
 Initializes components, generators etc.
 Takes source code filename as parameter
 */
-Electra::Electra(const std::string& filename): m_filename(filename)
+Electra::Electra(int argc, char* argv[])
 {
+    m_filename = argv[1];
+    defaultLogger.loggingEnabled = false;
+    for(std::size_t i = 2; i < argc; i++)
+    {
+        std::string currentArg = std::string(argv[i]);
+        if(currentArg == "--log" || currentArg == "-l")
+            defaultLogger.loggingEnabled = true;
+    }
+
     // Initializes cables
     // I'll add unicode characters as cables in the future
     // I am not sure about Windows compatability though

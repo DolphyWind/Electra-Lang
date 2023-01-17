@@ -7,16 +7,24 @@ Logger::Logger()
     std::stringstream ss;
     ss << "Log " << now->tm_mday << "_" << now->tm_mon + 1 << "_" << now->tm_year + 1900 << "_" << now->tm_hour << "_" << now->tm_min << "_" << now->tm_sec << ".log";
     m_filename = ss.str();
-    m_writer.open(m_filename);
 }
 
 Logger::~Logger()
 {
-    m_writer.close();
+    if(m_fileOpened)
+        m_writer.close();
 }
 
 void Logger::log(LogType logType, std::string message, std::vector<int> args)
-{   
+{
+    if(!loggingEnabled) return;
+    
+    if(!m_fileOpened)
+    {
+        m_writer.open(m_filename);
+        m_fileOpened = m_writer.good();
+    }
+
     std::string logTypeStr;
     switch (logType)
     {

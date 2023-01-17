@@ -55,7 +55,7 @@ class Electra
     static void sigHandler(int signal);
     
 public:
-    Electra(const std::string& filename);
+    Electra(int argc, char* argv[]);
     ~Electra();
 
     void run();
