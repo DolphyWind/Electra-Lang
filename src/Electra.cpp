@@ -95,6 +95,7 @@ void Electra::run()
 {
     readSourceCode();
     createGenerators();
+    createPortals();
     mainLoop();
 }
 
@@ -176,21 +177,11 @@ void Electra::readSourceCode()
 // Creates generators
 void Electra::createGenerators()
 {
-    for(int y = 0; y < m_sourceCode.size(); y++)
+    for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
-        for(int x = 0; x < m_sourceCode[y].size(); x++)
+        for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
         {
-            char currentChar;
-            try
-            {
-                currentChar = m_sourceCode.at(y).at(x);
-            }
-            catch(const std::exception& e)
-            {
-                defaultLogger.log(LogType::ERROR, "Can\'t get character at ({},{}) in source code. Exiting.", {x, y});
-                std::cerr << e.what() << std::endl;
-                std::exit(1);
-            }
+            char currentChar = m_sourceCode.at(y).at(x);
             
             for(auto &c : m_generatorChars)
             {
@@ -205,6 +196,52 @@ void Electra::createGenerators()
                 }
             }
         }
+    }
+}
+
+/*
+Creates portals.
+*/
+void Electra::createPortals()
+{
+    for(std::size_t y = 0; y < m_sourceCode.size(); y++)
+    {
+        for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
+        {
+            char currentChar = m_sourceCode.at(y).at(x);
+            
+            bool isGenerator = false;
+            for(auto &c : m_generatorChars)
+            {
+                if(c == currentChar)
+                {
+                    isGenerator = true;
+                    break;
+                }
+            }
+            if(isGenerator) continue;
+            try
+            {
+                m_components.at(currentChar);
+            }
+            catch(const std::exception& e)
+            {
+                try
+                {
+                    m_portalMap[currentChar].push_back({x, y});
+                }
+                catch(const std::exception& e)
+                {
+                    m_portalMap[currentChar] = { {x, y} };
+                }
+            }
+            
+        }
+    }
+
+    for(auto &p : m_portalMap)
+    {
+        m_components[p.first] = new Portal(p.second);
     }
 }
 

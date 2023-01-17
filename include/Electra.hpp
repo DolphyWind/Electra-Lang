@@ -22,6 +22,7 @@
 #include <Swapper.hpp>
 #include <ConditionalUnit.hpp>
 #include <Key.hpp>
+#include <Portal.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;
@@ -50,6 +51,9 @@ class Electra
     // Main stack that language will use
     std::stack<var_t> m_stack;
 
+    // Portal map
+    std::map<char, std::vector<Position>> m_portalMap;
+
     // Signal handling.
     static bool m_isRunning;
     static void sigHandler(int signal);
@@ -62,6 +66,7 @@ public:
     std::vector<std::string> split(const std::string& str, const std::string& delim);
     void readSourceCode();
     void createGenerators();
+    void createPortals();
     void mainLoop();
 
     // Methods for mainLoop() method.
