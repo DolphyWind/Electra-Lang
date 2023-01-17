@@ -48,8 +48,12 @@ Electra::Electra(const std::string& filename): m_filename(filename)
     m_components['$'] = new Swapper( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack);
 
     // Initializes conditional units
-    m_components['['] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, true);
-    m_components[']'] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, false);
+    m_components['['] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, false);
+    m_components[']'] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, true);
+
+    // Initializes keys
+    m_components['~'] = new Key( {Direction::WEST, Direction::EAST}, {Direction::NORTH, Direction::SOUTH}, m_sourceCode, '-');
+    m_components['!'] = new Key( {Direction::NORTH, Direction::SOUTH}, {Direction::WEST, Direction::EAST}, m_sourceCode, '|');
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {Direction::EAST};
@@ -228,13 +232,13 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Y coordinate out of bounds)", {curPos.x, curPos.y, int(i)});
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", {curPos.x, curPos.y, (int)cur->getDirection()});
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (X coordinate out of bounds)", {curPos.x, curPos.y, int(i)});
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (X coordinate out of bounds)", {curPos.x, curPos.y, (int)cur->getDirection()});
             continue;
         }
 
@@ -247,7 +251,7 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Component does not support current\'s direction.)", {curPos.x, curPos.y, int(i)});
+                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Component refused to work.)", {curPos.x, curPos.y, (int)cur->getDirection()});
             }
         }
         catch(const std::exception& e)
@@ -276,13 +280,13 @@ void Electra::interpreteCurrents()
                 if(!isAlignedWithGenerator)
                 {
                     m_deadCurrentIndexes.push_back(i);
-                    defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Current does not align with generator)", {curPos.x, curPos.y, int(i)});
+                    defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Current does not align with generator)", {curPos.x, curPos.y, (int)cur->getDirection()});
                 }
             }
             else
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with index {} (Not a component nor generator.)", {curPos.x, curPos.y, int(i)});
+                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Not a component nor generator.)", {curPos.x, curPos.y, (int)cur->getDirection()});
             }
         }
     }

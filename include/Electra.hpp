@@ -21,6 +21,7 @@
 #include <ConstantPusher.hpp>
 #include <Swapper.hpp>
 #include <ConditionalUnit.hpp>
+#include <Key.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;
