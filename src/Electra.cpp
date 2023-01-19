@@ -209,6 +209,7 @@ void Electra::createPortals()
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
         {
             char currentChar = m_sourceCode.at(y).at(x);
+            if(currentChar == ' ' || currentChar == '\n') continue;
             
             bool isGenerator = false;
             for(auto &c : m_generatorChars)
