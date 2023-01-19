@@ -83,9 +83,25 @@ Constant pushers push a constant value to the stack. Some of them takes an input
 >**Character Pusher (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as `char_t` and converts it to `var_t`. Then pushes it to the stack.
 
 ### **Swapper ($)**
-Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
+Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.,
 
+### **Conditional Units ([, ])**
+Conditional units, kills or spares currents based on the value on top of the stack. They inherit from Cable class and return false if `Cable::work()` returns false. They do nothing if the stack is empty.
 
-**TODO:** Add explanation for each component and portals.
+#### **Conditional Unit Types**
+>**Regular Conditional Unit ([):** Pops the top value off the stack. Kills the current if the top value is zero.
+
+>**Inverted Conditional Unit (]):** Pops the top value off the stack. Kills the current if the top value is not zero.
+
+### **Keys (~, !)**
+Keys change their behaviour completely when activated. They stop current (Technically they move current one step back) if they are not activated. They inherit from Cable class and return false if `Cable::work()` returns false. 
+
+#### **Key Types**
+>**Horizontal Key (~):** Supports east and west directions. Becomes a horizontal cable when activated. Gets activated when a current touches it from north or south directions.
+
+>**Vertical Key (!):** Supports north and south directions. Becomes a vertical cable when activated. Gets activated when a current touches it from east and west directions.
+
+## **PORTALS**
+Every other character in electra is considered as a portal. Portals support all eight directions. When a current touches a portal, it gets cloned to every other copy of the same portal. Original current gets killed in the process.
 
 **TODO:** Add example codes for truth-machine, FizzBuzz, Hello World!
