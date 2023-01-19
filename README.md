@@ -61,13 +61,29 @@ Arithmetical units lets electra do arithmetical calculations. They inherit from 
 
 >**Modder (%):** Supports northeast and southwest directions. Pops two values off the stack and pushes `std::fmod(first, second)` back. If there is at least no two values on the stack, it does nothing.
 
-#### **Constant Adders (I, D)**
+### **Constant Adders (I, D)**
 Constant adders adds a constant value to the top value of the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
 
+#### **Constant Adder Types**
 >**Increaser (I):** Supports north and south directions. Pops the top value off the stack and adds one to it. Then pushes the result back. It does nothing if the stack is empty.
 
 >**Decreaser (D):** Supports east, west, north, south southwest and northwest directions. Pops the top value off the stack and subtracts one from it. Then pushes the result back. It does nothing if the stack is empty.
 
+### **Cloner (#)**
+Cloner, clones the value on top of the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, west and east directions. It does nothing if the stack is empty.
+
+### **Constant Pushers (O, @, &)**
+Constant pushers push a constant value to the stack. Some of them takes an input from the user and pushes that to the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
+
+#### **Constant Pusher Types**
+>**Zero Pusher (O):** Supports all eight directions. Pushes zero to the stack. 
+
+>**Number Pusher (@):** Supports north, south, east, west, northeast, northwest and southwest directions. Takes an input from user as `var_t` and pushes it to the stack.
+
+>**Character Pusher (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as `char_t` and converts it to `var_t`. Then pushes it to the stack.
+
+### **Swapper ($)**
+Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
 
 
 **TODO:** Add explanation for each component and portals.

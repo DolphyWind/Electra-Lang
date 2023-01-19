@@ -8,7 +8,7 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
     if(m_stackPtr->empty())
         return true;
     
-    var_t x = m_stackPtr->top();
+    var_t x = popStack(m_stackPtr);
     bool condition = (x == m_targetValue);
     if(m_invert) condition = !condition;
 
