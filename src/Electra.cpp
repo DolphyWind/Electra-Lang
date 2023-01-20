@@ -32,7 +32,7 @@ Electra::Electra(int argc, char* argv[])
     
     // Initializes Printers
     m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
-    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
+    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
     
     // Initializes Arithmatical Units
     m_components['A'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return x + y;} );

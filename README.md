@@ -45,7 +45,7 @@ Printers lets electra print out the variables in the stack. They inherit from Ca
 #### **Printer Types**
 >**Number Printer (N):** Supports east, west, southeast, southwest, northeast and northwest direction. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
 
->**Character Printer (P):** Supports north, west, northwest and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
+>**Character Printer (P):** Supports north, west, east, northeast, northwest and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units (A, S, M, Q, %)**
 Arithmetical units lets electra do arithmetical calculations. They inherit from Cable class and return false if `Cable::work()` returns false.
