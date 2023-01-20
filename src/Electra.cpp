@@ -32,7 +32,7 @@ Electra::Electra(int argc, char* argv[])
     
     // Initializes Printers
     m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
-    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
+    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
     
     // Initializes Arithmatical Units
     m_components['A'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return x + y;} );
@@ -63,6 +63,9 @@ Electra::Electra(int argc, char* argv[])
     // Initializes keys
     m_components['~'] = new Key( {Direction::WEST, Direction::EAST}, {Direction::NORTH, Direction::SOUTH}, m_sourceCode, '-');
     m_components['!'] = new Key( {Direction::NORTH, Direction::SOUTH}, {Direction::WEST, Direction::EAST}, m_sourceCode, '|');
+
+    // Initializes Reverser
+    m_components['R'] = new Reverser( {Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTHEAST}, &m_stack );
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {Direction::EAST};

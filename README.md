@@ -45,7 +45,7 @@ Printers lets electra print out the variables in the stack. They inherit from Ca
 #### **Printer Types**
 >**Number Printer (N):** Supports east, west, southeast, southwest, northeast and northwest direction. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
 
->**Character Printer (P):** Supports north, east, west, northeast, northwest and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
+>**Character Printer (P):** Supports north, west, northwest and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units (A, S, M, Q, %)**
 Arithmetical units lets electra do arithmetical calculations. They inherit from Cable class and return false if `Cable::work()` returns false.
@@ -83,7 +83,7 @@ Constant pushers push a constant value to the stack. Some of them takes an input
 >**Character Pusher (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as `char_t` and converts it to `var_t`. Then pushes it to the stack.
 
 ### **Swapper ($)**
-Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.,
+Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
 
 ### **Conditional Units ([, ])**
 Conditional units, kills or spares currents based on the value on top of the stack. They inherit from Cable class and return false if `Cable::work()` returns false. They do nothing if the stack is empty.
@@ -100,6 +100,9 @@ Keys change their behaviour completely when activated. They stop current (Techni
 >**Horizontal Key (~):** Supports east and west directions. Becomes a horizontal cable when activated. Gets activated when a current touches it from north or south directions.
 
 >**Vertical Key (!):** Supports north and south directions. Becomes a vertical cable when activated. Gets activated when a current touches it from east and west directions.
+
+### **Reverser (R)**
+Reverser, reverses the entire stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, northewest, southwest and southeast directions.
 
 ## **PORTALS**
 Every other character in electra is considered as a portal. Portals support all eight directions. Portals are used to teleport currents. When electra first reads the source code, it marks first instance of a portal as original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (aka the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was the closest one for reperesenting functions.

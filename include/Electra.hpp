@@ -23,6 +23,7 @@
 #include <ConditionalUnit.hpp>
 #include <Key.hpp>
 #include <Portal.hpp>
+#include <Reverser.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;
