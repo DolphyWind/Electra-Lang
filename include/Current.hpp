@@ -2,13 +2,15 @@
 #include <iostream>
 #include <direction.hpp>
 #include <memory>
+#include <stack>
+#include <optional>
 
 class Current
 {
 private:
     Direction m_direction;
     Position m_position = {0, 0};
-    Position m_portalPosition = {-1, -1};
+    std::stack<Position> m_visitedPortalStack;
 public:
     Current(Direction direction): m_direction(direction) {};
     Current(Direction direction, Position position): m_position(position), m_direction(direction) {};
@@ -18,8 +20,10 @@ public:
     inline Direction getDirection() {return m_direction;}
     inline void setPosition(Position position) {m_position = position;}
     inline Position getPosition() {return m_position;}
-    inline void setLastUsedPortalPosition(Position position) {m_portalPosition = position;}
-    inline Position getLastUsedPortalPosition() {return m_portalPosition;}
+    void addVisitedPortal(Position position);
+    std::optional<Position> popLastPortal();
+    inline void setPortalStack(const std::stack<Position>& stack) {m_visitedPortalStack = stack;}
+    inline std::stack<Position> getPortalStack() {return m_visitedPortalStack;};
     void iterate();
 };
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include <Current.hpp>
 #include <algorithm>
+#include <optional>
 
 class Cable : public Component
 {

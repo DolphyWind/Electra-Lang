@@ -7,14 +7,14 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 
     Direction currentDir = current->getDirection();
     Position currentPos = current->getPosition();
-    Position portalPos = current->getLastUsedPortalPosition();
+    std::stack<Position> portalStack = current->getPortalStack();
 
     for(auto &dir : m_directions)
     {
         if(dir == currentDir || dir == invertDirection(currentDir)) continue;
         Position deltaPos = directionToPosition(dir);
         CurrentPtr newCurrent = std::make_shared<Current>(dir, currentPos + deltaPos);
-        newCurrent->setLastUsedPortalPosition(portalPos);
+        newCurrent->setPortalStack(portalStack);
         currentVector->push_back(newCurrent);
     }
     
