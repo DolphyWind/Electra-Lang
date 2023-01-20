@@ -52,7 +52,7 @@ class Electra
     std::stack<var_t> m_stack;
 
     // Portal map
-    std::map<char, std::vector<Position>> m_portalMap;
+    std::map<char, Position> m_portalMap;
 
     // Signal handling.
     static bool m_isRunning;

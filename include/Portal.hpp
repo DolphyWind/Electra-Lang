@@ -3,10 +3,10 @@
 
 class Portal : public Component
 {
-    std::vector<Position> m_allCopies;
+    Position m_originalPosition;
 public:
-    Portal(std::vector<Position> allCopies):
-        Component({Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST}), m_allCopies(allCopies)
+    Portal(Position originalPosition):
+        Component({Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST}), m_originalPosition(originalPosition)
     {}
     ~Portal() {};
 

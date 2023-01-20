@@ -2,13 +2,23 @@
 
 bool Portal::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    for(auto &p : m_allCopies)
-    {
-        Direction currentDirection = current->getDirection();
-        Position currentPos = current->getPosition();
+    Direction currentDirection = current->getDirection();
+    Position currentPos = current->getPosition();
+    Position lastPortalPos = current->getLastUsedPortalPosition();
 
-        if(p != currentPos)
-            currentVector->push_back(std::make_shared<Current>(currentDirection, p + directionToPosition(currentDirection)));
+    if(m_originalPosition != currentPos)
+    {
+        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, m_originalPosition + directionToPosition(currentDirection));
+        newCurrent->setLastUsedPortalPosition(currentPos);
+        currentVector->push_back(newCurrent);
     }
+    else
+    {
+        if(lastPortalPos == Position({-1, -1})) return true;
+        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, lastPortalPos + directionToPosition(currentDirection));
+        newCurrent->setLastUsedPortalPosition(currentPos);
+        currentVector->push_back(newCurrent);
+    }
+    
     return false;
 }

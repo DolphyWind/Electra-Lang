@@ -227,13 +227,9 @@ void Electra::createPortals()
             }
             catch(const std::exception& e)
             {
-                try
+                if(!m_portalMap.contains(currentChar))
                 {
-                    m_portalMap[currentChar].push_back({x, y});
-                }
-                catch(const std::exception& e)
-                {
-                    m_portalMap[currentChar] = { {x, y} };
+                    m_portalMap[currentChar] = {x, y};
                 }
             }
             
