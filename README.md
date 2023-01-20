@@ -14,7 +14,7 @@ Generators generate currents at the beginning of the program and become unused a
 ## **Components**
 Components are the elements that gives electra its functionality. Each component has its own job and can generate or remove existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
 
-### **Cables (-, |, +, X, \*, \\, /)**
+### **Cables (-, |, +, X, \*, \\, /, {, }, U, N)**
 Cables are the simplest components of the electra and every component except portals inherits from them. Their job is actually clone currents to make them flow correctly if they are multi-directional. 
 
 For example:
@@ -38,6 +38,15 @@ The regular four way cable (+) has a current that is coming from west heading to
 >**Diagonal Four Way Cable (X):** Supports northeast, northwest, southeast and southwest directions. Can be used to change direction of a current or clone it.
 
 >**Eight Way Cable (\*):** Supports all directions. Can be used to change direction of a current or clone it.
+
+>**EAST ONE-WAY CABLE ({):** Only lets current flowing from east direction.
+
+>**WEST ONE-WAY CABLE (}):** Only lets current flowing from west direction.
+
+>**EAST ONE-WAY CABLE (U):** Only lets current flowing from north direction.
+
+>**EAST ONE-WAY CABLE (n):** Only lets current flowing from south direction.
+
 
 ### **Printers (N, P)**
 Printers lets electra print out the variables in the stack. They inherit from Cable class and return false if `Cable::work()` returns false.

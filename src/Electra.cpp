@@ -19,17 +19,19 @@ Electra::Electra(int argc, char* argv[])
     }
 
     // Initializes cables
-    // I'll add unicode characters as cables in the future
-    // I am not sure about Windows compatability though
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
     m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
     m_components['/'] = new Cable( {Direction::SOUTHWEST, Direction::NORTHEAST} );
     m_components['\\'] = new Cable( {Direction::SOUTHEAST, Direction::NORTHWEST} );
     m_components['+'] = new Cable( {Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
     m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
-    m_components['✱'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
     m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
-    
+    // I ran out of good ascii characters :(
+    m_components['{'] = new Cable( {Direction::EAST} );
+    m_components['}'] = new Cable( {Direction::WEST} );
+    m_components['U'] = new Cable( {Direction::NORTH} );
+    m_components['n'] = new Cable( {Direction::SOUTH} );
+
     // Initializes Printers
     m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
     m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
