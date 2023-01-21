@@ -113,6 +113,6 @@ Keys change their behaviour completely when activated. They stop current (Techni
 ### **Reverser (R)**
 Reverser, reverses the entire stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, northewest, southwest and southeast directions.
 
-## **PORTALS**
+### **Portals**
 Every other character in electra is considered as a portal. Portals support all eight directions. Portals are used to teleport currents. When electra first reads the source code, it marks first instance of a portal as original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (aka the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was the closest one for reperesenting functions.
 
