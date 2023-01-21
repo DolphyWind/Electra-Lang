@@ -22,7 +22,7 @@ For example:
     >-----+-
           |
 
-The regular four way cable (+) has a current that is coming from west heading to east. It will create 2 more copies of that current with directions north and south. The current with direction north will get killed in the next iteration. Cables clone and support currents based on their ascii value.
+The regular four directional cable (+) has a current that is coming from west heading to east. It will create 2 more copies of that current with directions north and south. The current with direction north will get killed in the next iteration. Cables clone and support currents based on their ascii value.
 
 #### **Cable Types**
 >**Horizontal Cable (-):** Supports east and west directions. Simple cable for moving current horizontally.
@@ -33,19 +33,19 @@ The regular four way cable (+) has a current that is coming from west heading to
 
 >**Left Diagonal Cable (\\):** Supports northwest and southeast directions. Simple cable for moving current diagonally.
 
->**Regular Four Way Cable (+):** Supports east, west, north and south directions. Can be used to change direction of a current or clone it.
+>**Regular Four Directional Cable (+):** Supports east, west, north and south directions. Can be used to change direction of a current or clone it.
 
->**Diagonal Four Way Cable (X):** Supports northeast, northwest, southeast and southwest directions. Can be used to change direction of a current or clone it.
+>**Diagonal Four Directional Cable (X):** Supports northeast, northwest, southeast and southwest directions. Can be used to change direction of a current or clone it.
 
->**Eight Way Cable (\*):** Supports all directions. Can be used to change direction of a current or clone it.
+>**Eight Directional Cable (\*):** Supports all directions. Can be used to change direction of a current or clone it.
 
->**EAST ONE-WAY CABLE ({):** Only lets current flowing from east direction.
+>**East One Directional Cable ({):** Only lets current flowing from east direction.
 
->**WEST ONE-WAY CABLE (}):** Only lets current flowing from west direction.
+>**West One Directional Cable (}):** Only lets current flowing from west direction.
 
->**EAST ONE-WAY CABLE (U):** Only lets current flowing from north direction.
+>**North One Directional Cable (U):** Only lets current flowing from north direction.
 
->**EAST ONE-WAY CABLE (n):** Only lets current flowing from south direction.
+>**South One Directional Cable (n):** Only lets current flowing from south direction.
 
 
 ### **Printers (N, P)**
