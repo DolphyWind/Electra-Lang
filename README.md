@@ -14,7 +14,7 @@ Generators generate currents at the beginning of the program and become unused a
 ## **Components**
 Components are the elements that gives electra its functionality. Each component has its own job and can generate or remove existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
 
-### **Cables (-, |, +, X, \*, \\, /, {, }, U, N)**
+### **Cables (-, |, +, X, \*, \\, /, {, }, U, n)**
 Cables are the simplest components of the electra and every component except portals inherits from them. Their job is actually clone currents to make them flow correctly if they are multi-directional. 
 
 For example:
