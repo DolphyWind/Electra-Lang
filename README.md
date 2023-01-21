@@ -6,7 +6,7 @@ Small esolang inspired by AsciiDots. Uses instruction pointers that acts like cu
 Electra has generators and components. Generators generate currents and components interperate currents that came through them. Electra has two types defined. One of them is `var_t` (defined to be double) and the other one is `char_t` (defined to be char). Electra uses a single `std::stack<var_t>` for memory management.
 
 ## **Currents**
-Currents are instruction pointers in electra. They call `work() `function of the component that they are on. A component's `work()` function returns a boolean value. If it is false current gets killed.
+Currents are instruction pointers in electra. They call `work()` function of the component that they are on. A component's `work()` function returns a boolean value. If it is false current gets killed.
 
 ## **Generators (<, >, ^, v)**
 Generators generate currents at the beginning of the program and become unused after that. They generate current based on their ascii character (> generates a current to the east, < generates a current to the west etc.)
