@@ -12,10 +12,9 @@ void Current::addVisitedPortal(Position position)
 
 std::optional<Position> Current::popLastPortal()
 {
-    if(!m_visitedPortalStack.empty())
-    {
-        Position top = m_visitedPortalStack.top();
-        m_visitedPortalStack.pop();
-        return top;
-    }
+    if(m_visitedPortalStack.empty()) return std::nullopt;
+    
+    Position top = m_visitedPortalStack.top();
+    m_visitedPortalStack.pop();
+    return top;
 }
