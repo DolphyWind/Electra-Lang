@@ -3,19 +3,28 @@ Small esolang inspired by AsciiDots. Uses instruction pointers that acts like cu
 
 # How Electra works?
 
-Electra has generators and components. Generators generate currents and components interperete currents that came through them. Electra has two types defined. One of them is `var_t` (defined to be double) and the other one is `char_t` (defined to be char). Electra uses a single `std::stack<var_t>` for memory management.
+Electra has Currents, Generators and Components. Currents are instruction pointers that acts like currents in electricity, Generators generate currents and Components interperate currents that came through them. Electra has two types defined. One of them is `var_t` (defined to be double) and the other one is `char_t` (defined to be char). Electra uses a single `std::stack<var_t>` for memory management.
 
 ## **Currents**
 Currents are instruction pointers in electra. They call `work()` function of the component that they are on. A component's `work()` function returns a boolean value. If it is false current gets killed.
 
 ## **Generators (<, >, ^, v)**
-Generators generate currents at the beginning of the program and become unused after that. They generate current based on their ascii character (> generates a current to the east, < generates a current to the west etc.)
+Generators generate currents at the beginning of the program and become unused after that. They generate current based on their ascii character. To make looping easier, generators also lets current flowing on them. East Generator and West Generator both support east and west directions whilst North Generator and South Generator both support north and south directions.
+
+#### **Generator Types**
+>**East Generator (>):** Generates a current flowing to the east direction.
+
+>**West Generator (<>):** Generates a current flowing to the west direction.
+
+>**North Generator (^):** Generates a current flowing to the north direction.
+
+>**South Generator (v):** Generates a current flowing to the south direction.
 
 ## **Components**
-Components are the elements that gives electra its functionality. Each component has its own job and can generate or remove existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
+Components are the elements that gives electra its functionality. Each component has its own job and can generate or kill existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
 
 ### **Cables (-, |, +, X, \*, \\, /, {, }, U, n)**
-Cables are the simplest components of the electra and every component except portals inherits from them. Their job is actually clone currents to make them flow correctly if they are multi-directional. 
+Cables are the simplest components of the electra and every component except portals inherits from them. Some cables also clone currents.
 
 For example:
 
@@ -25,13 +34,13 @@ For example:
 The regular four directional cable (+) has a current that is coming from west heading to east. It will create 2 more copies of that current with directions north and south. The current with direction north will get killed in the next iteration. Cables clone and support currents based on their ascii value.
 
 #### **Cable Types**
->**Horizontal Cable (-):** Supports east and west directions. Simple cable for moving current horizontally.
+>**Horizontal Cable (-):** Supports east and west directions. Simple cable for flowing current horizontally.
 
->**Vertical Cable (|):** Supports north and south directions. Simple cable for moving current vertically.
+>**Vertical Cable (|):** Supports north and south directions. Simple cable for flowing current vertically.
 
->**Right Diagonal Cable (/):** Supports northeast and southwest directions. Simple cable for moving current diagonally.
+>**Right Diagonal Cable (/):** Supports northeast and southwest directions. Simple cable for flowing current diagonally.
 
->**Left Diagonal Cable (\\):** Supports northwest and southeast directions. Simple cable for moving current diagonally.
+>**Left Diagonal Cable (\\):** Supports northwest and southeast directions. Simple cable for flowing current diagonally.
 
 >**Regular Four Directional Cable (+):** Supports east, west, north and south directions. Can be used to change direction of a current or clone it.
 
