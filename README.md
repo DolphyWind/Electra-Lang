@@ -48,13 +48,13 @@ The regular four directional cable (+) has a current that is coming from west he
 
 >**Eight Directional Cable (\*):** Supports all directions. Can be used to change direction of a current or clone it.
 
->**East One Directional Cable ({):** Only lets current flowing from east direction.
+>**East One Directional Cable (}):** Only lets current flowing to east direction.
 
->**West One Directional Cable (}):** Only lets current flowing from west direction.
+>**West One Directional Cable ({):** Only lets current flowing to west direction.
 
->**North One Directional Cable (U):** Only lets current flowing from north direction.
+>**North One Directional Cable (n):** Only lets current flowing to north direction.
 
->**South One Directional Cable (n):** Only lets current flowing from south direction.
+>**South One Directional Cable (U):** Only lets current flowing to south direction.
 
 
 ### **Printers (N, P)**
