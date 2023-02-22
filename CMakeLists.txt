@@ -4,11 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 project(ElectraLang VERSION 1.0.0)
 
 file(GLOB SOURCE_FILES "./src/*.cpp")
-if(WIN32)
-    add_executable(electra WIN32 ${SOURCE_FILES})
-else()
-    add_executable(electra ${SOURCE_FILES})
-endif()
+add_executable(electra ${SOURCE_FILES})
 
 target_include_directories(electra PUBLIC include)
 if(NOT WIN32)
