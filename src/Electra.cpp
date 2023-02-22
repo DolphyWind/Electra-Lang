@@ -79,11 +79,21 @@ Electra::Electra(int argc, char* argv[])
     for(auto &p : m_generatorDataMap)
         m_generatorChars.push_back(p.first);
     
+    #ifdef SIGTERM
     signal(SIGTERM, &Electra::sigHandler);
+    #endif
+    #ifdef SIGINT
     signal(SIGINT, &Electra::sigHandler);
-    signal(SIGQUIT, &Electra::sigHandler);
+    #endif
+    #ifdef SIGQUIT
+        signal(SIGQUIT, &Electra::sigHandler);
+    #endif
+    #ifdef SIGKILL
     signal(SIGKILL, &Electra::sigHandler);
+    #endif
+    #ifdef SIGHUP
     signal(SIGHUP, &Electra::sigHandler);
+    #endif
 }
 
 Electra::~Electra()
@@ -234,7 +244,7 @@ void Electra::createPortals()
             {
                 if(!m_portalMap.contains(currentChar))
                 {
-                    m_portalMap[currentChar] = {x, y};
+                    m_portalMap[currentChar] = {(int)x, (int)y};
                 }
             }
             
