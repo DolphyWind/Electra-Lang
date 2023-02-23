@@ -14,7 +14,7 @@ Generators generate currents at the beginning of the program and become unused a
 #### **Generator Types**
 >**East Generator (>):** Generates a current flowing to the east direction.
 
->**West Generator (<>):** Generates a current flowing to the west direction.
+>**West Generator (<):** Generates a current flowing to the west direction.
 
 >**North Generator (^):** Generates a current flowing to the north direction.
 
