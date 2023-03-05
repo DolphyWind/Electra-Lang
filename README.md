@@ -1,12 +1,36 @@
-# Electra-Lang
-Small esolang inspired by AsciiDots. Uses instruction pointers that acts like currents in electricity.
+[![Linux Build](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Linux.yml/badge.svg)](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Linux.yml)  
+[![Windows Build](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Windows.yml/badge.svg)](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Windows.yml)  
+[![MacOS Build](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Mac.yml/badge.svg)](https://github.com/DolphyWind/Electra-Lang/actions/workflows/Mac.yml)
+
+# What is Electra?
+
+Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity.  
+
+# Building Electra
+
+To build Electra from source, open up a terminal and follow the steps below.
+
+```bash
+# Clone the repository and cd into it
+git clone https://github.com/DolphyWind/Electra-Lang.git
+cd Electra-Lang
+# Create a build directory
+mkdir build
+cd build
+# Run cmake to generate build files
+cmake .. 
+# Build Electra with make. (Use Visual Studio if you are on Windows)
+make
+# (Optional) Install Electra to your system
+sudo make install
+```
 
 # How Electra works?
 
 Electra has Currents, Generators and Components. Currents are instruction pointers that acts like currents in electricity, Generators generate currents and Components interperate currents that came through them. Electra has two types defined. One of them is `var_t` (defined to be double) and the other one is `char_t` (defined to be char). Electra uses a single `std::stack<var_t>` for memory management.
 
 ## **Currents**
-Currents are instruction pointers in electra. They call `work()` function of the component that they are on. A component's `work()` function returns a boolean value. If it is false current gets killed.
+Currents are instruction pointers in Electra. They call `work()` function of the component that they are on. A component's `work()` function returns a boolean value. If it is false current gets killed.
 
 ## **Generators (<, >, ^, v)**
 Generators generate currents at the beginning of the program and become unused after that. They generate current based on their ascii character. To make looping easier, generators also lets current flowing on them. East Generator and West Generator both support east and west directions whilst North Generator and South Generator both support north and south directions.
@@ -21,10 +45,10 @@ Generators generate currents at the beginning of the program and become unused a
 >**South Generator (v):** Generates a current flowing to the south direction.
 
 ## **Components**
-Components are the elements that gives electra its functionality. Each component has its own job and can generate or kill existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
+Components are the elements that gives Electra its functionality. Each component has its own job and can generate or kill existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false if not. 
 
 ### **Cables (-, |, +, X, \*, \\, /, {, }, U, n)**
-Cables are the simplest components of the electra and every component except portals inherits from them. Some cables also clone currents.
+Cables are the simplest components of the Electra and every component except portals inherits from them. Some cables also clone currents.
 
 For example:
 
@@ -58,7 +82,7 @@ The regular four directional cable (+) has a current that is coming from west he
 
 
 ### **Printers (N, P)**
-Printers lets electra print out the variables in the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
+Printers lets Electra print out the variables in the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
 
 #### **Printer Types**
 >**Number Printer (N):** Supports east, west, southeast, southwest, northeast and northwest direction. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
@@ -66,7 +90,7 @@ Printers lets electra print out the variables in the stack. They inherit from Ca
 >**Character Printer (P):** Supports north, west, east, northeast, northwest and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units (A, S, M, Q, %)**
-Arithmetical units lets electra do arithmetical calculations. They inherit from Cable class and return false if `Cable::work()` returns false.
+Arithmetical units lets Electra do arithmetical calculations. They inherit from Cable class and return false if `Cable::work()` returns false.
 
 #### **Arithmetical Unit Types**
 >**Adder (A):** Supports north, southeast and southwest directions. Pops two values off the stack and pushes first+second back. If there is at least no two values on the stack, it does nothing.
@@ -123,4 +147,4 @@ Keys change their behaviour completely when activated. They stop current (Techni
 Reverser, reverses the entire stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, northewest, southwest and southeast directions.
 
 ### **Portals**
-Every other character in electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (aka the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
+Every other character in Electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (aka the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
