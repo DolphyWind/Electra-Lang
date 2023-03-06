@@ -9,14 +9,40 @@ Takes source code filename as parameter
 */
 Electra::Electra(int argc, char* argv[])
 {
-    m_filename = argv[1];
-    defaultLogger.loggingEnabled = false;
-    for(std::size_t i = 2; i < argc; i++)
+    Argparser parser(argc, argv);
+    parser.program_name = "Electra";
+    parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
+    "Find more about electra at https://github.com/DolphyWind/Electra-Lang";
+
+    parser.addArgument("-h", "--help", true, "Print this message and exit.");
+    parser.addArgument("-v", "--version", true, "Print version and exit.");
+    parser.addArgument("-l", "--log", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
+
+    auto parser_args = parser.parse();
+    auto string_map = std::get<0>(parser_args);
+    auto bool_map = std::get<1>(parser_args);
+    auto alone_args = parser.getAloneArguments();
+
+    if(bool_map["help"])
     {
-        std::string currentArg = std::string(argv[i]);
-        if(currentArg == "--log" || currentArg == "-l")
-            defaultLogger.loggingEnabled = true;
+        parser.printHelpMessage();
+        std::exit(0);
     }
+
+    if(bool_map["version"])
+    {
+        parser.printVersionMessage();
+        std::exit(0);
+    }
+    
+    if(alone_args.size() == 0)
+    {
+        parser.printHelpMessage();
+        std::exit(1);
+    }
+    
+    defaultLogger.loggingEnabled = bool_map["log"];
+    m_filename = alone_args[0];
 
     // Initializes cables
     m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );

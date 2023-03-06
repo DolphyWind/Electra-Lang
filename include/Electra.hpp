@@ -24,6 +24,7 @@
 #include <Key.hpp>
 #include <Portal.hpp>
 #include <Reverser.hpp>
+#include <Argparser.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;
