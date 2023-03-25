@@ -2,7 +2,7 @@
 #define _ARGPARSER_HPP_
 
 #define ELECTRA_VERSION_MAJOR 1
-#define ELECTRA_VERSION_MINOR 1
+#define ELECTRA_VERSION_MINOR 2
 #define ELECTRA_VERSION_PATCH 0
 
 #include <string>
