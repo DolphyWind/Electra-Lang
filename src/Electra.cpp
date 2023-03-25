@@ -45,55 +45,56 @@ Electra::Electra(int argc, char* argv[])
     m_filename = alone_args[0];
 
     // Initializes cables
-    m_components['-'] = new Cable( {Direction::WEST, Direction::EAST} );
-    m_components['|'] = new Cable( {Direction::NORTH, Direction::SOUTH} );
-    m_components['/'] = new Cable( {Direction::SOUTHWEST, Direction::NORTHEAST} );
-    m_components['\\'] = new Cable( {Direction::SOUTHEAST, Direction::NORTHWEST} );
-    m_components['+'] = new Cable( {Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
-    m_components['X'] = new Cable( {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
-    m_components['*'] = new Cable( {Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
+    // m_components['-'] = new Cable({Direction::WEST, Direction::EAST}) );
+    m_components['-'] = std::make_unique<Cable>(std::vector<Direction>{Direction::WEST, Direction::EAST}) ;
+    m_components['|'] = std::make_unique<Cable>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH} );
+    m_components['/'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHWEST, Direction::NORTHEAST} );
+    m_components['\\'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHEAST, Direction::NORTHWEST} );
+    m_components['+'] = std::make_unique<Cable>( std::vector<Direction>{Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
+    m_components['X'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
+    m_components['*'] = std::make_unique<Cable>( std::vector<Direction>{Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
     // I ran out of good ascii characters :(
-    m_components['{'] = new Cable( {Direction::EAST} );
-    m_components['}'] = new Cable( {Direction::WEST} );
-    m_components['U'] = new Cable( {Direction::NORTH} );
-    m_components['n'] = new Cable( {Direction::SOUTH} );
+    m_components['{'] = std::make_unique<Cable>( std::vector<Direction>{Direction::EAST} );
+    m_components['}'] = std::make_unique<Cable>( std::vector<Direction>{Direction::WEST} );
+    m_components['U'] = std::make_unique<Cable>( std::vector<Direction>{Direction::NORTH} );
+    m_components['n'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTH} );
 
     // Initializes Printers
-    m_components['N'] = new Printer( {Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
-    m_components['P'] = new Printer( {Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
+    m_components['N'] = std::make_unique<Printer>( std::vector<Direction>{Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, false);
+    m_components['P'] = std::make_unique<Printer>( std::vector<Direction>{Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true);
     
     // Initializes Arithmatical Units
-    m_components['A'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return x + y;} );
-    m_components['S'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack, [](var_t x, var_t y){return x - y;} );
-    m_components['M'] = new ArithmeticalUnit( {Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::EAST, Direction::WEST}, &m_stack, [](var_t x, var_t y){return x * y;} );
-    m_components['Q'] = new ArithmeticalUnit( {Direction::NORTH, Direction::SOUTH, Direction::WEST, Direction::EAST, Direction::SOUTHEAST}, &m_stack, [](var_t x, var_t y){return x / y;} );
-    m_components['%'] = new ArithmeticalUnit( {Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return std::fmod(x, y);} );
+    m_components['A'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return x + y;} );
+    m_components['S'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack, [](var_t x, var_t y){return x - y;} );
+    m_components['M'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::EAST, Direction::WEST}, &m_stack, [](var_t x, var_t y){return x * y;} );
+    m_components['Q'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::WEST, Direction::EAST, Direction::SOUTHEAST}, &m_stack, [](var_t x, var_t y){return x / y;} );
+    m_components['%'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTHEAST, Direction::SOUTHWEST}, &m_stack, [](var_t x, var_t y){return std::fmod(x, y);} );
 
     // Initializes constant adders
-    m_components['I'] = new ConstantAdder( {Direction::NORTH, Direction::SOUTH}, &m_stack, 1);
-    m_components['D'] = new ConstantAdder( {Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::NORTH, Direction::SOUTH}, &m_stack, -1);
+    m_components['I'] = std::make_unique<ConstantAdder>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, &m_stack, 1);
+    m_components['D'] = std::make_unique<ConstantAdder>( std::vector<Direction>{Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::NORTH, Direction::SOUTH}, &m_stack, -1);
     
     // Initializes cloner
-    m_components['#'] = new Cloner( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST}, &m_stack);
+    m_components['#'] = std::make_unique<Cloner>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST}, &m_stack);
 
     // Initializes constant pushers
-    m_components['O'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stack, false, false, 0);
-    m_components['@'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true, false, 0);
-    m_components['&'] = new ConstantPusher( {Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, true, true, 0);
+    m_components['O'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST}, &m_stack, false, false, 0);
+    m_components['@'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, &m_stack, true, false, 0);
+    m_components['&'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST}, &m_stack, true, true, 0);
 
     // Initializes swapper
-    m_components['$'] = new Swapper( {Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack);
+    m_components['$'] = std::make_unique<Swapper>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, &m_stack);
 
     // Initializes conditional units
-    m_components['['] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, false);
-    m_components[']'] = new ConditionalUnit( {Direction::NORTH, Direction::SOUTH}, &m_stack, 0, true);
+    m_components['['] = std::make_unique<ConditionalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, &m_stack, 0, false);
+    m_components[']'] = std::make_unique<ConditionalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, &m_stack, 0, true);
 
     // Initializes keys
-    m_components['~'] = new Key( {Direction::WEST, Direction::EAST}, {Direction::NORTH, Direction::SOUTH}, m_sourceCode, '-');
-    m_components['!'] = new Key( {Direction::NORTH, Direction::SOUTH}, {Direction::WEST, Direction::EAST}, m_sourceCode, '|');
+    m_components['~'] = std::make_unique<Key>( std::vector<Direction>{Direction::WEST, Direction::EAST}, std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, m_sourceCode, '-');
+    m_components['!'] = std::make_unique<Key>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, std::vector<Direction>{Direction::WEST, Direction::EAST}, m_sourceCode, '|');
 
     // Initializes Reverser
-    m_components['R'] = new Reverser( {Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTHEAST}, &m_stack );
+    m_components['R'] = std::make_unique<Reverser>( std::vector<Direction>{Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTHEAST}, &m_stack );
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap['>'] = {Direction::EAST};
@@ -124,9 +125,6 @@ Electra::Electra(int argc, char* argv[])
 
 Electra::~Electra()
 {
-    for(auto& p : m_components)
-        delete p.second;
-
     m_components.clear();
     m_generators.clear();
 }
@@ -279,7 +277,7 @@ void Electra::createPortals()
 
     for(auto &p : m_portalMap)
     {
-        m_components[p.first] = new Portal(p.second);
+        m_components[p.first] = std::make_unique<Portal>(p.second);
     }
 }
 

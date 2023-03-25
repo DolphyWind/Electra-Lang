@@ -26,13 +26,14 @@
 #include <Reverser.hpp>
 #include <Argparser.hpp>
 #include <csignal>
+#include <memory>
 
 typedef std::vector<Direction> GeneratorData;
 
 class Electra
 {
     // Maps some chars to corresponding components.
-    std::map<char, Component*> m_components;
+    std::map<char, std::unique_ptr<Component>> m_components;
     
     // First element of DirectionPair corresponds to m_directions, second element corresponds to m_togglerDirections
     std::map<char, GeneratorData> m_generatorDataMap;
