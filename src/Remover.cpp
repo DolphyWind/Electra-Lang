@@ -4,6 +4,6 @@ bool Remover::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Cable::work(current, currentVector))
         return false;
-    popStack(m_stackPtr);
+    defaultLogger.log(LogType::INFO, "Removed {} from stack.", popStack(m_stackPtr));
     return true;
 }

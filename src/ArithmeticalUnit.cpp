@@ -2,8 +2,7 @@
 
 bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
-        return false;
+    if(!Cable::work(current, currentVector)) return false;
     
     if(m_stackPtr->size() < 2) return true;
     
@@ -15,7 +14,6 @@ bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *current
     var_t result = m_func(first, second);
     m_stackPtr->push(result);
     
-    defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing" + std::to_string(first) + " and " + std::to_string(second) + " into an arithmetical unit. "
-    + "The result is: " + std::to_string(result));
+    defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
     return true;
 }

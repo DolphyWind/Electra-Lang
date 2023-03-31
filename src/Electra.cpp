@@ -11,37 +11,63 @@ Electra::Electra(int argc, char* argv[])
 {
     Argparser parser(argc, argv);
     parser.program_name = "Electra";
+    parser.binary_name = "electra";
     parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
     "Find more about electra at https://github.com/DolphyWind/Electra-Lang";
 
     parser.addArgument("-h", "--help", true, "Print this message and exit.");
     parser.addArgument("-v", "--version", true, "Print version and exit.");
     parser.addArgument("-l", "--log", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
+    parser.addArgument("-s", "--stack", false, "Specify the inital values of stack.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
     auto bool_map = std::get<1>(parser_args);
     auto alone_args = parser.getAloneArguments();
 
+    defaultLogger.loggingEnabled = bool_map["log"];
+
     if(bool_map["help"])
     {
         parser.printHelpMessage();
+        defaultLogger.log(LogType::INFO, "Printed help message. Exiting with code 0.");
         std::exit(0);
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
+        defaultLogger.log(LogType::INFO, "Printed current version of electra. Exiting with code 0.");
         std::exit(0);
     }
     
     if(alone_args.size() == 0)
     {
         parser.printHelpMessage();
+        defaultLogger.log(LogType::INFO, "No arguments specified. Printing help message. Exiting with code 1.");
         std::exit(1);
     }
+
+    for(auto &i : this->split(string_map["stack"], " "))
+    {
+        if(i.empty()) continue;
+
+        try
+        {
+            m_stack.push(std::stod(i));
+        }
+        catch(const std::out_of_range &e)
+        {
+            defaultLogger.log(LogType::ERROR, "The value {} is too big or small for var_t.", i);
+            std::exit(1);
+        }
+        catch(const std::invalid_argument &e)
+        {
+            defaultLogger.log(LogType::ERROR, "Can\'t convert {} to var_t.", i);
+            std::exit(1);
+        }
+    }
     
-    defaultLogger.loggingEnabled = bool_map["log"];
     m_filename = alone_args[0];
 
     // Initializes cables
@@ -170,7 +196,7 @@ void Electra::mainLoop()
 
     do
     {
-        defaultLogger.log(LogType::INFO, "Tick: {}", {tickCount});
+        defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
         
         interpreteCurrents();
         moveCurrents();
@@ -180,12 +206,13 @@ void Electra::mainLoop()
         tickCount ++;
     }while (!m_currents.empty() && Electra::m_isRunning);
 
-    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", {tickCount});
+    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
 
 // Reads source code and saves it into m_sourceCode
 void Electra::readSourceCode()
 {
+    defaultLogger.log(LogType::INFO, "Started reading source code to memory!");
     std::ifstream file(m_filename);
 
     if(file.good())
@@ -197,6 +224,7 @@ void Electra::readSourceCode()
 
         if(fileData.find('\t') != std::string::npos) 
         {
+            defaultLogger.log(LogType::ERROR, "Cannot parse source code. Source code contains tab character. Exiting with code 1.");
             std::cerr << "ERROR: Source code contains tab!" << std::endl;
             file.close();
             std::exit(1);
@@ -207,15 +235,17 @@ void Electra::readSourceCode()
     else
     {
         std::cerr << "Cannot open \"" << m_filename << "\"" << std::endl;
+        defaultLogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", m_filename);
         std::exit(1);
     }
-
+    defaultLogger.log(LogType::INFO, "Finished reading source code!");
     file.close();
 }
 
 // Creates generators
 void Electra::createGenerators()
 {
+    defaultLogger.log(LogType::INFO, "Started parsing generators from source code!");
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
@@ -227,8 +257,8 @@ void Electra::createGenerators()
                 if(c == currentChar)
                 {
                     GeneratorData* genData = &m_generatorDataMap[c];
-
-                    m_generators.push_back( std::make_shared<Generator>( 
+                    defaultLogger.log(LogType::INFO, "Found a generator at ({}, {}).", x, y);
+                    m_generators.push_back( std::make_shared<Generator>(
                         *genData,
                         Position(x, y)
                     ) );
@@ -236,6 +266,7 @@ void Electra::createGenerators()
             }
         }
     }
+    defaultLogger.log(LogType::INFO, "Finished parsing generators from source code!");
 }
 
 /*
@@ -243,6 +274,8 @@ Creates portals.
 */
 void Electra::createPortals()
 {
+    defaultLogger.log(LogType::INFO, "Started parsing portals from source code!");
+
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
@@ -250,16 +283,9 @@ void Electra::createPortals()
             char currentChar = m_sourceCode.at(y).at(x);
             if(currentChar == ' ' || currentChar == '\n') continue;
             
-            bool isGenerator = false;
-            for(auto &c : m_generatorChars)
-            {
-                if(c == currentChar)
-                {
-                    isGenerator = true;
-                    break;
-                }
-            }
-            if(isGenerator) continue;
+            // If current char is a generator check next character
+            if(std::find(m_generatorChars.begin(), m_generatorChars.end(), currentChar) != m_generatorChars.end()) continue;
+
             try
             {
                 m_components.at(currentChar);
@@ -269,6 +295,7 @@ void Electra::createPortals()
                 if(m_portalMap.find(currentChar) == m_portalMap.end())
                 {
                     m_portalMap[currentChar] = {(int)x, (int)y};
+                    defaultLogger.log(LogType::INFO, "Found a portal at ({}, {}).", x, y);
                 }
             }
             
@@ -279,6 +306,7 @@ void Electra::createPortals()
     {
         m_components[p.first] = std::make_unique<Portal>(p.second);
     }
+    defaultLogger.log(LogType::INFO, "Finished parsing portals from source code!");
 }
 
 /*
@@ -305,6 +333,7 @@ Make components work and also decides what currents to remove and create.
 */
 void Electra::interpreteCurrents()
 {
+    defaultLogger.log(LogType::INFO, "Program started!");
     for(std::size_t i = 0; i < m_currents.size(); i++)
     {
         auto &cur = m_currents[i];
@@ -314,13 +343,13 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", {curPos.x, curPos.y, (int)cur->getDirection()});
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (X coordinate out of bounds)", {curPos.x, curPos.y, (int)cur->getDirection()});
+            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
 
@@ -333,7 +362,7 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Component refused to work.)", {curPos.x, curPos.y, (int)cur->getDirection()});
+                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         catch(const std::exception& e)
@@ -362,16 +391,18 @@ void Electra::interpreteCurrents()
                 if(!isAlignedWithGenerator)
                 {
                     m_deadCurrentIndexes.push_back(i);
-                    defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Current does not align with generator)", {curPos.x, curPos.y, (int)cur->getDirection()});
+                    defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
                 }
             }
             else
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Not a component nor generator.)", {curPos.x, curPos.y, (int)cur->getDirection()});
+                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
     }
+
+    defaultLogger.log(LogType::INFO, "Program finished!");
 }
 
 // Removes currents
@@ -389,16 +420,17 @@ void Electra::removeCurrents()
 // Creates currents
 void Electra::createCurrents()
 {
+    defaultLogger.log(LogType::INFO, "Started creating currents!");
     for(auto &cur : m_newCurrents)
     {
         Position curPos = cur->getPosition();
-        defaultLogger.log(LogType::INFO, "Created new current at ({},{}) with direction {}", {curPos.x, curPos.y, (int)cur->getDirection()});
         m_currents.push_back(cur);
     }
     
     m_newCurrents.clear();
 
-    defaultLogger.log(LogType::INFO, "Total current count: {}", {(int)m_currents.size()});
+    defaultLogger.log(LogType::INFO, "Total current count: {}.", m_currents.size());
+    defaultLogger.log(LogType::INFO, "Finished creating currents!");
 }
 
 void Electra::sigHandler(int signal)

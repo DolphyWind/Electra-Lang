@@ -13,5 +13,7 @@ bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     m_stackPtr->push(first);
     m_stackPtr->push(second);
 
+    defaultLogger.log(LogType::INFO, "Swapping {} and {} on the stack.", first, second);
+
     return true;
 }

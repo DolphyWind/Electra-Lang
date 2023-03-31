@@ -4,7 +4,7 @@ var_t popStack(StackPtr stack, var_t defaultValue)
 {
     if(stack->empty())
     {
-        defaultLogger.log(LogType::WARNING, "The stack you tried to pop is empty. Returning " + std::to_string(defaultValue));
+        defaultLogger.log(LogType::WARNING, "The stack you tried to pop is empty. Returning {}.", defaultValue);
         return defaultValue;
     }
 

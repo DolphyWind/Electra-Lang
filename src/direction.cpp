@@ -15,7 +15,7 @@ Position Position::operator+(const Position& right)
     return {this->x + right.x, this->y + right.y};
 }
 
-Position directionToPosition(Direction direction)
+Position directionToPosition(const Direction &direction)
 {
     // -1 on y coordinate mean up since the origin of the array is on the top left corner.
 
@@ -45,13 +45,14 @@ Position directionToPosition(Direction direction)
     case Direction::SOUTHEAST:
         return {1, 1};
         break;
+    case Direction::NONE:
     default:
         return {0, 0};
         break;
     }
 }
 
-Direction invertDirection(Direction direction)
+Direction invertDirection(const Direction &direction)
 {
     if(direction == Direction::NONE) return Direction::NONE;
     int dirAsInt = (int)direction;

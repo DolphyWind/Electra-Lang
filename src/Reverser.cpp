@@ -12,6 +12,7 @@ bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         m_stackPtr->pop();
     }
     *m_stackPtr = newStack;
+    defaultLogger.log(LogType::INFO, "Reversed the entire stack.");
 
     return true;
 }

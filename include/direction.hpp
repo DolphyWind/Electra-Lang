@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 
 enum class Direction
 {
@@ -25,5 +26,5 @@ struct Position
     Position operator+(const Position &right);
 };
 
-Position directionToPosition(Direction direction);
-Direction invertDirection(Direction direction);
+Position directionToPosition(const Direction &direction);
+Direction invertDirection(const Direction &direction);

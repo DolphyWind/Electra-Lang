@@ -5,6 +5,7 @@
 #include <Current.hpp>
 #include <algorithm>
 #include <optional>
+#include <Logger.hpp>
 
 class Cable : public Component
 {

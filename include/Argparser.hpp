@@ -2,7 +2,7 @@
 #define _ARGPARSER_HPP_
 
 #define ELECTRA_VERSION_MAJOR 1
-#define ELECTRA_VERSION_MINOR 2
+#define ELECTRA_VERSION_MINOR 3
 #define ELECTRA_VERSION_PATCH 0
 
 #include <string>
@@ -11,6 +11,7 @@
 #include <tuple>
 #include <algorithm>
 #include <iostream>
+#include <Logger.hpp>
 
 class Argparser
 {
@@ -27,11 +28,11 @@ private:
     std::vector<Argument> m_args;
     std::vector<std::string> m_argsEntered;
     std::vector<std::string> m_aloneArguments;
-    std::string_view m_binaryName;
 
 public:
     Argparser(int argc, char *argv[]);
 
+    std::string_view binary_name;
     std::string_view program_name;
     std::string_view program_description;
     void addArgument(const std::string &name, const std::string &shortName, bool store_boolean=false, const std::string &argumentDesc=std::string());

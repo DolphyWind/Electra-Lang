@@ -18,7 +18,7 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(inActivatorDirections)
     {
         m_sourceCode[curPos.y][curPos.x] = m_transformTo;
-        defaultLogger.log(LogType::INFO, "Key is activated...");
+        defaultLogger.log(LogType::INFO, "Key at ({}, {}) is now activated.", curPos.x, curPos.y);
         return true;
     }
 
@@ -28,7 +28,7 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     // If not in activator directions move the current back
     Position newPos = curPos + directionToPosition(curDirInv);
     current->setPosition(newPos);
-    defaultLogger.log(LogType::INFO, "Key is not activated. Moving back...");
+    defaultLogger.log(LogType::INFO, "(Key) Key at ({}, {}) is not activated. The is being moved to ({}, {})", curPos.x, curPos.y, newPos.x, newPos.y);
 
     return true;
 }

@@ -11,12 +11,12 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(m_printAsChar)
     {
         std::cout << (char_t) top << std::flush;
-        defaultLogger.log(LogType::INFO, "Printed " + std::to_string((char_t)top) + " to screen.");
+        defaultLogger.log(LogType::INFO, "Printed {} to screen.", (char_t)top);
     }
     else
     {
         std::cout << top << std::flush;
-        defaultLogger.log(LogType::INFO, "Printed " + std::to_string(top) + " to screen.");
+        defaultLogger.log(LogType::INFO, "Printed to screen.", top);
     }
     
     return true;

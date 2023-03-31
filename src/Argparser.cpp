@@ -2,7 +2,6 @@
 
 Argparser::Argparser(int argc, char* argv[])
 {
-    m_binaryName = argv[0];
     if(argc == 1) return;
     for(int i = 1; i < argc; i++)
     {
@@ -36,6 +35,7 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
             m_aloneArguments.push_back(m_argsEntered[i]);
             continue;
         }
+
         for(auto &a : m_args)
         {
             if(a.name == m_argsEntered[i] || a.shortName == m_argsEntered[i])
@@ -43,20 +43,24 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
                 std::string a_name = a.name;
                 while(a_name[0] == '-') a_name.erase(0, 1);
 
-                if(a.store_boolean) bool_map[a_name] = true;
+                if(a.store_boolean)
+                {
+                    bool_map[a_name] = true;
+                }
                 else
                 {
                     if(i == m_argsEntered.size() - 1) break;
+                    
                     std::string candidate = m_argsEntered[i + 1];
                     if(candidate[0] == '-') break;
                     string_map[a_name] = candidate;
+                    defaultLogger.log(LogType::INFO, "Argument \"" + a_name + "\" is set to \"" + candidate + "\".");
                     ++i;
                 }
                 break;
             }
         }
     }
-
     return {string_map, bool_map};
 }
 
@@ -75,12 +79,12 @@ void Argparser::printHelpMessage()
     printVersionMessage();
     std::cout << std::endl << program_description << std::endl << std::endl;
 
-    std::cout << "Usage: " << m_binaryName << " [OPTIONS] INPUT_FILE" << std::endl << std::endl;
+    std::cout << "Usage: " << binary_name << " [OPTIONS] INPUT_FILE" << std::endl << std::endl;
     std::cout << "Options: " << std::endl;
     for(auto &i : m_args)
     {
         std::cout << "\t" << i.shortName << ", " << i.name;
-        if(!i.store_boolean) std::cout << "<arg>";
+        if(!i.store_boolean) std::cout << " <arg>";
         std::cout << "\t" << i.argumentDesc << std::endl;
     }
     std::cout << std::endl;
