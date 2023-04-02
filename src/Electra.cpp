@@ -168,15 +168,15 @@ void Electra::run()
 }
 
 // Splits a string based on a given delimiter
-std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
+std::vector<string_t> Electra::split(const string_t& str, const string_t& delim) 
 {
-    std::vector<std::string> tokens;
+    std::vector<string_t> tokens;
     std::size_t prev = 0, pos = 0;
     do
     {
         pos = str.find(delim, prev);
-        if(pos == std::string::npos) pos = str.length();
-        std::string token = str.substr(prev, pos-prev);
+        if(pos == string_t::npos) pos = str.length();
+        string_t token = str.substr(prev, pos-prev);
         tokens.push_back(token);
         prev = pos + delim.length();
     } while (pos < str.length() && prev < str.length());
@@ -216,16 +216,16 @@ void Electra::mainLoop()
 void Electra::readSourceCode()
 {
     defaultLogger.log(LogType::INFO, "Started reading source code to memory!");
-    std::ifstream file(m_filename);
+    ifstream_t file(m_filename);
 
     if(file.good())
     {
-        std::string fileData;
-        std::stringstream ss;
+        string_t fileData;
+        stringstream_t ss;
         ss << file.rdbuf();
         fileData = ss.str();
 
-        if(fileData.find('\t') != std::string::npos) 
+        if(fileData.find('\t') != string_t::npos) 
         {
             defaultLogger.log(LogType::ERROR, "Cannot parse source code. Source code contains tab character. Exiting with code 1.");
             std::cerr << "ERROR: Source code contains tab!" << std::endl;
