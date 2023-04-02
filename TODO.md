@@ -11,3 +11,8 @@ Also an argument called --stack-count for managing stack count would be great.
 + Add support for unicode characters. This might break the windows compatability though, because my every attempt of reading unicode from file with MSVC failed. But I got it worked on MinGW.
 + Add unicode versions of cables and other components.
 + Make each current have their own stack pointer this way multithreading would be a safe option.
++ Make ConstantPusher and Input Characters seperated. Input characters will be called InputUnit. This won't change how language works. It just makes more sense to keep them seperated.
++ Comment out the code in general
++ Add a function to convert binary numbers to direction vectors.
++ Greatly modify README.md
+    + Explain how Electra 2.0 works including multiple stacks and each current having its own stackPtr

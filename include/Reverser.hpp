@@ -3,10 +3,9 @@
 
 class Reverser : public Cable
 {
-    StackPtr m_stackPtr;
 public:
-    Reverser(std::vector<Direction> directions, StackPtr stackPtr):
-        Cable(directions), m_stackPtr(stackPtr)
+    Reverser(std::vector<Direction> directions):
+        Cable(directions)
     {}
     ~Reverser(){};
 

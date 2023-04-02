@@ -24,6 +24,7 @@
 #include <Key.hpp>
 #include <Portal.hpp>
 #include <Reverser.hpp>
+#include <Eraser.hpp>
 #include <Argparser.hpp>
 #include <csignal>
 

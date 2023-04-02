@@ -6,11 +6,10 @@
 
 class ConstantAdder : public Cable
 {
-    StackPtr m_stackPtr;
     var_t m_constant;
 public:
-    ConstantAdder(std::vector<Direction> directions, StackPtr stackPtr, var_t constant):
-        Cable(directions), m_stackPtr(stackPtr), m_constant(constant)
+    ConstantAdder(std::vector<Direction> directions, var_t constant):
+        Cable(directions), m_constant(constant)
     {}
     ~ConstantAdder() {};
 

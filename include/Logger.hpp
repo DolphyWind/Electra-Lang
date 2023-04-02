@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <GlobalFunctions.hpp>
+#include <Global.hpp>
 #include <ctime>
 #include <sstream>
 #include <string_conversions.hpp>

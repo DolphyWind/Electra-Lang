@@ -4,7 +4,7 @@
 #include <memory>
 #include <Current.hpp>
 #include <stack>
-#include <GlobalFunctions.hpp>
+#include <Global.hpp>
 #include <Logger.hpp>
 
 // Electrical components

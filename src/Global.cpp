@@ -1,4 +1,4 @@
-#include <GlobalFunctions.hpp>
+#include <Global.hpp>
 
 var_t popStack(StackPtr stack, var_t defaultValue)
 {

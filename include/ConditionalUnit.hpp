@@ -6,12 +6,11 @@
 
 class ConditionalUnit : public Cable
 {
-    StackPtr m_stackPtr;
     var_t m_targetValue;
     bool m_invert;
 public:
-    ConditionalUnit(std::vector<Direction> directions, StackPtr stackPtr, var_t targetValue, bool invert):
-        Cable(directions), m_stackPtr(stackPtr), m_targetValue(targetValue), m_invert(invert)
+    ConditionalUnit(std::vector<Direction> directions, var_t targetValue, bool invert):
+        Cable(directions), m_targetValue(targetValue), m_invert(invert)
     {}
     ~ConditionalUnit() {};
 

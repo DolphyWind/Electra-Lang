@@ -5,10 +5,10 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
     if(!Cable::work(current, currentVector))
         return false;
     
-    if(m_stackPtr->empty())
+    if(current->stackPtr->empty())
         return true;
     
-    var_t x = popStack(m_stackPtr);
+    var_t x = popStack(current->stackPtr);
     bool condition = (x == m_targetValue);
 
     if(condition) defaultLogger.log(LogType::INFO, "(ConditionalUnit) {} is equals to {}.", x, m_targetValue);

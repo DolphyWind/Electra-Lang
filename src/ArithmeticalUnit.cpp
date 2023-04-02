@@ -4,15 +4,15 @@ bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *current
 {
     if(!Cable::work(current, currentVector)) return false;
     
-    if(m_stackPtr->size() < 2) return true;
+    if(current->stackPtr->size() < 2) return true;
     
     var_t first, second;
     
-    first = popStack(m_stackPtr);
-    second = popStack(m_stackPtr);
+    first = popStack(current->stackPtr);
+    second = popStack(current->stackPtr);
 
     var_t result = m_func(first, second);
-    m_stackPtr->push(result);
+    current->stackPtr->push(result);
     
     defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
     return true;

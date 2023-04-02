@@ -1,6 +1,6 @@
 #include "Generator.hpp"
 
-void Generator::generate(std::vector<CurrentPtr> *currentVector)
+void Generator::generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr)
 {
     for(auto& dir : m_directions)
     {
@@ -8,7 +8,7 @@ void Generator::generate(std::vector<CurrentPtr> *currentVector)
         Position deltaPos = directionToPosition(dir);
         Position resultPos = m_position + deltaPos;
 
-        currentVector->push_back(std::make_shared<Current>(dir, resultPos));
+        currentVector->push_back(std::make_shared<Current>(dir, resultPos, stackPtr));
         defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
     }
 }

@@ -5,10 +5,9 @@
 
 class Cloner : public Cable
 {
-    StackPtr m_stackPtr;
 public:
-    Cloner(std::vector<Direction> directions, StackPtr stackPtr):
-    Cable(directions), m_stackPtr(stackPtr)
+    Cloner(std::vector<Direction> directions):
+    Cable(directions)
     {};
     ~Cloner() {};
 

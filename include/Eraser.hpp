@@ -1,14 +1,13 @@
 #pragma once
 #include <Cable.hpp>
 
-// Swaps the top two values of m_stack
-
-class Swapper : public Cable
+// Pops the top value from the current stack
+class Eraser : public Cable
 {
 public:
-    Swapper(std::vector<Direction> directions):
+    Eraser(std::vector<Direction> directions):
         Cable(directions) {}
-    ~Swapper(){};
+    ~Eraser() {};
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

@@ -5,8 +5,8 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(!Cable::work(current, currentVector))
         return false;
     
-    if(m_stackPtr->empty()) return true;
-    var_t top = popStack(m_stackPtr);
+    if(current->stackPtr->empty()) return true;
+    var_t top = popStack(current->stackPtr);
 
     if(m_printAsChar)
     {

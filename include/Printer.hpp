@@ -10,11 +10,10 @@
 class Printer : public Cable
 {
 private:
-    StackPtr m_stackPtr;
     bool m_printAsChar = false;
 public:
-    Printer(std::vector<Direction> directions, StackPtr stackPtr, bool printAsChar):
-        Cable(directions), m_stackPtr(stackPtr), m_printAsChar(printAsChar)
+    Printer(std::vector<Direction> directions, bool printAsChar):
+        Cable(directions), m_printAsChar(printAsChar)
     {
 
     }

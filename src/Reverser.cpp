@@ -6,12 +6,12 @@ bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         return false;
     
     std::stack<var_t> newStack;
-    while(!m_stackPtr->empty())
+    while(!current->stackPtr->empty())
     {
-        newStack.push(m_stackPtr->top());
-        m_stackPtr->pop();
+        newStack.push(current->stackPtr->top());
+        current->stackPtr->pop();
     }
-    *m_stackPtr = newStack;
+    *current->stackPtr = newStack;
     defaultLogger.log(LogType::INFO, "Reversed the entire stack.");
 
     return true;

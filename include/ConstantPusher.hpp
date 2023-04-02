@@ -9,13 +9,10 @@ class ConstantPusher : public Cable
     bool m_getInput = false;
     bool m_getInputAsChar = false;
     var_t m_constant;
-    StackPtr m_stackPtr;
 public:
-    ConstantPusher(std::vector<Direction> directions, StackPtr stackPtr, bool getInput, bool getInputAsChar, var_t constant):
-        Cable(directions), m_stackPtr(stackPtr), m_getInput(getInput), m_getInputAsChar(getInputAsChar), m_constant(constant)
-    {
-        
-    }
+    ConstantPusher(std::vector<Direction> directions, bool getInput, bool getInputAsChar, var_t constant):
+        Cable(directions), m_getInput(getInput), m_getInputAsChar(getInputAsChar), m_constant(constant)
+    {}
     ~ConstantPusher() {};
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;

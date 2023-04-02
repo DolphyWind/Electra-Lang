@@ -10,7 +10,7 @@ bool Portal::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     {
         portalStack.push(currentPos);
         Position newPos = m_originalPosition + directionToPosition(currentDirection);
-        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, newPos);
+        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, newPos, current->stackPtr);
         newCurrent->setPortalStack(portalStack);
         currentVector->push_back(newCurrent);
         defaultLogger.log(LogType::INFO, "Teleported current from ({}, {}) to ({}, {}).", currentPos.x, currentPos.y, newPos.x, newPos.y);
@@ -20,7 +20,7 @@ bool Portal::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         std::optional<Position> lastPortalPos = current->popLastPortal();
         if(!lastPortalPos.has_value()) return true;
         Position newPos = lastPortalPos.value() + directionToPosition(currentDirection);
-        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, newPos);
+        CurrentPtr newCurrent = std::make_shared<Current>(currentDirection, newPos, current->stackPtr);
         newCurrent->setPortalStack(current->getPortalStack());
         currentVector->push_back(newCurrent);
         defaultLogger.log(LogType::INFO, "Teleported current from ({}, {}) to ({}, {}).", currentPos.x, currentPos.y, newPos.x, newPos.y);

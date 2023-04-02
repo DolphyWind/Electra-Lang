@@ -5,6 +5,8 @@
 #include <Current.hpp>
 #include <memory>
 #include <Logger.hpp>
+#include <stack>
+#include <Global.hpp>
 
 // Generates currents.
 class Generator
@@ -21,7 +23,7 @@ public:
 
     /// @brief Generates new current if it can
     /// @param currentVector Pushes the new current in this vector
-    void generate(std::vector<CurrentPtr> *currentVector);
+    void generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr);
 
     std::vector<Direction> getDirections();
 };
