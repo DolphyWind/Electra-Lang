@@ -4,7 +4,7 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
     {
-        defaultLogger.log(LogType::INFO, "The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
+        defaultLogger.log(LogType::INFO, L"The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
         current->getPosition().x, current->getPosition().y, current->getDirection(), this->m_directions);
         return false;
     }

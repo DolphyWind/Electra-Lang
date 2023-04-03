@@ -10,6 +10,6 @@ bool Cloner::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     var_t top = current->stackPtr->top();
     current->stackPtr->push(top);
 
-    defaultLogger.log(LogType::INFO, "(Cloner) Pushing {} to stack.", top);
+    defaultLogger.log(LogType::INFO, L"(Cloner) Pushing {} to stack.", top);
     return true;
 }

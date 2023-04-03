@@ -58,3 +58,16 @@ Direction invertDirection(const Direction &direction)
     int dirAsInt = (int)direction;
     return (Direction)((dirAsInt + 4) % 8);
 }
+
+std::vector<Direction> bin2dir(std::size_t num)
+{
+    std::vector<Direction> output;
+    std::size_t index;
+    while(num)
+    {
+        if(num & 0x1) output.push_back((Direction)index);
+        num >>= 1;
+        index ++;
+    }
+    return output;
+}

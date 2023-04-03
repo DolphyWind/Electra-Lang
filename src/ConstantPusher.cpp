@@ -10,14 +10,14 @@ bool ConstantPusher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVe
         if(m_getInputAsChar)
         {
             char_t c;
-            std::cin >> c;
+            std::wcin >> c;
             m_constant = c;
         }
         else
-            std::cin >> m_constant;
+            std::wcin >> m_constant;
     }
 
     current->stackPtr->push(m_constant);
-    defaultLogger.log(LogType::INFO, "(ConstantPusher) Pushed {} to the stack.", m_constant);
+    defaultLogger.log(LogType::INFO, L"(ConstantPusher) Pushed {} to the stack.", m_constant);
     return true;
 }

@@ -33,18 +33,18 @@ typedef std::vector<Direction> GeneratorData;
 class Electra
 {
     // Maps some chars to corresponding components.
-    std::map<char, std::unique_ptr<Component>> m_components;
+    std::map<wchar_t, std::unique_ptr<Component>> m_components;
     
     // First element of DirectionPair corresponds to m_directions, second element corresponds to m_togglerDirections
-    std::map<char, GeneratorData> m_generatorDataMap;
-    std::vector<char> m_generatorChars;
+    std::map<wchar_t, GeneratorData> m_generatorDataMap;
+    std::vector<wchar_t> m_generatorChars;
     std::vector<GeneratorPtr> m_generators;
 
     std::vector<CurrentPtr> m_currents;
     
     // Related to files
     std::string m_filename;
-    std::vector<std::string> m_sourceCode;
+    std::vector<std::wstring> m_sourceCode;
 
     // Holds indexes of currents that are soon to be deleted.
     std::vector<std::size_t> m_deadCurrentIndexes;
@@ -55,7 +55,7 @@ class Electra
     std::stack<var_t> m_stack;
 
     // Portal map
-    std::map<char, Position> m_portalMap;
+    std::map<wchar_t, Position> m_portalMap;
 
     // Signal handling.
     static bool m_isRunning;
@@ -67,6 +67,7 @@ public:
 
     void run();
     std::vector<std::string> split(const std::string& str, const std::string& delim);
+    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
     void readSourceCode();
     void createGenerators();
     void createPortals();

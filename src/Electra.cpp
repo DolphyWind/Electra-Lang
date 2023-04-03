@@ -30,21 +30,21 @@ Electra::Electra(int argc, char* argv[])
     if(bool_map["help"])
     {
         parser.printHelpMessage();
-        defaultLogger.log(LogType::INFO, "Printed help message. Exiting with code 0.");
+        defaultLogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
         std::exit(0);
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
-        defaultLogger.log(LogType::INFO, "Printed current version of electra. Exiting with code 0.");
+        defaultLogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
         std::exit(0);
     }
     
     if(alone_args.size() == 0)
     {
         parser.printHelpMessage();
-        defaultLogger.log(LogType::INFO, "No arguments specified. Printing help message. Exiting with code 1.");
+        defaultLogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
         std::exit(1);
     }
 
@@ -58,12 +58,12 @@ Electra::Electra(int argc, char* argv[])
         }
         catch(const std::out_of_range &e)
         {
-            defaultLogger.log(LogType::ERROR, "The value {} is too big or small for var_t.", i);
+            defaultLogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
             std::exit(1);
         }
         catch(const std::invalid_argument &e)
         {
-            defaultLogger.log(LogType::ERROR, "Can\'t convert {} to var_t.", i);
+            defaultLogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
             std::exit(1);
         }
     }
@@ -72,64 +72,67 @@ Electra::Electra(int argc, char* argv[])
 
     // Initializes cables
     // m_components['-'] = new Cable({Direction::WEST, Direction::EAST}) );
-    m_components['-'] = std::make_unique<Cable>(std::vector<Direction>{Direction::WEST, Direction::EAST}) ;
-    m_components['|'] = std::make_unique<Cable>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH} );
-    m_components['/'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHWEST, Direction::NORTHEAST} );
-    m_components['\\'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHEAST, Direction::NORTHWEST} );
-    m_components['+'] = std::make_unique<Cable>( std::vector<Direction>{Direction::WEST, Direction::EAST, Direction::NORTH, Direction::SOUTH} );
-    m_components['X'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST} );
-    m_components['*'] = std::make_unique<Cable>( std::vector<Direction>{Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
+    m_components[L'-'] = std::make_unique<Cable>( bin2dir(0b00010001) );
+    m_components[L'⎯'] = std::make_unique<Cable>( bin2dir(0b00010001) );
+    
+    m_components[L'|'] = std::make_unique<Cable>( bin2dir(0b01000100) );
+    m_components[L'/'] = std::make_unique<Cable>( bin2dir(0b00100010) );
+    m_components[L'\\'] = std::make_unique<Cable>( bin2dir(0b10001000) );
+    m_components[L'+'] = std::make_unique<Cable>( bin2dir(0b01010101) );
+    m_components[L'X'] = std::make_unique<Cable>( bin2dir(0b10101010) );
+    m_components[L'*'] = std::make_unique<Cable>( bin2dir(0b11111111) );
+    m_components[L'✱'] = std::make_unique<Cable>( bin2dir(0b11111111) );
     // I ran out of good ascii characters :(
-    m_components['{'] = std::make_unique<Cable>( std::vector<Direction>{Direction::EAST} );
-    m_components['}'] = std::make_unique<Cable>( std::vector<Direction>{Direction::WEST} );
-    m_components['U'] = std::make_unique<Cable>( std::vector<Direction>{Direction::NORTH} );
-    m_components['n'] = std::make_unique<Cable>( std::vector<Direction>{Direction::SOUTH} );
+    m_components[L'{'] = std::make_unique<Cable>( bin2dir(0b00000001) );
+    m_components[L'}'] = std::make_unique<Cable>( bin2dir(0b00010000) );
+    m_components[L'U'] = std::make_unique<Cable>( bin2dir(0b00000100) );
+    m_components[L'n'] = std::make_unique<Cable>( bin2dir(0b01000000) );
 
     // Initializes Printers
-    m_components['N'] = std::make_unique<Printer>( std::vector<Direction>{Direction::NORTHWEST, Direction::SOUTHEAST, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::SOUTHWEST}, false);
-    m_components['P'] = std::make_unique<Printer>( std::vector<Direction>{Direction::NORTH, Direction::WEST, Direction::EAST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, true);
+    m_components[L'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);
+    m_components[L'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true);
     
     // Initializes Arithmatical Units
-    m_components['A'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTHEAST, Direction::SOUTHWEST}, [](var_t x, var_t y){return x + y;} );
-    m_components['S'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST}, [](var_t x, var_t y){return x - y;} );
-    m_components['M'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::EAST, Direction::WEST}, [](var_t x, var_t y){return x * y;} );
-    m_components['Q'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::WEST, Direction::EAST, Direction::SOUTHEAST}, [](var_t x, var_t y){return x / y;} );
-    m_components['%'] = std::make_unique<ArithmeticalUnit>( std::vector<Direction>{Direction::NORTHEAST, Direction::SOUTHWEST}, [](var_t x, var_t y){return std::fmod(x, y);} );
+    m_components[L'A'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b10100100), [](var_t x, var_t y){return x + y;} );
+    m_components[L'S'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b01100110), [](var_t x, var_t y){return x - y;} );
+    m_components[L'M'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b11111011), [](var_t x, var_t y){return x * y;} );
+    m_components[L'Q'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b11010101), [](var_t x, var_t y){return x / y;} );
+    m_components[L'%'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b00100010), [](var_t x, var_t y){return std::fmod(x, y);} );
 
     // Initializes constant adders
-    m_components['I'] = std::make_unique<ConstantAdder>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, 1);
-    m_components['D'] = std::make_unique<ConstantAdder>( std::vector<Direction>{Direction::WEST, Direction::EAST, Direction::SOUTHWEST, Direction::NORTHWEST, Direction::NORTH, Direction::SOUTH}, -1);
+    m_components[L'I'] = std::make_unique<ConstantAdder>( bin2dir(0b01000100), 1);
+    m_components[L'D'] = std::make_unique<ConstantAdder>( bin2dir(0b01111101), -1);
     
     // Initializes cloner
-    m_components['#'] = std::make_unique<Cloner>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST});
+    m_components[L'#'] = std::make_unique<Cloner>( bin2dir(0b01010101) );
 
     // Initializes constant pushers
-    m_components['O'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::NORTHEAST, Direction::NORTHWEST}, false, false, 0);
-    m_components['@'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::WEST, Direction::NORTHEAST, Direction::NORTHWEST, Direction::SOUTHWEST}, true, false, 0);
-    m_components['&'] = std::make_unique<ConstantPusher>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST}, true, true, 0);
+    m_components[L'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), false, false, 0);
+    m_components[L'@'] = std::make_unique<ConstantPusher>( bin2dir(0b01111111), true, false, 0);
+    m_components[L'&'] = std::make_unique<ConstantPusher>( bin2dir(0b11100101), true, true, 0);
 
     // Initializes swapper
-    m_components['$'] = std::make_unique<Swapper>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH, Direction::SOUTHWEST, Direction::NORTHEAST});
+    m_components[L'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );
 
     // Initializes conditional units
-    m_components['['] = std::make_unique<ConditionalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, 0, false);
-    m_components[']'] = std::make_unique<ConditionalUnit>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, 0, true);
+    m_components[L'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false);
+    m_components[L']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true);
 
     // Initializes keys
-    m_components['~'] = std::make_unique<Key>( std::vector<Direction>{Direction::WEST, Direction::EAST}, std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, m_sourceCode, '-');
-    m_components['!'] = std::make_unique<Key>( std::vector<Direction>{Direction::NORTH, Direction::SOUTH}, std::vector<Direction>{Direction::WEST, Direction::EAST}, m_sourceCode, '|');
+    m_components[L'~'] = std::make_unique<Key>( bin2dir(0b00010001), bin2dir(0b01000100), m_sourceCode, L'-');
+    m_components[L'!'] = std::make_unique<Key>( bin2dir(0b01000100), bin2dir(0b00010001), m_sourceCode, L'|');
 
     // Initializes Reverser
-    m_components['R'] = std::make_unique<Reverser>( std::vector<Direction>{Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTHEAST});
+    m_components[L'R'] = std::make_unique<Reverser>( bin2dir(0b10111111) );
     
     // Initializes Remover
-    m_components['E'] = std::make_unique<Eraser>( std::vector<Direction>{Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST} );
+    m_components[L'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Saves generator characters and their directions and toggler directions in a map
-    m_generatorDataMap['>'] = {Direction::EAST};
-    m_generatorDataMap['^'] = {Direction::NORTH};
-    m_generatorDataMap['<'] = {Direction::WEST};
-    m_generatorDataMap['v'] = {Direction::SOUTH};
+    m_generatorDataMap[L'>'] = bin2dir(0b00000001);
+    m_generatorDataMap[L'^'] = bin2dir(0b00000100);
+    m_generatorDataMap[L'<'] = bin2dir(0b00010000);
+    m_generatorDataMap[L'v'] = bin2dir(0b01000000);
     
     // Saves generator chars seperately
     for(auto &p : m_generatorDataMap)
@@ -183,6 +186,21 @@ std::vector<std::string> Electra::split(const std::string& str, const std::strin
     return tokens;
 }
 
+std::vector<std::wstring> Electra::split_wstr(const std::wstring& str, const std::wstring& delim)
+{
+    std::vector<std::wstring> tokens;
+    std::size_t prev = 0, pos = 0;
+    do
+    {
+        pos = str.find(delim, prev);
+        if(pos == std::string::npos) pos = str.length();
+        std::wstring token = str.substr(prev, pos-prev);
+        tokens.push_back(token);
+        prev = pos + delim.length();
+    } while (pos < str.length() && prev < str.length());
+    return tokens;
+}
+
 /*
 The part that runs source code.
 First it generates new currents with generators
@@ -194,12 +212,13 @@ And then it briefly does these in order on every loop:
 */
 void Electra::mainLoop()
 {
+    defaultLogger.log(LogType::INFO, L"Program started!");
     int tickCount = 0;
     generateGenerators();
 
     do
     {
-        defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
+        defaultLogger.log(LogType::INFO, L"Tick: {}", tickCount);
         
         interpreteCurrents();
         moveCurrents();
@@ -209,58 +228,59 @@ void Electra::mainLoop()
         tickCount ++;
     }while (!m_currents.empty() && Electra::m_isRunning);
 
-    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
+    defaultLogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
 // Reads source code and saves it into m_sourceCode
 void Electra::readSourceCode()
 {
-    defaultLogger.log(LogType::INFO, "Started reading source code to memory!");
-    std::ifstream file(m_filename);
+    defaultLogger.log(LogType::INFO, L"Started reading source code to memory!");
+    std::wifstream file(m_filename);
+    file.imbue(std::locale("en_US.UTF-8"));
 
     if(file.good())
     {
-        std::string fileData;
-        std::stringstream ss;
+        std::wstring fileData;
+        std::wstringstream ss;
         ss << file.rdbuf();
         fileData = ss.str();
 
         if(fileData.find('\t') != std::string::npos) 
         {
-            defaultLogger.log(LogType::ERROR, "Cannot parse source code. Source code contains tab character. Exiting with code 1.");
+            defaultLogger.log(LogType::ERROR, L"Cannot parse source code. Source code contains tab character. Exiting with code 1.");
             std::cerr << "ERROR: Source code contains tab!" << std::endl;
             file.close();
             std::exit(1);
         }
 
-        m_sourceCode = split(fileData, "\n");
+        m_sourceCode = split_wstr(fileData, L"\n");
     }
     else
     {
         std::cerr << "Cannot open \"" << m_filename << "\"" << std::endl;
-        defaultLogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", m_filename);
+        defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", m_filename);
         std::exit(1);
     }
-    defaultLogger.log(LogType::INFO, "Finished reading source code!");
+    defaultLogger.log(LogType::INFO, L"Finished reading source code!");
     file.close();
 }
 
 // Creates generators
 void Electra::createGenerators()
 {
-    defaultLogger.log(LogType::INFO, "Started parsing generators from source code!");
+    defaultLogger.log(LogType::INFO, L"Started parsing generators from source code!");
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
         {
-            char currentChar = m_sourceCode.at(y).at(x);
+            char_t currentChar = m_sourceCode.at(y).at(x);
             
             for(auto &c : m_generatorChars)
             {
                 if(c == currentChar)
                 {
                     GeneratorData* genData = &m_generatorDataMap[c];
-                    defaultLogger.log(LogType::INFO, "Found a generator at ({}, {}).", x, y);
+                    defaultLogger.log(LogType::INFO, L"Found a generator at ({}, {}).", x, y);
                     m_generators.push_back( std::make_shared<Generator>(
                         *genData,
                         Position(x, y)
@@ -269,7 +289,7 @@ void Electra::createGenerators()
             }
         }
     }
-    defaultLogger.log(LogType::INFO, "Finished parsing generators from source code!");
+    defaultLogger.log(LogType::INFO, L"Finished parsing generators from source code!");
 }
 
 /*
@@ -277,14 +297,14 @@ Creates portals.
 */
 void Electra::createPortals()
 {
-    defaultLogger.log(LogType::INFO, "Started parsing portals from source code!");
+    defaultLogger.log(LogType::INFO, L"Started parsing portals from source code!");
 
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
         {
-            char currentChar = m_sourceCode.at(y).at(x);
-            if(currentChar == ' ' || currentChar == '\n') continue;
+            char_t currentChar = m_sourceCode.at(y).at(x);
+            if(currentChar == L' ' || currentChar == L'\n') continue;
             
             // If current char is a generator check next character
             if(std::find(m_generatorChars.begin(), m_generatorChars.end(), currentChar) != m_generatorChars.end()) continue;
@@ -298,7 +318,7 @@ void Electra::createPortals()
                 if(m_portalMap.find(currentChar) == m_portalMap.end())
                 {
                     m_portalMap[currentChar] = {(int)x, (int)y};
-                    defaultLogger.log(LogType::INFO, "Found a portal at ({}, {}).", x, y);
+                    defaultLogger.log(LogType::INFO, L"Found a portal at ({}, {}).", x, y);
                 }
             }
             
@@ -309,7 +329,7 @@ void Electra::createPortals()
     {
         m_components[p.first] = std::make_unique<Portal>(p.second);
     }
-    defaultLogger.log(LogType::INFO, "Finished parsing portals from source code!");
+    defaultLogger.log(LogType::INFO, L"Finished parsing portals from source code!");
 }
 
 /*
@@ -336,7 +356,6 @@ Make components work and also decides what currents to remove and create.
 */
 void Electra::interpreteCurrents()
 {
-    defaultLogger.log(LogType::INFO, "Program started!");
     for(std::size_t i = 0; i < m_currents.size(); i++)
     {
         auto &cur = m_currents[i];
@@ -346,18 +365,18 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
 
         // Main part that determines functionality of the current
-        char currentChar = m_sourceCode[curPos.y][curPos.x];
+        char_t currentChar = m_sourceCode[curPos.y][curPos.x];
         try
         {
             // throws an error if currentChar is not a key of m_components
@@ -365,7 +384,7 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         catch(const std::exception& e)
@@ -394,18 +413,16 @@ void Electra::interpreteCurrents()
                 if(!isAlignedWithGenerator)
                 {
                     m_deadCurrentIndexes.push_back(i);
-                    defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
+                    defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
                 }
             }
             else
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, "Removing current at ({},{}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
     }
-
-    defaultLogger.log(LogType::INFO, "Program finished!");
 }
 
 // Removes currents
@@ -423,7 +440,7 @@ void Electra::removeCurrents()
 // Creates currents
 void Electra::createCurrents()
 {
-    defaultLogger.log(LogType::INFO, "Started creating currents!");
+    defaultLogger.log(LogType::INFO, L"Started creating currents!");
     for(auto &cur : m_newCurrents)
     {
         Position curPos = cur->getPosition();
@@ -432,8 +449,8 @@ void Electra::createCurrents()
     
     m_newCurrents.clear();
 
-    defaultLogger.log(LogType::INFO, "Total current count: {}.", m_currents.size());
-    defaultLogger.log(LogType::INFO, "Finished creating currents!");
+    defaultLogger.log(LogType::INFO, L"Total current count: {}.", m_currents.size());
+    defaultLogger.log(LogType::INFO, L"Finished creating currents!");
 }
 
 void Electra::sigHandler(int signal)

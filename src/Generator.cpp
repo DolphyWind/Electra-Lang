@@ -9,7 +9,7 @@ void Generator::generate(std::vector<CurrentPtr> *currentVector, StackPtr stackP
         Position resultPos = m_position + deltaPos;
 
         currentVector->push_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        defaultLogger.log(LogType::INFO, L"Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
     }
 }
 

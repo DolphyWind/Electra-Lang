@@ -20,65 +20,64 @@ class Logger
 {
 private:
     std::string m_filename;
-    std::ofstream m_writer;
-    std::string replaceString(std::string& originalStr, const std::string& lookFor, const std::string& replaceWith);
+    std::wofstream m_writer;
+    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
     bool m_fileOpened = false;
 
     template<typename T>
-    void parseVariadic(std::vector<std::string> &output, T t);
+    void parseVariadic(std::vector<std::wstring> &output, T t);
 
     template<typename T, typename... Args>
-    void parseVariadic(std::vector<std::string> &output, T t, Args... args);
+    void parseVariadic(std::vector<std::wstring> &output, T t, Args... args);
 public:
     Logger();
-    ~Logger();
-
     bool loggingEnabled = false;
 
     template<typename... Args>
-    void log(LogType logType, std::string message, Args... args);
+    void log(LogType logType, std::wstring message, Args... args);
 };
 
 template<typename T>
-void Logger::parseVariadic(std::vector<std::string> &out, T t)
+void Logger::parseVariadic(std::vector<std::wstring> &out, T t)
 {
-    out.push_back(std::to_string(t));
+    out.push_back(std::to_wstring(t));
 }
 
 template<typename T, typename... Args>
-void Logger::parseVariadic(std::vector<std::string> &out, T t, Args... args)
+void Logger::parseVariadic(std::vector<std::wstring> &out, T t, Args... args)
 {
-    out.push_back(std::to_string(t));
+    out.push_back(std::to_wstring(t));
     parseVariadic(out, args...);
 }
 
 
 template<typename... Args>
-void Logger::log(LogType logType, std::string message, Args... args)
+void Logger::log(LogType logType, std::wstring message, Args... args)
 {
     if(!loggingEnabled) return;
-    message = std::string("{}") + message;
+    message = std::wstring(L"{}") + message;
     
-    std::vector<std::string> arguments;
-    parseVariadic(arguments, "", args...);
+    std::vector<std::wstring> arguments;
+    parseVariadic(arguments, L"", args...);
 
     if(!m_fileOpened)
     {
         m_writer.open(m_filename);
+        m_writer.imbue(std::locale("en_US.UTF-8"));
         m_fileOpened = m_writer.good();
     }
 
-    std::string logTypeStr;
+    std::wstring logTypeStr;
     switch (logType)
     {
     case LogType::WARNING:
-        logTypeStr = "WARNING";
+        logTypeStr = L"WARNING";
         break;
     case LogType::INFO:
-        logTypeStr = "INFO";
+        logTypeStr = L"INFO";
         break;
     case LogType::ERROR:
-        logTypeStr = "ERROR";
+        logTypeStr = L"ERROR";
         break;
     default:
         break;
@@ -86,11 +85,11 @@ void Logger::log(LogType logType, std::string message, Args... args)
 
     for(auto& arg : arguments)
     {
-        message = replaceString(message, "{}", arg);
+        message = replaceString(message, L"{}", arg);
     }
     
     // Write out logtype with item
-    m_writer << "[" << logTypeStr << "] " << message << '\n';
+    m_writer << "[" << logTypeStr << "] " << message << L'\n';
 }
 
 extern Logger defaultLogger;

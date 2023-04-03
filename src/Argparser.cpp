@@ -54,7 +54,6 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
                     std::string candidate = m_argsEntered[i + 1];
                     if(candidate[0] == '-') break;
                     string_map[a_name] = candidate;
-                    defaultLogger.log(LogType::INFO, "Argument \"" + a_name + "\" is set to \"" + candidate + "\".");
                     ++i;
                 }
                 break;

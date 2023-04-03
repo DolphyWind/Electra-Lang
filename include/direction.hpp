@@ -26,5 +26,11 @@ struct Position
     Position operator+(const Position &right);
 };
 
+// Converts direction to position
 Position directionToPosition(const Direction &direction);
+
+// Inverts the given direction
 Direction invertDirection(const Direction &direction);
+
+// Converts any number to vector direction
+std::vector<Direction> bin2dir(std::size_t num);

@@ -8,11 +8,8 @@
 I might increase the total stack count to 16 and add two components for switching the stacks.  
 Also an argument called --stack-count for managing stack count would be great.
 + Update --stack's formatting to something like this: "1 2 3,4 5 6". First stack contains 321, second stack contains 654
-+ Add support for unicode characters. This might break the windows compatability though, because my every attempt of reading unicode from file with MSVC failed. But I got it worked on MinGW.
 + Add unicode versions of cables and other components.
-+ Make each current have their own stack pointer this way multithreading would be a safe option.
-+ Make ConstantPusher and Input Characters seperated. Input characters will be called InputUnit. This won't change how language works. It just makes more sense to keep them seperated.
++ Make ConstantPusher and Input components seperated. Input components will be called Reader. This won't change how language works. It just makes more sense to keep them seperated.
 + Comment out the code in general
-+ Add a function to convert binary numbers to direction vectors.
 + Greatly modify README.md
     + Explain how Electra 2.0 works including multiple stacks and each current having its own stackPtr

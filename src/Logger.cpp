@@ -9,16 +9,10 @@ Logger::Logger()
     m_filename = ss.str();
 }
 
-Logger::~Logger()
-{
-    if(m_fileOpened)
-        m_writer.close();
-}
-
-std::string Logger::replaceString(std::string& originalStr, const std::string& lookFor, const std::string& replaceWith)
+std::wstring Logger::replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith)
 {
     std::size_t pos = originalStr.find(lookFor);
-    if(pos == std::string::npos)
+    if(pos == std::wstring::npos)
         return originalStr;
     
     return originalStr.replace(pos, lookFor.length(), replaceWith);
