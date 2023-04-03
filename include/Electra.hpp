@@ -44,7 +44,7 @@ class Electra
     
     // Related to files
     std::string m_filename;
-    std::vector<string_t> m_sourceCode;
+    std::vector<std::string> m_sourceCode;
 
     // Holds indexes of currents that are soon to be deleted.
     std::vector<std::size_t> m_deadCurrentIndexes;
@@ -66,7 +66,7 @@ public:
     ~Electra();
 
     void run();
-    std::vector<string_t> split(const string_t& str, const string_t& delim);
+    std::vector<std::string> split(const std::string& str, const std::string& delim);
     void readSourceCode();
     void createGenerators();
     void createPortals();
