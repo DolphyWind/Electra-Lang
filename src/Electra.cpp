@@ -76,18 +76,45 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'⎯'] = std::make_unique<Cable>( bin2dir(0b00010001) );
     
     m_components[L'|'] = std::make_unique<Cable>( bin2dir(0b01000100) );
+    
     m_components[L'/'] = std::make_unique<Cable>( bin2dir(0b00100010) );
+    m_components[L'╱'] = std::make_unique<Cable>( bin2dir(0b00100010) );
+    
     m_components[L'\\'] = std::make_unique<Cable>( bin2dir(0b10001000) );
+    m_components[L'╲'] = std::make_unique<Cable>( bin2dir(0b10001000) );
+    
     m_components[L'+'] = std::make_unique<Cable>( bin2dir(0b01010101) );
+    m_components[L'┼'] = std::make_unique<Cable>( bin2dir(0b01010101) );
+    
     m_components[L'X'] = std::make_unique<Cable>( bin2dir(0b10101010) );
+    m_components[L'╳'] = std::make_unique<Cable>( bin2dir(0b10101010) );
+    
     m_components[L'*'] = std::make_unique<Cable>( bin2dir(0b11111111) );
     m_components[L'✱'] = std::make_unique<Cable>( bin2dir(0b11111111) );
+
+    m_components[L'╰'] = std::make_unique<Cable>( bin2dir(0b00000101) );
+    m_components[L'└'] = std::make_unique<Cable>( bin2dir(0b00000101) );
+
+    m_components[L'╯'] = std::make_unique<Cable>( bin2dir(0b00010100) );
+    m_components[L'┘'] = std::make_unique<Cable>( bin2dir(0b00010100) );
+
+    m_components[L'╭'] = std::make_unique<Cable>( bin2dir(0b01000001) );
+    m_components[L'┌'] = std::make_unique<Cable>( bin2dir(0b01000001) );
+
+    m_components[L'┐'] = std::make_unique<Cable>( bin2dir(0b01010000) );
+    m_components[L'╮'] = std::make_unique<Cable>( bin2dir(0b01010000) );
+
+    m_components[L'├'] = std::make_unique<Cable>( bin2dir(0b00010101) );
+    m_components[L'┤'] = std::make_unique<Cable>( bin2dir(0b01010100) );
+    m_components[L'┬'] = std::make_unique<Cable>( bin2dir(0b01010001) );
+    m_components[L'┴'] = std::make_unique<Cable>( bin2dir(0b00010101) );
+
     // I ran out of good ascii characters :(
     m_components[L'{'] = std::make_unique<Cable>( bin2dir(0b00000001) );
     m_components[L'}'] = std::make_unique<Cable>( bin2dir(0b00010000) );
     m_components[L'U'] = std::make_unique<Cable>( bin2dir(0b00000100) );
     m_components[L'n'] = std::make_unique<Cable>( bin2dir(0b01000000) );
-
+    
     // Initializes Printers
     m_components[L'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);
     m_components[L'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true);
@@ -117,22 +144,39 @@ Electra::Electra(int argc, char* argv[])
     // Initializes conditional units
     m_components[L'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false);
     m_components[L']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true);
-
+    
     // Initializes keys
     m_components[L'~'] = std::make_unique<Key>( bin2dir(0b00010001), bin2dir(0b01000100), m_sourceCode, L'-');
     m_components[L'!'] = std::make_unique<Key>( bin2dir(0b01000100), bin2dir(0b00010001), m_sourceCode, L'|');
-
+    
     // Initializes Reverser
     m_components[L'R'] = std::make_unique<Reverser>( bin2dir(0b10111111) );
     
     // Initializes Remover
     m_components[L'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
+    // Initializes Bomb
+    m_components[L'o'] = std::make_unique<Bomb>( bin2dir(0b11111111), &m_isRunning );
+
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap[L'>'] = bin2dir(0b00000001);
+    m_generatorDataMap[L'→'] = bin2dir(0b00000001);
+
     m_generatorDataMap[L'^'] = bin2dir(0b00000100);
+    m_generatorDataMap[L'↑'] = bin2dir(0b00000100);
+    
     m_generatorDataMap[L'<'] = bin2dir(0b00010000);
+    m_generatorDataMap[L'←'] = bin2dir(0b00010000);
+    
     m_generatorDataMap[L'v'] = bin2dir(0b01000000);
+    m_generatorDataMap[L'↓'] = bin2dir(0b01000000);
+    
+    m_generatorDataMap[L'↔'] = bin2dir(0b00010001);
+    m_generatorDataMap[L'↕'] = bin2dir(0b01000100);
+    m_generatorDataMap[L'↗'] = bin2dir(0b00000010);
+    m_generatorDataMap[L'↖'] = bin2dir(0b00001000);
+    m_generatorDataMap[L'↙'] = bin2dir(0b00100000);
+    m_generatorDataMap[L'↘'] = bin2dir(0b10000000);
     
     // Saves generator chars seperately
     for(auto &p : m_generatorDataMap)

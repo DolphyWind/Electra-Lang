@@ -145,7 +145,7 @@ Conditional units, kills or spares currents based on the value on top of the sta
 >**Inverted Conditional Unit (]):** Pops the top value off the stack. Kills the current if the top value is not zero.
 
 ### **Keys (~, !)**
-Keys transform to the other components when they are activated. They will stop current (Technically they move current one step back) if they are not activated. To activate a key, a current must be touch the key from its activator directions. They inherit from Cable class but does not call 'Cable::work()'.
+Keys transform to the other components when they are activated. They will stop current (Technically they move current one step back) if they are not activated. To activate a key, a current must be touch the key from its activator directions. They inherit from Cable class but does not call 'Cable::work()' immidiately.
 
 #### **Key Types**
 >**Horizontal Key (~):** Supports east and west directions. Becomes a horizontal cable when activated. Gets activated when a current touches it from north or south directions.

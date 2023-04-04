@@ -26,6 +26,7 @@
 #include <Reverser.hpp>
 #include <Eraser.hpp>
 #include <Argparser.hpp>
+#include <Bomb.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;

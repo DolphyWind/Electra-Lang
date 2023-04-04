@@ -13,6 +13,7 @@
 #include <iostream>
 #include <Logger.hpp>
 
+// Simple argument parser
 class Argparser
 {
 private:

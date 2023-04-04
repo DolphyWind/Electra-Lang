@@ -1,7 +1,6 @@
 # Electra 2.0
 
-+ Add a component that instantly ends the program called bomb.
-+ Add a component that checks if the current stack is empty or not called stack checker.
++ Add a component that checks if the current stack is empty or not called stack checker. Use these characters: ().
 + Add a way to comment the code. Something like ? This is a comment ?
 + Add a way to include other code files. Something like ?? filename.ec x:y. Includes the lines in range [x, y)in filename.ec.
 + Increase the stack size and add stack switcher component(s).  
