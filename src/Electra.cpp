@@ -172,9 +172,9 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'#'] = std::make_unique<Cloner>( bin2dir(0b01010101) );
 
     // Initializes constant pushers
-    m_components[L'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), false, false, 0);
-    m_components[L'@'] = std::make_unique<ConstantPusher>( bin2dir(0b01111111), true, false, 0);
-    m_components[L'&'] = std::make_unique<ConstantPusher>( bin2dir(0b11100101), true, true, 0);
+    m_components[L'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), 0);
+    m_components[L'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false);
+    m_components[L'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true);
 
     // Initializes swapper
     m_components[L'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );

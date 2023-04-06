@@ -27,6 +27,7 @@
 #include <Eraser.hpp>
 #include <Argparser.hpp>
 #include <Bomb.hpp>
+#include <Reader.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;
