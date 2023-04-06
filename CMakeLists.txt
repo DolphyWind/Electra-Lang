@@ -5,6 +5,7 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(ElectraLang VERSION 1.0.0)
 
 file(GLOB SOURCE_FILES "./src/*.cpp")

@@ -1,4 +1,8 @@
 #include "Electra.hpp"
+#include "Logger.hpp"
+#include <stdexcept>
+#include <string>
+#include <vector>
 #define _VARIADIC_MAX INT_MAX
 
 bool Electra::m_isRunning = true;
@@ -15,10 +19,11 @@ Electra::Electra(int argc, char* argv[])
     parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
     "Find more about electra at https://github.com/DolphyWind/Electra-Lang";
 
-    parser.addArgument("-h", "--help", true, "Print this message and exit.");
-    parser.addArgument("-v", "--version", true, "Print version and exit.");
-    parser.addArgument("-l", "--log", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
-    parser.addArgument("-s", "--stack", false, "Specify the inital values of stack.");
+    parser.addArgument("--help", "-h", true, "Print this message and exit.");
+    parser.addArgument("--version", "-v", true, "Print version and exit.");
+    parser.addArgument("--log", "-l", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
+    parser.addArgument("--stack", "-s", false, "Specify the inital values of stack.");
+    parser.addArgument("--stack-count", "-sc", false, "Specify the total stack count that electra uses. Must be greater than or equal to one.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
@@ -48,24 +53,57 @@ Electra::Electra(int argc, char* argv[])
         std::exit(1);
     }
 
-    for(auto &i : this->split(string_map["stack"], " "))
+    std::string stack_count_str = string_map["stack-count"];
+    std::size_t stack_count = 0;
+    
+    try
     {
-        if(i.empty()) continue;
+        if(stack_count_str.empty()) stack_count = Electra::default_stack_count;
+        else stack_count = std::stoi(stack_count_str);
+        if(stack_count == 0) throw std::invalid_argument("Stack count should be greater than zero!");
+        
+        for(std::size_t i = 0; i < stack_count; i++)
+        {
+            m_stacks.push_back({});
+        }
+    }
+    catch (const std::invalid_argument &e)
+    {
+        defaultLogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
+        std::cerr << '\"' << stack_count_str << "\" is invalid for stack-count.\n";
+        std::exit(1);
+    }
+    catch (const std::out_of_range &e)
+    {
+        defaultLogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
+        std::cerr << '\"' << stack_count_str << "\" is out of range for stack-count." << std::endl;
+        std::exit(1);
+    }
+    std::size_t index = 0;
+    for(auto &splitted : this->split(string_map["stack"], ","))
+    {
+        for(auto &i : this->split(splitted, " "))
+        {
+            if(i.empty()) continue;
 
-        try
-        {
-            m_stack.push(std::stod(i));
+            try
+            {
+                m_stacks[index].push(std::stod(i));
+            }
+            catch(const std::out_of_range &e)
+            {
+                defaultLogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
+                std::cerr << "The value " << i << " is too big or small for var_t." << std::endl;
+                std::exit(1);
+            }
+            catch(const std::invalid_argument &e)
+            {
+                defaultLogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
+                std::cerr << "Can\'t convert " << i << " to var_t." << std::endl;
+                std::exit(1);
+            }
         }
-        catch(const std::out_of_range &e)
-        {
-            defaultLogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
-            std::exit(1);
-        }
-        catch(const std::invalid_argument &e)
-        {
-            defaultLogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
-            std::exit(1);
-        }
+        index ++;
     }
     
     m_filename = alone_args[0];
@@ -383,7 +421,7 @@ Generators will generate new current if they can.
 void Electra::generateGenerators()
 {
     for(auto &gen : m_generators)
-        gen->generate(&m_currents, &m_stack);
+        gen->generate(&m_currents, &m_stacks[0]);
 }
 
 /*

@@ -52,8 +52,9 @@ class Electra
     // Currents that are going to be created via components.
     std::vector<CurrentPtr> m_newCurrents;
 
-    // Main stack that language will use
-    std::stack<var_t> m_stack;
+    // Stacks that language will use for memory manager
+    std::vector<std::stack<var_t>> m_stacks;
+    const std::size_t default_stack_count = 16;
 
     // Portal map
     std::map<wchar_t, Position> m_portalMap;

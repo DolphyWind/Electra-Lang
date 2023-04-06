@@ -11,7 +11,7 @@ Argparser::Argparser(int argc, char* argv[])
 
 void Argparser::addArgument(const std::string &name, const std::string &shortName, bool store_boolean, const std::string &argumentDesc)
 {
-    m_args.push_back({name, shortName, store_boolean, argumentDesc});
+    m_args.push_back({shortName, name, store_boolean, argumentDesc});
 }
 
 std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> Argparser::parse()
@@ -76,15 +76,24 @@ void Argparser::printVersionMessage()
 void Argparser::printHelpMessage()
 {
     printVersionMessage();
+    std::size_t longest_argument_name_length = 0;
+    for(auto &i : m_args)
+    {
+        std::size_t current_argument_message_length = i.shortName.length() + i.name.length();
+        if(!i.store_boolean) current_argument_message_length += 6; // The length of " <arg>"
+        if(current_argument_message_length > longest_argument_name_length) longest_argument_name_length = current_argument_message_length;
+    }
+
     std::cout << std::endl << program_description << std::endl << std::endl;
 
     std::cout << "Usage: " << binary_name << " [OPTIONS] INPUT_FILE" << std::endl << std::endl;
     std::cout << "Options: " << std::endl;
     for(auto &i : m_args)
     {
+        std::size_t argument_message_length = i.shortName.length() + i.name.length();
         std::cout << "\t" << i.shortName << ", " << i.name;
         if(!i.store_boolean) std::cout << " <arg>";
-        std::cout << "\t" << i.argumentDesc << std::endl;
+        std::cout << std::string(longest_argument_name_length - argument_message_length, ' ') << "\t" << i.argumentDesc << std::endl;
     }
     std::cout << std::endl;
 }
