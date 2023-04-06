@@ -171,8 +171,10 @@ Electra::Electra(int argc, char* argv[])
     // Initializes cloner
     m_components[L'#'] = std::make_unique<Cloner>( bin2dir(0b01010101) );
 
-    // Initializes constant pushers
+    // Initializes constant pusher
     m_components[L'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), 0);
+    
+    // Initializes readers
     m_components[L'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false);
     m_components[L'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true);
 
