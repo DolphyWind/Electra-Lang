@@ -4,7 +4,6 @@
 #include <Electra.hpp>
 #include <Logger.hpp>
 #include <codecvt>
-#include <locale>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -20,32 +19,32 @@ Takes source code filename as parameter
 Electra::Electra(int argc, char* argv[])
 {
     Argparser parser(argc, argv);
-    parser.program_name = L"Electra";
-    parser.binary_name = L"electra";
-    parser.program_description = L"Electra is an esolang where you code like an electrician.\n" \
+    parser.program_name = "Electra";
+    parser.binary_name = "electra";
+    parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
     "Find more about electra at https://github.com/DolphyWind/Electra-Lang";
 
-    parser.addArgument(L"--help", L"-h", true, L"Print this message and exit.");
-    parser.addArgument(L"--version", L"-v", true, L"Print version and exit.");
-    parser.addArgument(L"--log", L"-l", true, L"Enables logging. Electra logs each step of the program and saves it into a file.");
-    parser.addArgument(L"--stack", L"-s", false, L"Specify the inital values of stack.");
-    parser.addArgument(L"--stack-count", L"-sc", false, L"Specify the total stack count that electra uses. Must be greater than or equal to one.");
+    parser.addArgument("--help", "-h", true, "Print this message and exit.");
+    parser.addArgument("--version", "-v", true, "Print version and exit.");
+    parser.addArgument("--log", "-l", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
+    parser.addArgument("--stack", "-s", false, "Specify the inital values of stack.");
+    parser.addArgument("--stack-count", "-sc", false, "Specify the total stack count that electra uses. Must be greater than or equal to one.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
     auto bool_map = std::get<1>(parser_args);
     auto alone_args = parser.getAloneArguments();
 
-    defaultLogger.loggingEnabled = bool_map[L"log"];
+    defaultLogger.loggingEnabled = bool_map["log"];
 
-    if(bool_map[L"help"])
+    if(bool_map["help"])
     {
         parser.printHelpMessage();
         defaultLogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
         std::exit(0);
     }
 
-    if(bool_map[L"version"])
+    if(bool_map["version"])
     {
         parser.printVersionMessage();
         defaultLogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
@@ -59,7 +58,7 @@ Electra::Electra(int argc, char* argv[])
         std::exit(1);
     }
 
-    std::wstring stack_count_str = string_map[L"stack-count"];
+    std::string stack_count_str = string_map["stack-count"];
     std::size_t stack_count = 0;
     
     try
@@ -76,19 +75,19 @@ Electra::Electra(int argc, char* argv[])
     catch (const std::invalid_argument &e)
     {
         defaultLogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
-        std::wcerr << '\"' << stack_count_str << "\" is invalid for stack-count.\n";
+        std::cerr << '\"' << stack_count_str << "\" is invalid for stack-count.\n";
         std::exit(1);
     }
     catch (const std::out_of_range &e)
     {
         defaultLogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
-        std::wcerr << '\"' << stack_count_str << "\" is out of range for stack-count." << std::endl;
+        std::cerr << '\"' << stack_count_str << "\" is out of range for stack-count." << std::endl;
         std::exit(1);
     }
     std::size_t index = 0;
-    for(auto &splitted : this->split_wstr(string_map[L"stack"], L","))
+    for(auto &splitted : this->split(string_map["stack"], ","))
     {
-        for(auto &i : this->split_wstr(splitted, L" "))
+        for(auto &i : this->split(splitted, " "))
         {
             if(i.empty()) continue;
 
@@ -99,13 +98,13 @@ Electra::Electra(int argc, char* argv[])
             catch(const std::out_of_range &e)
             {
                 defaultLogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
-                std::wcerr << L"The value " << i << L" is too big or small for var_t." << std::endl;
+                std::cerr << "The value " << i << " is too big or small for var_t." << std::endl;
                 std::exit(1);
             }
             catch(const std::invalid_argument &e)
             {
                 defaultLogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
-                std::wcerr << L"Can\'t convert " << i << L" to var_t." << std::endl;
+                std::cerr << "Can\'t convert " << i << " to var_t." << std::endl;
                 std::exit(1);
             }
         }
@@ -333,8 +332,7 @@ void Electra::mainLoop()
 void Electra::readSourceCode()
 {
     defaultLogger.log(LogType::INFO, L"Started reading source code to memory!");
-    std::wstring_convert<std::codecvt_utf8<char_t>, char_t> converter;
-    std::wifstream file(converter.to_bytes(m_filename));
+    std::wifstream file(m_filename);
     file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<char_t>));
 
     if(file.good())
@@ -347,7 +345,7 @@ void Electra::readSourceCode()
         if(fileData.find('\t') != std::string::npos) 
         {
             defaultLogger.log(LogType::ERROR, L"Cannot parse source code. Source code contains tab character. Exiting with code 1.");
-            std::wcerr << L"ERROR: Source code contains tab!" << std::endl;
+            std::cerr << "ERROR: Source code contains tab!" << std::endl;
             file.close();
             std::exit(1);
         }
@@ -356,7 +354,7 @@ void Electra::readSourceCode()
     }
     else
     {
-        std::wcerr << L"Cannot open \"" << m_filename << L"\"" << std::endl;
+        std::cerr << "Cannot open \"" << m_filename << "\"" << std::endl;
         defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", m_filename);
         std::exit(1);
     }

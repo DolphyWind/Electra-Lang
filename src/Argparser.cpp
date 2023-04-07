@@ -1,39 +1,36 @@
 #include <Argparser.hpp>
-#include <codecvt>
-#include <locale>
 
 Argparser::Argparser(int argc, char* argv[])
 {
     if(argc == 1) return;
     for(int i = 1; i < argc; i++)
     {
-        std::wstring_convert<std::codecvt_utf8<char_t>, char_t> converter;
-        m_argsEntered.push_back( converter.from_bytes(argv[i]) );
+        m_argsEntered.push_back(std::string(argv[i]));
     }
 }
 
-void Argparser::addArgument(const std::wstring &name, const std::wstring &shortName, bool store_boolean, const std::wstring &argumentDesc)
+void Argparser::addArgument(const std::string &name, const std::string &shortName, bool store_boolean, const std::string &argumentDesc)
 {
     m_args.push_back({shortName, name, store_boolean, argumentDesc});
 }
 
-std::tuple<std::unordered_map<std::wstring, std::wstring>, std::unordered_map<std::wstring, bool>> Argparser::parse()
+std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> Argparser::parse()
 {
-    std::unordered_map<std::wstring, std::wstring> string_map;
-    std::unordered_map<std::wstring, bool> bool_map;
+    std::unordered_map<std::string, std::string> string_map;
+    std::unordered_map<std::string, bool> bool_map;
 
     for(auto &arg : m_args)
     {
-        std::wstring arg_name = arg.name;
+        std::string arg_name = arg.name;
         while(arg_name[0] == '-') arg_name.erase(0, 1);
 
         if(arg.store_boolean) bool_map[arg_name] = false;
-        else string_map[arg_name] = std::wstring();
+        else string_map[arg_name] = std::string();
     }
 
     for(std::size_t i = 0; i < m_argsEntered.size(); ++i)
     {
-        if(m_argsEntered[i][0] != L'-')
+        if(m_argsEntered[i][0] != '-')
         {
             m_aloneArguments.push_back(m_argsEntered[i]);
             continue;
@@ -43,8 +40,8 @@ std::tuple<std::unordered_map<std::wstring, std::wstring>, std::unordered_map<st
         {
             if(a.name == m_argsEntered[i] || a.shortName == m_argsEntered[i])
             {
-                std::wstring a_name = a.name;
-                while(a_name[0] == L'-') a_name.erase(0, 1);
+                std::string a_name = a.name;
+                while(a_name[0] == '-') a_name.erase(0, 1);
 
                 if(a.store_boolean)
                 {
@@ -54,8 +51,8 @@ std::tuple<std::unordered_map<std::wstring, std::wstring>, std::unordered_map<st
                 {
                     if(i == m_argsEntered.size() - 1) break;
                     
-                    std::wstring candidate = m_argsEntered[i + 1];
-                    if(candidate[0] == L'-') break;
+                    std::string candidate = m_argsEntered[i + 1];
+                    if(candidate[0] == '-') break;
                     string_map[a_name] = candidate;
                     ++i;
                 }
@@ -66,14 +63,14 @@ std::tuple<std::unordered_map<std::wstring, std::wstring>, std::unordered_map<st
     return {string_map, bool_map};
 }
 
-std::vector<std::wstring> Argparser::getAloneArguments()
+std::vector<std::string> Argparser::getAloneArguments()
 {
     return m_aloneArguments;
 }
 
 void Argparser::printVersionMessage()
 {
-    std::wcout << program_name << L" v" << ELECTRA_VERSION_MAJOR << L"." << ELECTRA_VERSION_MINOR << L"." << ELECTRA_VERSION_PATCH << std::endl;
+    std::cout << program_name << " v" << ELECTRA_VERSION_MAJOR << "." << ELECTRA_VERSION_MINOR << "." << ELECTRA_VERSION_PATCH << std::endl;
 }
 
 void Argparser::printHelpMessage()
@@ -87,16 +84,16 @@ void Argparser::printHelpMessage()
         if(current_argument_message_length > longest_argument_name_length) longest_argument_name_length = current_argument_message_length;
     }
 
-    std::wcout << std::endl << program_description << std::endl << std::endl;
+    std::cout << std::endl << program_description << std::endl << std::endl;
 
-    std::wcout << L"Usage: " << binary_name << L" [OPTIONS] INPUT_FILE" << std::endl << std::endl;
-    std::wcout << L"Options: " << std::endl;
+    std::cout << "Usage: " << binary_name << " [OPTIONS] INPUT_FILE" << std::endl << std::endl;
+    std::cout << "Options: " << std::endl;
     for(auto &i : m_args)
     {
         std::size_t argument_message_length = i.shortName.length() + i.name.length();
-        std::wcout << L"\t" << i.shortName << L", " << i.name;
-        if(!i.store_boolean) std::wcout << L" <arg>";
-        std::wcout << std::wstring(longest_argument_name_length - argument_message_length, L' ') << L"\t" << i.argumentDesc << std::endl;
+        std::cout << "\t" << i.shortName << ", " << i.name;
+        if(!i.store_boolean) std::cout << " <arg>";
+        std::cout << std::string(longest_argument_name_length - argument_message_length, ' ') << "\t" << i.argumentDesc << std::endl;
     }
-    std::wcout << std::endl;
+    std::cout << std::endl;
 }

@@ -20,25 +20,25 @@ private:
 
     struct Argument
     {
-        std::wstring shortName;
-        std::wstring name;
+        std::string shortName;
+        std::string name;
         bool store_boolean;
-        std::wstring argumentDesc;
+        std::string argumentDesc;
     };
     
     std::vector<Argument> m_args;
-    std::vector<std::wstring> m_argsEntered;
-    std::vector<std::wstring> m_aloneArguments;
+    std::vector<std::string> m_argsEntered;
+    std::vector<std::string> m_aloneArguments;
 
 public:
     Argparser(int argc, char *argv[]);
 
-    std::wstring_view binary_name;
-    std::wstring_view program_name;
-    std::wstring_view program_description;
-    void addArgument(const std::wstring &name, const std::wstring &shortName, bool store_boolean=false, const std::wstring &argumentDesc=std::wstring());
-    std::tuple<std::unordered_map<std::wstring, std::wstring>, std::unordered_map<std::wstring, bool>> parse();
-    std::vector<std::wstring> getAloneArguments();
+    std::string_view binary_name;
+    std::string_view program_name;
+    std::string_view program_description;
+    void addArgument(const std::string &name, const std::string &shortName, bool store_boolean=false, const std::string &argumentDesc=std::string());
+    std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> parse();
+    std::vector<std::string> getAloneArguments();
     
     void printVersionMessage();
     void printHelpMessage();

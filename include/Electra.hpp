@@ -47,7 +47,7 @@ class Electra
     std::vector<CurrentPtr> m_currents;
     
     // Related to files
-    std::wstring m_filename;
+    std::string m_filename;
     std::vector<std::wstring> m_sourceCode;
 
     // Holds indexes of currents that are soon to be deleted.
