@@ -3,6 +3,7 @@
 #include "direction.hpp"
 #include <Electra.hpp>
 #include <Logger.hpp>
+#include <codecvt>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -332,7 +333,7 @@ void Electra::readSourceCode()
 {
     defaultLogger.log(LogType::INFO, L"Started reading source code to memory!");
     std::wifstream file(m_filename);
-    file.imbue(std::locale("en_US.UTF-8"));
+    file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<char_t>));
 
     if(file.good())
     {

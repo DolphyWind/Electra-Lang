@@ -1,4 +1,5 @@
 #pragma once
+#include <codecvt>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -63,7 +64,7 @@ void Logger::log(LogType logType, std::wstring message, Args... args)
     if(!m_fileOpened)
     {
         m_writer.open(m_filename);
-        m_writer.imbue(std::locale("en_US.UTF-8"));
+        m_writer.imbue(std::locale(m_writer.getloc(), new std::codecvt_utf8<wchar_t>));
         m_fileOpened = m_writer.good();
     }
 
