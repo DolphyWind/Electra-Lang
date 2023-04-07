@@ -1,3 +1,4 @@
+#include "string_conversions.hpp"
 #include <Argparser.hpp>
 
 Argparser::Argparser(int argc, char* argv[])
@@ -70,7 +71,7 @@ std::vector<std::string> Argparser::getAloneArguments()
 
 void Argparser::printVersionMessage()
 {
-    std::cout << program_name << " v" << ELECTRA_VERSION_MAJOR << "." << ELECTRA_VERSION_MINOR << "." << ELECTRA_VERSION_PATCH << std::endl;
+    std::wcout << program_name << " v" << ELECTRA_VERSION_MAJOR << "." << ELECTRA_VERSION_MINOR << "." << ELECTRA_VERSION_PATCH << std::endl;
 }
 
 void Argparser::printHelpMessage()
@@ -84,16 +85,16 @@ void Argparser::printHelpMessage()
         if(current_argument_message_length > longest_argument_name_length) longest_argument_name_length = current_argument_message_length;
     }
 
-    std::cout << std::endl << program_description << std::endl << std::endl;
+    std::wcout << std::endl << program_description << std::endl << std::endl;
 
-    std::cout << "Usage: " << binary_name << " [OPTIONS] INPUT_FILE" << std::endl << std::endl;
-    std::cout << "Options: " << std::endl;
+    std::wcout << L"Usage: " << binary_name << L" [OPTIONS] INPUT_FILE" << std::endl << std::endl;
+    std::wcout << L"Options: " << std::endl;
     for(auto &i : m_args)
     {
         std::size_t argument_message_length = i.shortName.length() + i.name.length();
-        std::cout << "\t" << i.shortName << ", " << i.name;
-        if(!i.store_boolean) std::cout << " <arg>";
-        std::cout << std::string(longest_argument_name_length - argument_message_length, ' ') << "\t" << i.argumentDesc << std::endl;
+        std::wcout << L"\t" << std::to_wstring(i.shortName) << L", " << std::to_wstring(i.name);
+        if(!i.store_boolean) std::wcout << " <arg>";
+        std::wcout << std::wstring(longest_argument_name_length - argument_message_length, L' ') << L"\t" << std::to_wstring(i.argumentDesc) << std::endl;
     }
-    std::cout << std::endl;
+    std::wcout << std::endl;
 }

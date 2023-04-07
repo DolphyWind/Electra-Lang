@@ -33,9 +33,9 @@ private:
 public:
     Argparser(int argc, char *argv[]);
 
-    std::string_view binary_name;
-    std::string_view program_name;
-    std::string_view program_description;
+    std::wstring_view binary_name;
+    std::wstring_view program_name;
+    std::wstring_view program_description;
     void addArgument(const std::string &name, const std::string &shortName, bool store_boolean=false, const std::string &argumentDesc=std::string());
     std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> parse();
     std::vector<std::string> getAloneArguments();
