@@ -28,6 +28,8 @@
 #include <Argparser.hpp>
 #include <Bomb.hpp>
 #include <Reader.hpp>
+#include <StackChecker.hpp>
+#include <StackSwitcher.hpp>
 #include <csignal>
 
 typedef std::vector<Direction> GeneratorData;

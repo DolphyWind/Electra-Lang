@@ -9,15 +9,14 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
         return true;
     
     var_t x = popStack(current->stackPtr);
-    bool condition = (x == m_targetValue);
+    bool condition = (x != m_targetValue);
 
-    if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is equals to {}.", x, m_targetValue);
-    else defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is not equals to {}.", x, m_targetValue);
-
-    
+    if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is not equals to {}.", x, m_targetValue);
+    else defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is equals to {}.", x, m_targetValue);
     if(m_invert) condition = !condition;
-    if(!condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) Current will pass.");
+    
+    if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) Current will pass.");
     else defaultLogger.log(LogType::INFO, L"(ConditionalUnit) Current will not pass.");
 
-    return !condition;
+    return condition;
 }

@@ -1,7 +1,6 @@
 #pragma once
-#include "ConstantPusher.hpp"
-#include "Current.hpp"
-#include "direction.hpp"
+#include <Current.hpp>
+#include <direction.hpp>
 #include <Cable.hpp>
 
 // Takes input from user and pushes it on top of the stack of the current.

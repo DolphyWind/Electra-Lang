@@ -1,5 +1,9 @@
-#include "Electra.hpp"
-#include "Logger.hpp"
+#include "StackChecker.hpp"
+#include "StackSwitcher.hpp"
+#include "direction.hpp"
+#include <Electra.hpp>
+#include <Logger.hpp>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -185,6 +189,14 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false);
     m_components[L']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true);
     
+    // Initializes stack checkers
+    m_components[L'('] = std::make_unique<StackChecker>( bin2dir(0b01000100), true);
+    m_components[L')'] = std::make_unique<StackChecker>( bin2dir(0b01000100), false);
+
+    // Initializes stack switchers
+    m_components[L'F'] = std::make_unique<StackSwitcher>( bin2dir(0b00111111), true, &m_stacks);
+    m_components[L'B'] = std::make_unique<StackSwitcher>( bin2dir(0b11111110), false, &m_stacks);
+
     // Initializes keys
     m_components[L'~'] = std::make_unique<Key>( bin2dir(0b00010001), bin2dir(0b01000100), m_sourceCode, L'-');
     m_components[L'!'] = std::make_unique<Key>( bin2dir(0b01000100), bin2dir(0b00010001), m_sourceCode, L'|');
