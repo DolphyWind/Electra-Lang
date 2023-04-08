@@ -31,6 +31,9 @@
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
 #include <csignal>
+#include <regex>
+#include <codecvt>
+#include <stdexcept>
 
 typedef std::vector<Direction> GeneratorData;
 
@@ -74,6 +77,7 @@ public:
     std::vector<std::string> split(const std::string& str, const std::string& delim);
     std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
     void readSourceCode();
+    void removeComments();
     void createGenerators();
     void createPortals();
     void mainLoop();

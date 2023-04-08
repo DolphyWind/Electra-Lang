@@ -1,4 +1,4 @@
-#include "Generator.hpp"
+#include <Generator.hpp>
 
 void Generator::generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr)
 {

@@ -1,4 +1,4 @@
-#include "Swapper.hpp"
+#include <Swapper.hpp>
 
 bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

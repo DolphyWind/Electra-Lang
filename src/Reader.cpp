@@ -1,7 +1,4 @@
-#include "Cable.hpp"
-#include "Logger.hpp"
 #include <Reader.hpp>
-#include <string>
 
 bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

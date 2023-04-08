@@ -1,4 +1,4 @@
-#include "ConstantAdder.hpp"
+#include <ConstantAdder.hpp>
 
 bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

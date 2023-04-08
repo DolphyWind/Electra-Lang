@@ -1,4 +1,4 @@
-#include "Portal.hpp"
+#include <Portal.hpp>
 
 bool Portal::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

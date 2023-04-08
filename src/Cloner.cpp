@@ -1,4 +1,4 @@
-#include "Cloner.hpp"
+#include <Cloner.hpp>
 
 bool Cloner::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

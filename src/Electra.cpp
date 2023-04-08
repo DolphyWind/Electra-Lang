@@ -1,14 +1,4 @@
-#include "StackChecker.hpp"
-#include "StackSwitcher.hpp"
-#include "direction.hpp"
-#include "string_conversions.hpp"
 #include <Electra.hpp>
-#include <Logger.hpp>
-#include <codecvt>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <vector>
 #define _VARIADIC_MAX INT_MAX
 
 bool Electra::m_isRunning = true;
@@ -62,6 +52,7 @@ Electra::Electra(int argc, char* argv[])
     std::string stack_count_str = string_map["stack-count"];
     std::size_t stack_count = 0;
     
+    // Parses --stack-count argument
     try
     {
         if(stack_count_str.empty()) stack_count = Electra::default_stack_count;
@@ -85,8 +76,17 @@ Electra::Electra(int argc, char* argv[])
         std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is out of range for stack-count." << std::endl;
         std::exit(1);
     }
+
+    // Parses --stack argument
     std::size_t index = 0;
-    for(auto &splitted : this->split(string_map["stack"], ","))
+    auto splitted_by_comma = this->split(string_map["stack"], ",");
+    if(splitted_by_comma.size() > m_stacks.size())
+    {
+        std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
+        defaultLogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
+        std::exit(1);
+    }
+    for(auto &splitted : splitted_by_comma)
     {
         for(auto &i : this->split(splitted, " "))
         {
@@ -243,7 +243,7 @@ Electra::Electra(int argc, char* argv[])
     signal(SIGINT, &Electra::sigHandler);
     #endif
     #ifdef SIGQUIT
-        signal(SIGQUIT, &Electra::sigHandler);
+    signal(SIGQUIT, &Electra::sigHandler);
     #endif
     #ifdef SIGKILL
     signal(SIGKILL, &Electra::sigHandler);
@@ -263,6 +263,7 @@ Electra::~Electra()
 void Electra::run()
 {
     readSourceCode();
+    removeComments();
     createGenerators();
     createPortals();
     mainLoop();
@@ -361,6 +362,26 @@ void Electra::readSourceCode()
     }
     defaultLogger.log(LogType::INFO, L"Finished reading source code!");
     file.close();
+}
+
+void Electra::removeComments()
+{
+    for(auto &line : m_sourceCode)
+    {
+        bool replace_with_space = false;
+        for(std::size_t i = 0; i < line.length(); i++)
+        {
+            if(line[i] == L'?')
+            {
+                line[i] = L' ';
+                replace_with_space = !replace_with_space;
+            }
+            else if(replace_with_space)
+            {
+                line[i] = L' ';
+            }
+        }
+    }
 }
 
 // Creates generators

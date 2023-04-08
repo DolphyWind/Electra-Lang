@@ -1,4 +1,4 @@
-#include "Reverser.hpp"
+#include <Reverser.hpp>
 
 bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

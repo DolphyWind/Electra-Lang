@@ -1,4 +1,4 @@
-#include "ConditionalUnit.hpp"
+#include <ConditionalUnit.hpp>
 
 bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

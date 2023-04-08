@@ -1,4 +1,4 @@
-#include "Component.hpp"
+#include <Component.hpp>
 
 bool Component::work(CurrentPtr current, std::vector<CurrentPtr> *currentPtr)
 {

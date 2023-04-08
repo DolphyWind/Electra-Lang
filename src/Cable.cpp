@@ -1,4 +1,4 @@
-#include "Cable.hpp"
+#include <Cable.hpp>
 
 bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {

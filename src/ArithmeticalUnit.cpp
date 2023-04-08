@@ -1,4 +1,4 @@
-#include "ArithmeticalUnit.hpp"
+#include <ArithmeticalUnit.hpp>
 
 bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
