@@ -25,7 +25,8 @@ SOFTWARE.
 #include <Electra.hpp>
 #define _VARIADIC_MAX INT_MAX
 
-bool Electra::m_isRunning = true;
+bool Electra::isRunning = true;
+std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> Electra::wstring_converter;
 
 Electra::Electra(int argc, char* argv[])
 {
@@ -238,7 +239,7 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Initializes Bomb
-    m_components[L'o'] = std::make_unique<Bomb>( bin2dir(0b11111111), &m_isRunning );
+    m_components[L'o'] = std::make_unique<Bomb>( bin2dir(0b11111111), &isRunning );
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap[L'>'] = bin2dir(0b00000001);
@@ -279,6 +280,9 @@ Electra::Electra(int argc, char* argv[])
     #ifdef SIGHUP
     signal(SIGHUP, &Electra::sigHandler);
     #endif
+    #ifdef SIGABRT
+    signal(SIGABRT, &Electra::sigHandler);
+    #endif
 }
 
 Electra::~Electra()
@@ -288,7 +292,7 @@ Electra::~Electra()
 
 void Electra::run()
 {
-    m_sourceCode = includeFile(m_currentPath, m_filename);
+    m_sourceCode = includeFile(m_currentPath, Electra::wstring_converter.from_bytes(m_filename));
     removeComments();
     createGenerators();
     createPortals();
@@ -341,7 +345,7 @@ void Electra::mainLoop()
         createCurrents();
 
         tickCount ++;
-    }while (!m_currents.empty() && Electra::m_isRunning);
+    }while (!m_currents.empty() && Electra::isRunning);
 
     defaultLogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
@@ -365,7 +369,7 @@ void Electra::safe_exit(int exit_code)
     std::exit(exit_code);
 }
 
-std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::string& filename, std::size_t start, std::size_t end)
+std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end)
 {
     // Start cannot be greater then the end
     if(start >= end)
@@ -407,54 +411,61 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         contents = std::vector<std::wstring>(contents.begin() + start, contents.begin() + end);
 
         // Include other files if there is any
-        std::wregex pattern(L"\"([^\"]*)\""); // The regex pattern to match text within double quotation marks
+        std::wregex include_pattern(L"^\".*?\"\\s*(?:[^:]+:[^']+)?"); // The regex pattern to match text within double quotation marks
         std::wsmatch match; 
         for(std::size_t i = contents.size() - 1; i >= 0 && i != std::wstring::npos; i--)
         {
-            if(std::regex_search(contents[i], match, pattern))
+            if(std::regex_search(contents[i], match, include_pattern))
             {
                 std::wstring match_str = match.str();
-                match_str = std::wstring(match_str.begin() + 1, match_str.end() - 1);
 
-                // Split only once from space. Generates a 2 sized vector if there is a space. 1 sized if there is not
-                auto space_pos = match_str.find(L" ");
-                std::vector<std::wstring> split_from_space;
-                split_from_space.push_back(match_str.substr(0, space_pos));
-                if(space_pos != std::wstring::npos) split_from_space.push_back(match_str.substr(space_pos + 1));
-                
-                std::wstring new_filename = split_from_space[0];
+                std::wregex filename_pattern(L"^\"([^\"]*)\"");
+                std::wsmatch filename_match;
+                std::regex_search(match_str, filename_match, filename_pattern);
+
+                std::wstring new_filename = filename_match.str();
+                new_filename = std::wstring(new_filename.begin() + 1, new_filename.end() - 1);
                 std::size_t new_start = 0;
                 std::size_t new_end = std::wstring::npos;
                 
-                if(split_from_space.size() != 1)
+                match_str = match_str.substr(filename_match.str().size(), std::wstring::npos);
+                if(match_str.find(L':') != std::wstring::npos)
                 {
                     // Determines new_start and new_end by parsing x:y
-                    auto split_from_colon = split_wstr(split_from_space[1], L":");
+                    auto split_from_colon = split_wstr(match_str, L":");
 
                     try
                     {
                         if(split_from_colon.at(0).empty()) new_start = 0;
                         else new_start = std::stoul(split_from_colon.at(0));
+                    }
+                    catch (const std::exception &e)
+                    {
+                        std::wcerr << L"Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
+                        defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
+                    }
 
+                    try
+                    {
                         if(split_from_colon.size() == 1 || split_from_colon.at(1).empty()) new_end = std::wstring::npos;
                         else new_end = std::stoul(split_from_colon.at(1));
                     }
                     catch (const std::exception &e)
                     {
-                        std::wcerr << L"An exception occurred: " << e.what() << std::endl;
-                        defaultLogger.log(LogType::ERROR, L"An exception occurred: {}", e.what());
+                        std::wcerr << L"Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
+                        defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
                     }
                 }
 
                 contents.erase(contents.begin() + i);
-                auto new_content = includeFile(currentPath, std::string(new_filename.begin(), new_filename.end()), new_start, new_end);
+                auto new_content = includeFile(currentPath, new_filename, new_start, new_end);
                 contents.insert(contents.begin() + i, new_content.begin(), new_content.end());
             }
         }
     }
     else
     {
-        std::wcerr << L"Cannot open \"" << std::to_wstring(filename) << L"\"" << std::endl;
+        std::wcerr << L"Cannot open \"" << filename << L"\"" << std::endl;
         defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
         safe_exit(1);
     }
@@ -657,5 +668,5 @@ void Electra::createCurrents()
 
 void Electra::sigHandler(int signal)
 {
-    Electra::m_isRunning = false;
+    Electra::isRunning = false;
 }

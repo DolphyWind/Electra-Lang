@@ -100,8 +100,11 @@ class Electra
     std::unordered_map<char_t, Position> m_portalMap;
 
     // Signal handling.
-    static bool m_isRunning;
+    static bool isRunning;
     static void sigHandler(int signal);
+
+    // Wstring converter
+    static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> wstring_converter;
     
 public:
     /// @brief Parses command line arguments, and initializes component and generators.
@@ -113,8 +116,7 @@ public:
     /// @brief Clears components and generators
     ~Electra();
 
-    /// @brief 
-    /// 
+    /// @brief Runs the electra
     void run();
 
     /// @brief Splits a string based on a given delimiter
@@ -138,7 +140,7 @@ public:
     /// @param start The start index of the slice
     /// @param end The end index of the slice
     /// @return Contents of recursively inclusion
-    std::vector<std::wstring> includeFile(fs::path currentPath, const std::string& filename, std::size_t start = 0, std::size_t end = std::wstring::npos);
+    std::vector<std::wstring> includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start = 0, std::size_t end = std::wstring::npos);
 
     /// @brief Removes comments from the source code.
     void removeComments();
