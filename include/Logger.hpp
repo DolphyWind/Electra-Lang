@@ -34,6 +34,11 @@ public:
     Logger();
     bool loggingEnabled = false;
 
+    /// @brief Logs the given string with given LogType into a file with formatting.
+    /// 
+    /// @param logType Type of log. Can be one from WARNING, INFO and ERROR.
+    /// @param message Message you want to log.
+    /// @param args Arguments that will be formatted
     template<typename... Args>
     void log(LogType logType, std::wstring message, Args... args);
 };
@@ -64,7 +69,7 @@ void Logger::log(LogType logType, std::wstring message, Args... args)
     if(!m_fileOpened)
     {
         m_writer.open(m_filename);
-        m_writer.imbue(std::locale(m_writer.getloc(), new std::codecvt_utf8<wchar_t>));
+        m_writer.imbue(std::locale(m_writer.getloc(), new std::codecvt_utf8<wchar_t>)); // For some reason using char_t gives an error
         m_fileOpened = m_writer.good();
     }
 

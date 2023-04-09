@@ -3,12 +3,9 @@
 
 bool Electra::m_isRunning = true;
 
-/*
-Initializes components, generators etc.
-Takes source code filename as parameter
-*/
 Electra::Electra(int argc, char* argv[])
 {
+    // Creates argument parser and parses command line arguments.
     Argparser parser(argc, argv);
     parser.program_name = L"Electra";
     parser.binary_name = L"electra";
@@ -27,7 +24,6 @@ Electra::Electra(int argc, char* argv[])
     auto alone_args = parser.getAloneArguments();
 
     defaultLogger.loggingEnabled = bool_map["log"];
-
     if(bool_map["help"])
     {
         parser.printHelpMessage();
@@ -53,12 +49,15 @@ Electra::Electra(int argc, char* argv[])
     std::size_t stack_count = 0;
     
     // Parses --stack-count argument
+    // Example: --stack-count 32
+    // Makes the size of m_stacks 
     try
     {
         if(stack_count_str.empty()) stack_count = Electra::default_stack_count;
         else stack_count = std::stoi(stack_count_str);
         if(stack_count == 0) throw std::invalid_argument("Stack count should be greater than zero!");
         
+        m_stacks.reserve(stack_count);
         for(std::size_t i = 0; i < stack_count; i++)
         {
             m_stacks.push_back({});
@@ -78,6 +77,8 @@ Electra::Electra(int argc, char* argv[])
     }
 
     // Parses --stack argument
+    // Example: --stack "1 2 3,4 5 6"
+    // First stack contains 123 and second stack contains 456
     std::size_t index = 0;
     auto splitted_by_comma = this->split(string_map["stack"], ",");
     if(splitted_by_comma.size() > m_stacks.size())
@@ -114,8 +115,8 @@ Electra::Electra(int argc, char* argv[])
     
     m_filename = alone_args[0];
 
+    /// Initializes components and gereators.
     // Initializes cables
-    // m_components['-'] = new Cable({Direction::WEST, Direction::EAST}) );
     m_components[L'-'] = std::make_unique<Cable>( bin2dir(0b00010001) );
     m_components[L'⎯'] = std::make_unique<Cable>( bin2dir(0b00010001) );
     
@@ -206,7 +207,7 @@ Electra::Electra(int argc, char* argv[])
     // Initializes Reverser
     m_components[L'R'] = std::make_unique<Reverser>( bin2dir(0b10111111) );
     
-    // Initializes Remover
+    // Initializes Eraser
     m_components[L'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Initializes Bomb
@@ -259,7 +260,6 @@ Electra::~Electra()
     m_generators.clear();
 }
 
-// Parses source code, creates generators and runs the code
 void Electra::run()
 {
     readSourceCode();
@@ -269,7 +269,6 @@ void Electra::run()
     mainLoop();
 }
 
-// Splits a string based on a given delimiter
 std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
 {
     std::vector<std::string> tokens;
@@ -300,15 +299,6 @@ std::vector<std::wstring> Electra::split_wstr(const std::wstring& str, const std
     return tokens;
 }
 
-/*
-The part that runs source code.
-First it generates new currents with generators
-And then it briefly does these in order on every loop:
-- Makes components work
-- Moves existing currents
-- Removes currents that should be removed
-- Creates new currents (For multi-directioned components)
-*/
 void Electra::mainLoop()
 {
     defaultLogger.log(LogType::INFO, L"Program started!");
@@ -330,7 +320,6 @@ void Electra::mainLoop()
     defaultLogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-// Reads source code and saves it into m_sourceCode
 void Electra::readSourceCode()
 {
     defaultLogger.log(LogType::INFO, L"Started reading source code to memory!");
@@ -384,7 +373,6 @@ void Electra::removeComments()
     }
 }
 
-// Creates generators
 void Electra::createGenerators()
 {
     defaultLogger.log(LogType::INFO, L"Started parsing generators from source code!");
@@ -411,9 +399,6 @@ void Electra::createGenerators()
     defaultLogger.log(LogType::INFO, L"Finished parsing generators from source code!");
 }
 
-/*
-Creates portals.
-*/
 void Electra::createPortals()
 {
     defaultLogger.log(LogType::INFO, L"Started parsing portals from source code!");
@@ -451,28 +436,18 @@ void Electra::createPortals()
     defaultLogger.log(LogType::INFO, L"Finished parsing portals from source code!");
 }
 
-/*
-Updates generators.
-Generators will generate new current if they can.
-*/
 void Electra::generateGenerators()
 {
     for(auto &gen : m_generators)
         gen->generate(&m_currents, &m_stacks[0]);
 }
 
-/*
-Makes currents go one step further
-*/
 void Electra::moveCurrents()
 {
     for(auto &cur : m_currents)
         cur->iterate();
 }
 
-/*
-Make components work and also decides what currents to remove and create.
-*/
 void Electra::interpreteCurrents()
 {
     for(std::size_t i = 0; i < m_currents.size(); i++)
@@ -544,7 +519,6 @@ void Electra::interpreteCurrents()
     }
 }
 
-// Removes currents
 void Electra::removeCurrents()
 {
     std::sort(m_deadCurrentIndexes.begin(), m_deadCurrentIndexes.end(), std::greater<>());
@@ -556,7 +530,6 @@ void Electra::removeCurrents()
     m_deadCurrentIndexes.clear();
 }
 
-// Creates currents
 void Electra::createCurrents()
 {
     defaultLogger.log(LogType::INFO, L"Started creating currents!");

@@ -32,7 +32,7 @@ private:
 
 public:
     Argparser(int argc, char *argv[]);
-
+    
     std::wstring_view binary_name;
     std::wstring_view program_name;
     std::wstring_view program_description;
