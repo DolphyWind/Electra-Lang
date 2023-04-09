@@ -36,3 +36,20 @@ var_t popStack(StackPtr stack, var_t defaultValue)
     stack->pop();
     return top;
 }
+
+std::wstring format_variable(var_t variable)
+{
+    std::wstring wstr = std::to_wstring(variable);
+    if(wstr.find(L'.') == std::wstring::npos) return wstr;
+    
+    while(wstr[wstr.length() - 1] == L'0')
+    {
+        wstr.pop_back();
+        if(wstr[wstr.length() - 1] == L'.')
+        {
+            wstr.pop_back();
+            break;
+        }
+    }
+    return wstr;
+}

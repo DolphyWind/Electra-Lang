@@ -32,3 +32,6 @@ typedef wchar_t char_t;
 
 // Pops the top value of stack. Returns defaultValue if there is no item.
 var_t popStack(StackPtr stack, var_t defaultValue = 0);
+
+// Removes unnecessery zeros in the mantissa
+std::wstring format_variable(var_t variable);

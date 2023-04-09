@@ -95,6 +95,7 @@ void Logger::log(LogType logType, std::wstring message, Args... args)
         m_writer.open(m_filename);
         m_writer.imbue(std::locale(m_writer.getloc(), new std::codecvt_utf8<wchar_t>)); // For some reason using char_t gives an error
         m_fileOpened = m_writer.good();
+        if(m_fileOpened) m_writer << std::fixed;
     }
 
     std::wstring logTypeStr;
