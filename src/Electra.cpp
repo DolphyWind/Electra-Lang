@@ -410,6 +410,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                 
                 if(split_from_space.size() != 1)
                 {
+                    // Determines new_start and new_end by parsing x:y
                     auto split_from_colon = split_wstr(split_from_space[1], L":");
 
                     try
@@ -445,6 +446,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
 
 void Electra::removeComments()
 {
+    // Replaces every ? comment ? with space
     for(auto &line : m_sourceCode)
     {
         bool replace_with_space = false;

@@ -133,6 +133,7 @@ public:
 
     /// @brief Recursively includes a file. 
     /// 
+    /// @param currentPath Current folder of the file. Helps when including files from some other direction.
     /// @param filename File to include
     /// @param start The start index of the slice
     /// @param end The end index of the slice
