@@ -58,6 +58,15 @@ SOFTWARE.
 #include <regex>
 #include <codecvt>
 #include <stdexcept>
+#if __has_include(<filesystem>)
+  #include <filesystem>
+  namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+  #include <experimental/filesystem> 
+  namespace fs = std::experimental::filesystem;
+#else
+  error "Missing the <filesystem> header."
+#endif
 
 typedef std::vector<Direction> GeneratorData;
 
@@ -74,6 +83,7 @@ class Electra
     
     // Related to files
     std::string m_filename;
+    fs::path m_currentPath;
     std::vector<std::wstring> m_sourceCode;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
@@ -121,8 +131,13 @@ public:
     /// @return Splitted wstring
     std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
 
-    /// @brief Reads the source code into m_sourceCode
-    void readSourceCode();
+    /// @brief Recursively includes a file. 
+    /// 
+    /// @param filename File to include
+    /// @param start The start index of the slice
+    /// @param end The end index of the slice
+    /// @return Contents of recursively inclusion
+    std::vector<std::wstring> includeFile(fs::path currentPath, const std::string& filename, std::size_t start = 0, std::size_t end = std::wstring::npos);
 
     /// @brief Removes comments from the source code.
     void removeComments();

@@ -29,6 +29,9 @@ bool Electra::m_isRunning = true;
 
 Electra::Electra(int argc, char* argv[])
 {
+    // Get the current folder
+    m_currentPath = fs::current_path();
+
     // Creates argument parser and parses command line arguments.
     Argparser parser(argc, argv);
     parser.program_name = L"Electra";
@@ -70,7 +73,7 @@ Electra::Electra(int argc, char* argv[])
     }
 
     std::string stack_count_str = string_map["stack-count"];
-    std::size_t stack_count = 0;
+    long stack_count = 0;
     
     // Parses --stack-count argument
     // Example: --stack-count 32
@@ -78,8 +81,8 @@ Electra::Electra(int argc, char* argv[])
     try
     {
         if(stack_count_str.empty()) stack_count = Electra::default_stack_count;
-        else stack_count = std::stoi(stack_count_str);
-        if(stack_count == 0) throw std::invalid_argument("Stack count should be greater than zero!");
+        else stack_count = std::stol(stack_count_str);
+        if(stack_count <= 0) throw std::invalid_argument("Stack count should be greater than zero!");
         
         m_stacks.reserve(stack_count);
         for(std::size_t i = 0; i < stack_count; i++)
@@ -286,7 +289,7 @@ Electra::~Electra()
 
 void Electra::run()
 {
-    readSourceCode();
+    m_sourceCode = includeFile(m_currentPath, m_filename);
     removeComments();
     createGenerators();
     createPortals();
@@ -344,37 +347,100 @@ void Electra::mainLoop()
     defaultLogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-void Electra::readSourceCode()
+std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::string& filename, std::size_t start, std::size_t end)
 {
-    defaultLogger.log(LogType::INFO, L"Started reading source code to memory!");
-    std::wifstream file(m_filename);
+    // Start cannot be greater then the end
+    if(start >= end)
+    {
+        std::wcerr << L"Start index must be less than the end index." << std::endl;
+        defaultLogger.log(LogType::ERROR, L"Start index must be less than the end index.");
+        std::exit(1);
+    }
+
+    // Start reading source code
+    std::vector<std::wstring> contents;
+    defaultLogger.log(LogType::INFO, L"Reading \"{}\".", filename);
+    currentPath /= filename;
+    std::wifstream file(currentPath);
+    currentPath = currentPath.parent_path();
+    
     file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<char_t>));
 
     if(file.good())
     {
+        // Read file content into wss
         std::wstring fileData;
-        std::wstringstream ss;
-        ss << file.rdbuf();
-        fileData = ss.str();
+        std::wstringstream wss;
+        wss << file.rdbuf();
+        fileData = wss.str();
+        file.close();
 
-        if(fileData.find('\t') != std::string::npos) 
+        // If there is tab character exit immidiately since tabsize may vary editor to editor
+        if(fileData.find(L'\t') != std::string::npos) 
         {
-            defaultLogger.log(LogType::ERROR, L"Cannot parse source code. Source code contains tab character. Exiting with code 1.");
+            defaultLogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
             std::wcerr << "ERROR: Source code contains tab!" << std::endl;
-            file.close();
             std::exit(1);
         }
 
-        m_sourceCode = split_wstr(fileData, L"\n");
+        // Split by the new line and slice file according to given parameters
+        contents = split_wstr(fileData, L"\n");
+        if(end > contents.size()) end = contents.size();
+        contents = std::vector<std::wstring>(contents.begin() + start, contents.begin() + end);
+
+        // Include other files if there is any
+        std::wregex pattern(L"\"([^\"]*)\""); // The regex pattern to match text within double quotation marks
+        std::wsmatch match; 
+        for(std::size_t i = contents.size() - 1; i >= 0 && i != std::wstring::npos; i--)
+        {
+            if(std::regex_search(contents[i], match, pattern))
+            {
+                std::wstring match_str = match.str();
+                match_str = std::wstring(match_str.begin() + 1, match_str.end() - 1);
+
+                // Split only once from space. Generates a 2 sized vector if there is a space. 1 sized if there is not
+                auto space_pos = match_str.find(L" ");
+                std::vector<std::wstring> split_from_space;
+                split_from_space.push_back(match_str.substr(0, space_pos));
+                if(space_pos != std::wstring::npos) split_from_space.push_back(match_str.substr(space_pos + 1));
+                
+                std::wstring new_filename = split_from_space[0];
+                std::size_t new_start = 0;
+                std::size_t new_end = std::wstring::npos;
+                
+                if(split_from_space.size() != 1)
+                {
+                    auto split_from_colon = split_wstr(split_from_space[1], L":");
+
+                    try
+                    {
+                        if(split_from_colon.at(0).empty()) new_start = 0;
+                        else new_start = std::stoul(split_from_colon.at(0));
+
+                        if(split_from_colon.size() == 1 || split_from_colon.at(1).empty()) new_end = std::wstring::npos;
+                        else new_end = std::stoul(split_from_colon.at(1));
+                    }
+                    catch (const std::exception &e)
+                    {
+                        std::wcerr << L"An exception occurred: " << e.what() << std::endl;
+                        defaultLogger.log(LogType::ERROR, L"An exception occurred: {}", e.what());
+                    }
+                }
+
+                contents.erase(contents.begin() + i);
+                auto new_content = includeFile(currentPath, std::string(new_filename.begin(), new_filename.end()), new_start, new_end);
+                contents.insert(contents.begin() + i, new_content.begin(), new_content.end());
+            }
+        }
     }
     else
     {
-        std::wcerr << L"Cannot open \"" << std::to_wstring(m_filename) << L"\"" << std::endl;
-        defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", m_filename);
+        std::wcerr << L"Cannot open \"" << std::to_wstring(filename) << L"\"" << std::endl;
+        defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
         std::exit(1);
     }
-    defaultLogger.log(LogType::INFO, L"Finished reading source code!");
-    file.close();
+
+    return contents;
 }
 
 void Electra::removeComments()

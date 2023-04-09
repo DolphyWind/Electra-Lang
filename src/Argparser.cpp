@@ -76,7 +76,10 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
                     if(i == m_argsEntered.size() - 1) break;
                     
                     std::string candidate = m_argsEntered[i + 1];
-                    if(candidate[0] == '-') break;
+                    for(auto &arg : m_args)
+                    {
+                        if(arg.name == candidate || arg.shortName == candidate) break;
+                    }
                     string_map[a_name] = candidate;
                     ++i;
                 }

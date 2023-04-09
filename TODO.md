@@ -1,6 +1,5 @@
 # Electra 2.0
 
-+ Add a way to include other code files. Something like "filename.ec x:y". Includes the lines in range [x, y)in filename.ec.
 + Add more examples
 + Add unicode versions of cables and other components.
 + Update comments
