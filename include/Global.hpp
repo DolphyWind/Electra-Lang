@@ -25,7 +25,8 @@ SOFTWARE.
 #pragma once
 #include <stack>
 #include <algorithm>
-#include <Logger.hpp>
+#include <string>
+#include <vector>
 
 typedef double var_t;
 typedef std::stack<var_t>* StackPtr;
@@ -33,7 +34,6 @@ typedef wchar_t char_t;
 
 namespace Global
 {
-
     // Pops the top value of stack. Returns defaultValue if there is no item.
     var_t popStack(StackPtr stack, var_t defaultValue = 0);
 
@@ -51,4 +51,7 @@ namespace Global
 
     // Replaces "lookFor" with "replaceWith" in "originalStr"
     std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
+
+    // Empty struct
+    struct Empty{};
 }

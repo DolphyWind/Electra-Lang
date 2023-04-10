@@ -35,6 +35,6 @@ bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     var += m_constant;
     current->stackPtr->push(var);
 
-    defaultLogger.log(LogType::INFO, L"(ConstantAdder) Added {} to the top value.", m_constant);
+    defaultlogger.log(LogType::INFO, L"(ConstantAdder) Added {} to the top value.", m_constant);
     return true;
 }

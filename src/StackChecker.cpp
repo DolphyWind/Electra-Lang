@@ -32,17 +32,17 @@ bool StackChecker::work(CurrentPtr current, std::vector<CurrentPtr> *currentVect
     if(current->stackPtr->empty())
     {
         if(m_returnIfEmpty)
-            defaultLogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
+            defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
         else
-            defaultLogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
+            defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
         
         return m_returnIfEmpty;
     }
 
     if(!m_returnIfEmpty)
-        defaultLogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
+        defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
     else
-        defaultLogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
+        defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
     
     return !m_returnIfEmpty;
 }

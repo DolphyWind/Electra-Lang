@@ -28,11 +28,7 @@ namespace Global
 {
     var_t popStack(StackPtr stack, var_t defaultValue)
     {
-        if(stack->empty())
-        {
-            defaultLogger.log(LogType::WARNING, L"The stack you tried to pop is empty. Returning {}.", defaultValue);
-            return defaultValue;
-        }
+        if(stack->empty()) return defaultValue;
 
         var_t top = stack->top();
         stack->pop();

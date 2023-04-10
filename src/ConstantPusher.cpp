@@ -30,6 +30,6 @@ bool ConstantPusher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVe
         return false;
     
     current->stackPtr->push(m_constant);
-    defaultLogger.log(LogType::INFO, L"(ConstantPusher) Pushed {} to the stack.", m_constant);
+    defaultlogger.log(LogType::INFO, L"(ConstantPusher) Pushed {} to the stack.", m_constant);
     return true;
 }

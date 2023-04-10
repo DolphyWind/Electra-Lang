@@ -36,6 +36,6 @@ bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *current
     var_t result = m_func(first, second);
     current->stackPtr->push(result);
     
-    defaultLogger.log(LogType::INFO, L"(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
+    defaultlogger.log(LogType::INFO, L"(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
     return true;
 }

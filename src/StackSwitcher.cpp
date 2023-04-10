@@ -32,10 +32,12 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     if(m_moveForward)
     {
         if((++current->stackPtr) == &(*m_stacks->end())) current->stackPtr = &(*m_stacks->begin());
+        defaultlogger.log(LogType::INFO, L"(StackSwitcher) Moving one stack forward.");
     }
     else
     {
         if(current->stackPtr == &(*m_stacks->begin())) current->stackPtr = &(*(m_stacks->end() - 1));
+        defaultlogger.log(LogType::INFO, L"(StackSwitcher) Moving one stack backward.");
     }
 
     return true;

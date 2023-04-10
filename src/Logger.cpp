@@ -33,4 +33,4 @@ Logger::Logger()
     m_filename = ss.str();
 }
 
-Logger defaultLogger = Logger();
+Logger defaultlogger = Logger();

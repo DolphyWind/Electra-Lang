@@ -26,21 +26,19 @@ SOFTWARE.
 
 bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
-    
     if(current->stackPtr->empty())
-        return true;
+        return Cable::work(current, currentVector);
     
-    var_t x = Global::popStack(current->stackPtr);
-    bool condition = (x != m_targetValue);
+    var_t top = Global::popStack(current->stackPtr);
 
-    if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is not equals to {}.", x, m_targetValue);
-    else defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is equals to {}.", x, m_targetValue);
-    if(m_invert) condition = !condition;
-    
-    if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) Current will pass.");
-    else defaultLogger.log(LogType::INFO, L"(ConditionalUnit) Current will not pass.");
+    bool result = true;
+    result = result && (m_checkEqual ? (top == m_targetValue) : true);
+    result = result && (m_checkLess ? (top < m_targetValue) : true);
+    result = result && (m_checkGreater ? (top > m_targetValue) : true);
+    result = (m_invert ? !result : result);
 
-    return condition;
+    defaultlogger.log(LogType::INFO, L"(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_invert, m_checkEqual, m_checkLess, m_checkGreater);
+    return result && Cable::work(current, currentVector);
 }

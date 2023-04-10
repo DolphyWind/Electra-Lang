@@ -34,14 +34,14 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         char_t c;
         std::wcin >> c;
         current->stackPtr->push(c);
-        defaultLogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", std::wstring(1, c));
+        defaultlogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", std::wstring(1, c));
     }
     else
     {
         var_t v;
         std::wcin >> v;
         current->stackPtr->push(v);
-        defaultLogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", v);
+        defaultlogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", v);
     }
     return true;
 }

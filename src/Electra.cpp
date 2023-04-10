@@ -51,25 +51,25 @@ Electra::Electra(int argc, char* argv[])
     auto bool_map = std::get<1>(parser_args);
     auto alone_args = parser.getAloneArguments();
 
-    defaultLogger.loggingEnabled = bool_map["log"];
+    defaultlogger.loggingEnabled = bool_map["log"];
     if(bool_map["help"])
     {
         parser.printHelpMessage();
-        defaultLogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
+        defaultlogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
         safe_exit(0);
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
-        defaultLogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
+        defaultlogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
         safe_exit(0);
     }
     
     if(alone_args.size() == 0)
     {
         parser.printHelpMessage();
-        defaultLogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
+        defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
         safe_exit(1);
     }
 
@@ -93,13 +93,13 @@ Electra::Electra(int argc, char* argv[])
     }
     catch (const std::invalid_argument &e)
     {
-        defaultLogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
+        defaultlogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
         std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is invalid for stack-count.\n";
         safe_exit(1);
     }
     catch (const std::out_of_range &e)
     {
-        defaultLogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
+        defaultlogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
         std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is out of range for stack-count." << std::endl;
         safe_exit(1);
     }
@@ -112,7 +112,7 @@ Electra::Electra(int argc, char* argv[])
     if(splitted_by_comma.size() > m_stacks.size())
     {
         std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
-        defaultLogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
+        defaultlogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
         safe_exit(1);
     }
     for(auto &splitted : splitted_by_comma)
@@ -127,13 +127,13 @@ Electra::Electra(int argc, char* argv[])
             }
             catch(const std::out_of_range &e)
             {
-                defaultLogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
+                defaultlogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
                 std::wcerr << L"The value " << std::to_wstring(i) << L" is too big or small for var_t." << std::endl;
                 safe_exit(1);
             }
             catch(const std::invalid_argument &e)
             {
-                defaultLogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
+                defaultlogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
                 std::wcerr << L"Can\'t convert " << std::to_wstring(i) << L" to var_t." << std::endl;
                 safe_exit(1);
             }
@@ -217,8 +217,12 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );
 
     // Initializes conditional units
-    m_components[L'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false);
-    m_components[L']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true);
+    m_components[L'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true, true, false, false);
+    m_components[L']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false, true, false, false);
+    m_components[L'L'] = std::make_unique<ConditionalUnit>( bin2dir(0b11111000), 0, false, false, true, false);
+    m_components[L'l'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true, false, true, false);
+    m_components[L'G'] = std::make_unique<ConditionalUnit>( bin2dir(0b11111101), 0, false, false, false, true);
+    m_components[L'g'] = std::make_unique<ConditionalUnit>( bin2dir(0b11101110), 0, true, false, false, true);
     
     // Initializes stack checkers
     m_components[L'('] = std::make_unique<StackChecker>( bin2dir(0b01000100), true);
@@ -301,13 +305,13 @@ void Electra::run()
 
 void Electra::mainLoop()
 {
-    defaultLogger.log(LogType::INFO, L"Program started!");
+    defaultlogger.log(LogType::INFO, L"Program started!");
     int tickCount = 0;
     generateGenerators();
 
     do
     {
-        defaultLogger.log(LogType::INFO, L"Tick: {}", tickCount);
+        defaultlogger.log(LogType::INFO, L"Tick: {}", tickCount);
         
         interpreteCurrents();
         moveCurrents();
@@ -317,7 +321,7 @@ void Electra::mainLoop()
         tickCount ++;
     }while (!m_currents.empty() && Electra::isRunning);
 
-    defaultLogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
+    defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
 void Electra::cleanup()
@@ -345,13 +349,13 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     if(start >= end)
     {
         std::wcerr << L"Start index must be less than the end index." << std::endl;
-        defaultLogger.log(LogType::ERROR, L"Start index must be less than the end index.");
+        defaultlogger.log(LogType::ERROR, L"Start index must be less than the end index.");
         safe_exit(1);
     }
 
     // Start reading source code
     std::vector<std::wstring> contents;
-    defaultLogger.log(LogType::INFO, L"Reading \"{}\".", filename);
+    defaultlogger.log(LogType::INFO, L"Reading \"{}\".", filename);
     currentPath /= filename;
     std::wifstream file(currentPath);
     currentPath = currentPath.parent_path();
@@ -370,7 +374,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         // If there is tab character exit immidiately since tabsize may vary editor to editor
         if(fileData.find(L'\t') != std::string::npos) 
         {
-            defaultLogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
+            defaultlogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
             std::wcerr << "ERROR: Source code contains tab!" << std::endl;
             safe_exit(1);
         }
@@ -414,7 +418,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     catch (const std::exception &e)
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
-                        defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
+                        defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
                         safe_exit(1);
                     }
 
@@ -426,7 +430,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     catch (const std::exception &e)
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
-                        defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
+                        defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
                         safe_exit(1);
                     }
                 }
@@ -440,7 +444,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     else
     {
         std::wcerr << L"Cannot open \"" << filename << L"\"" << std::endl;
-        defaultLogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
+        defaultlogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
         safe_exit(1);
     }
 
@@ -470,7 +474,7 @@ void Electra::removeComments()
 
 void Electra::createGenerators()
 {
-    defaultLogger.log(LogType::INFO, L"Started parsing generators from source code!");
+    defaultlogger.log(LogType::INFO, L"Started parsing generators from source code!");
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
@@ -482,7 +486,7 @@ void Electra::createGenerators()
                 if(c == currentChar)
                 {
                     GeneratorData* genData = &m_generatorDataMap[c];
-                    defaultLogger.log(LogType::INFO, L"Found a generator at ({}, {}).", x, y);
+                    defaultlogger.log(LogType::INFO, L"Found a generator at ({}, {}).", x, y);
                     m_generators.push_back( std::make_shared<Generator>(
                         *genData,
                         Position(x, y)
@@ -491,12 +495,12 @@ void Electra::createGenerators()
             }
         }
     }
-    defaultLogger.log(LogType::INFO, L"Finished parsing generators from source code!");
+    defaultlogger.log(LogType::INFO, L"Finished parsing generators from source code!");
 }
 
 void Electra::createPortals()
 {
-    defaultLogger.log(LogType::INFO, L"Started parsing portals from source code!");
+    defaultlogger.log(LogType::INFO, L"Started parsing portals from source code!");
 
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
@@ -517,7 +521,7 @@ void Electra::createPortals()
                 if(m_portalMap.find(currentChar) == m_portalMap.end())
                 {
                     m_portalMap[currentChar] = {(int)x, (int)y};
-                    defaultLogger.log(LogType::INFO, L"Found a portal at ({}, {}).", x, y);
+                    defaultlogger.log(LogType::INFO, L"Found a portal at ({}, {}).", x, y);
                 }
             }
             
@@ -528,7 +532,7 @@ void Electra::createPortals()
     {
         m_components[p.first] = std::make_unique<Portal>(p.second);
     }
-    defaultLogger.log(LogType::INFO, L"Finished parsing portals from source code!");
+    defaultlogger.log(LogType::INFO, L"Finished parsing portals from source code!");
 }
 
 void Electra::generateGenerators()
@@ -554,13 +558,13 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultlogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultlogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
 
@@ -573,7 +577,7 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
+                defaultlogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         catch(const std::exception& e)
@@ -602,13 +606,13 @@ void Electra::interpreteCurrents()
                 if(!isAlignedWithGenerator)
                 {
                     m_deadCurrentIndexes.push_back(i);
-                    defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
+                    defaultlogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
                 }
             }
             else
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
+                defaultlogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
     }
@@ -627,7 +631,7 @@ void Electra::removeCurrents()
 
 void Electra::createCurrents()
 {
-    defaultLogger.log(LogType::INFO, L"Started creating currents!");
+    defaultlogger.log(LogType::INFO, L"Started creating currents!");
     for(auto &cur : m_newCurrents)
     {
         Position curPos = cur->getPosition();
@@ -636,8 +640,8 @@ void Electra::createCurrents()
     
     m_newCurrents.clear();
 
-    defaultLogger.log(LogType::INFO, L"Total current count: {}.", m_currents.size());
-    defaultLogger.log(LogType::INFO, L"Finished creating currents!");
+    defaultlogger.log(LogType::INFO, L"Total current count: {}.", m_currents.size());
+    defaultlogger.log(LogType::INFO, L"Finished creating currents!");
 }
 
 void Electra::sigHandler(int signal)

@@ -31,6 +31,6 @@ bool Eraser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     
     if(current->stackPtr->empty()) return true;
 
-    defaultLogger.log(LogType::INFO, L"Removed {} from stack.", Global::popStack(current->stackPtr));
+    defaultlogger.log(LogType::INFO, L"Removed {} from stack.", Global::popStack(current->stackPtr));
     return true;
 }

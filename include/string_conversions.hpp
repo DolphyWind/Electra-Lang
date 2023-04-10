@@ -27,6 +27,7 @@ SOFTWARE.
 #include <vector>
 #include <string>
 #include <direction.hpp>
+#include <Global.hpp>
 
 namespace std
 {
@@ -38,4 +39,6 @@ namespace std
     std::wstring to_wstring(const std::vector<Direction> &directions);
     std::wstring to_wstring(const std::wstring &str);
     std::wstring to_wstring(const std::string &str);
+    std::wstring to_wstring(const bool &b);
+    std::wstring to_wstring(const Global::Empty &e);
 }

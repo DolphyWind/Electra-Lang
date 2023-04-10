@@ -25,15 +25,18 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pops the value on top of the current's stackPtr, if top==targetValue it kills the signal if invert is false.
-// If invert is true, it kills the signal when top!=targetValue.
+// Pops the value on top of the current's stackPtr, and compares it with m_targetValue. If the result is true, lets current pass.
+// Otherwise kills the current. Inverted Conditional units does the opposite.
 class ConditionalUnit : public Cable
 {
     var_t m_targetValue;
     bool m_invert;
+    bool m_checkEqual;
+    bool m_checkLess;
+    bool m_checkGreater;
 public:
-    ConditionalUnit(std::vector<Direction> directions, var_t targetValue, bool invert):
-        Cable(directions), m_targetValue(targetValue), m_invert(invert)
+    ConditionalUnit(std::vector<Direction> directions, var_t targetValue, bool invert, bool checkEqual, bool checkLess, bool checkGreater):
+        Cable(directions), m_targetValue(targetValue), m_invert(invert), m_checkEqual(checkEqual), m_checkLess(checkLess), m_checkGreater(checkGreater)
     {}
     ~ConditionalUnit() {};
 

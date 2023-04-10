@@ -133,3 +133,13 @@ std::wstring std::to_wstring(const std::string &str)
 {
     return std::wstring(str.begin(), str.end());
 }
+
+std::wstring std::to_wstring(const bool &b)
+{
+    return (b ? L"true" : L"false");
+}
+
+std::wstring std::to_wstring(const Global::Empty& e)
+{
+    return std::wstring();
+}
