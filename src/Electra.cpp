@@ -108,7 +108,7 @@ Electra::Electra(int argc, char* argv[])
     // Example: --stack "1 2 3,4 5 6"
     // First stack contains 123 and second stack contains 456
     std::size_t index = 0;
-    auto splitted_by_comma = this->split(string_map["stack"], ",");
+    auto splitted_by_comma = Global::split(string_map["stack"], ",");
     if(splitted_by_comma.size() > m_stacks.size())
     {
         std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
@@ -117,7 +117,7 @@ Electra::Electra(int argc, char* argv[])
     }
     for(auto &splitted : splitted_by_comma)
     {
-        for(auto &i : this->split(splitted, " "))
+        for(auto &i : Global::split(splitted, " "))
         {
             if(i.empty()) continue;
 
@@ -299,36 +299,6 @@ void Electra::run()
     mainLoop();
 }
 
-std::vector<std::string> Electra::split(const std::string& str, const std::string& delim) 
-{
-    std::vector<std::string> tokens;
-    std::size_t prev = 0, pos = 0;
-    do
-    {
-        pos = str.find(delim, prev);
-        if(pos == std::string::npos) pos = str.length();
-        std::string token = str.substr(prev, pos-prev);
-        tokens.push_back(token);
-        prev = pos + delim.length();
-    } while (pos < str.length() && prev < str.length());
-    return tokens;
-}
-
-std::vector<std::wstring> Electra::split_wstr(const std::wstring& str, const std::wstring& delim)
-{
-    std::vector<std::wstring> tokens;
-    std::size_t prev = 0, pos = 0;
-    do
-    {
-        pos = str.find(delim, prev);
-        if(pos == std::string::npos) pos = str.length();
-        std::wstring token = str.substr(prev, pos-prev);
-        tokens.push_back(token);
-        prev = pos + delim.length();
-    } while (pos < str.length() && prev < str.length());
-    return tokens;
-}
-
 void Electra::mainLoop()
 {
     defaultLogger.log(LogType::INFO, L"Program started!");
@@ -406,12 +376,12 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         }
 
         // Split by the new line and slice file according to given parameters
-        contents = split_wstr(fileData, L"\n");
+        contents = Global::split_wstr(fileData, L"\n");
         if(end > contents.size()) end = contents.size();
         contents = std::vector<std::wstring>(contents.begin() + start, contents.begin() + end);
 
         // Include other files if there is any
-        std::wregex include_pattern(L"^\".*?\"\\s*(?:[^:]+:[^']+)?"); // The regex pattern to match text within double quotation marks
+        std::wregex include_pattern(L"^\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
         std::wsmatch match; 
         for(std::size_t i = contents.size() - 1; i >= 0 && i != std::wstring::npos; i--)
         {
@@ -429,10 +399,12 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                 std::size_t new_end = std::wstring::npos;
                 
                 match_str = match_str.substr(filename_match.str().size(), std::wstring::npos);
+                match_str = Global::remove_spaces(match_str);
+                
                 if(match_str.find(L':') != std::wstring::npos)
                 {
                     // Determines new_start and new_end by parsing x:y
-                    auto split_from_colon = split_wstr(match_str, L":");
+                    auto split_from_colon = Global::split_wstr(match_str, L":");
 
                     try
                     {
@@ -443,6 +415,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
                         defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
+                        safe_exit(1);
                     }
 
                     try
@@ -454,6 +427,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
                         defaultLogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
+                        safe_exit(1);
                     }
                 }
 
@@ -475,7 +449,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
 
 void Electra::removeComments()
 {
-    // Replaces every ? comment ? with space
+    // Replaces each comment with spaces
     for(auto &line : m_sourceCode)
     {
         bool replace_with_space = false;
@@ -580,13 +554,13 @@ void Electra::interpreteCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndexes.push_back(i);
-            defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
 
@@ -599,7 +573,7 @@ void Electra::interpreteCurrents()
             if(!comp->work(cur, &m_newCurrents))
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         catch(const std::exception& e)
@@ -628,13 +602,13 @@ void Electra::interpreteCurrents()
                 if(!isAlignedWithGenerator)
                 {
                     m_deadCurrentIndexes.push_back(i);
-                    defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
+                    defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Current does not align with generator)", curPos.x, curPos.y, cur->getDirection());
                 }
             }
             else
             {
                 m_deadCurrentIndexes.push_back(i);
-                defaultLogger.log(LogType::INFO, L"Removing current at ({},{}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, L"Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
     }

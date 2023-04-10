@@ -27,8 +27,7 @@ SOFTWARE.
 #include <direction.hpp>
 #include <Cable.hpp>
 
-// Takes input from user and pushes it on top of the stack of the current.
-
+// Takes input from user and pushes it on top of the current's stackPtr.
 class Reader : public Cable
 {
 private:

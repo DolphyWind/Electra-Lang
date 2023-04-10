@@ -25,8 +25,8 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Swaps the top two values of the stack of the current.
-// If there is less than two values  in stackit does nothing.
+// Swaps the top two values of the current's stackPtr of the current.
+// If there is less than two values in current's stackPtr it does nothing.
 class Swapper : public Cable
 {
 public:

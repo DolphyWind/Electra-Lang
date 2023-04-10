@@ -25,9 +25,8 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pops the value on top of the stack adds m_constant to it and pushes it back to the stack.
-// If there is no value on the stack, it does nothing.
-
+// Pops the value on top of the current's stackPtr adds m_constant to it and pushes it back to the current's stackPtr.
+// If there is no value on the current's stackPtr, it does nothing.
 class ConstantAdder : public Cable
 {
     var_t m_constant;

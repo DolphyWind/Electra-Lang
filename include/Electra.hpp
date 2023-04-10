@@ -65,7 +65,7 @@ SOFTWARE.
   #include <experimental/filesystem> 
   namespace fs = std::experimental::filesystem;
 #else
-  error "Missing the <filesystem> header."
+  #error "Missing the <filesystem> header."
 #endif
 
 typedef std::vector<Direction> GeneratorData;
@@ -118,20 +118,6 @@ public:
 
     /// @brief Runs the electra
     void run();
-
-    /// @brief Splits a string based on a given delimiter
-    /// 
-    /// @param str String to split
-    /// @param delim Delimeter
-    /// @return Splitted string
-    std::vector<std::string> split(const std::string& str, const std::string& delim);
-
-    /// @brief Splits a wstring based on a given delimeter
-    /// 
-    /// @param str Wstring to split
-    /// @param delim Delimeter
-    /// @return Splitted wstring
-    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
 
     /// @brief Recursively includes a file. 
     /// 

@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
+// Stops the current if it is not ativated. To activate a key, a current has to touch it from its activator directions.
 class Key : public Cable
 {
     std::vector<Direction> m_activatorDirections;

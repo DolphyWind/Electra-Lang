@@ -25,8 +25,7 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pushes m_constant to the stack.
-
+// Pushes m_constant to the current's stackPtr.
 class ConstantPusher : public Cable
 {
     var_t m_constant;

@@ -30,7 +30,7 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         return false;
     
     if(current->stackPtr->empty()) return true;
-    var_t top = popStack(current->stackPtr);
+    var_t top = Global::popStack(current->stackPtr);
 
     if(m_printAsChar)
     {
@@ -39,7 +39,7 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     }
     else
     {
-        std::wcout << format_variable(top) << std::flush;
+        std::wcout << Global::format_variable(top) << std::flush;
         defaultLogger.log(LogType::INFO, L"Printed {} to screen.", top);
     }
     

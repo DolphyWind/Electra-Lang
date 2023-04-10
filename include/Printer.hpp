@@ -28,9 +28,8 @@ SOFTWARE.
 #include <stack>
 #include <direction.hpp>
 
-// Pops the value on top of the stack and prints it on screen as number. If m_printAsUchar is true it prints it as a char_t.
+// Pops the value on top of the current's stackPtr and prints it on screen as number. If m_printAsUchar is true it prints it as a char_t.
 // If there is no top value, it does nothing.
-
 class Printer : public Cable
 {
 private:

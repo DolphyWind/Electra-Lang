@@ -31,8 +31,7 @@ SOFTWARE.
 #include <Global.hpp>
 #include <Logger.hpp>
 
-// Electrical components
-
+// Base electrical component class. Checks if the current's direction is supported.
 class Component
 {
 protected:

@@ -31,9 +31,9 @@ SOFTWARE.
 #include <optional>
 #include <Logger.hpp>
 
+// Clones the currents if the cable is multi-directional.
 class Cable : public Component
 {
-    
 public:
     Cable(std::vector<Direction> directions) : Component(directions) {};
     ~Cable() {};

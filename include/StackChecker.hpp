@@ -27,7 +27,7 @@ SOFTWARE.
 #include <direction.hpp>
 #include <Cable.hpp>
 
-// Checks if the stack is empty or not.
+// Checks if the current's stackPtr is empty or not.
 class StackChecker : public Cable
 {
 private:

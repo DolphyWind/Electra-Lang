@@ -32,7 +32,7 @@ SOFTWARE.
 #include <stack>
 #include <Global.hpp>
 
-// Generates currents.
+// Generates currents at the start of the program.
 class Generator
 {
 private:

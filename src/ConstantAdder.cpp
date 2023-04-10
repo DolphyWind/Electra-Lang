@@ -31,7 +31,7 @@ bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     
     if(current->stackPtr->empty()) return true;
     
-    var_t var = popStack(current->stackPtr);
+    var_t var = Global::popStack(current->stackPtr);
     var += m_constant;
     current->stackPtr->push(var);
 

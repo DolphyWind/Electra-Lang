@@ -40,13 +40,17 @@ enum class LogType
     ERROR,
 };
 
+namespace Global
+{
+    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
+}
+
 // A logger class for debugging purposes.
 class Logger
 {
 private:
     std::string m_filename;
     std::wofstream m_writer;
-    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
     bool m_fileOpened = false;
 
     template<typename T>
@@ -79,7 +83,6 @@ void Logger::parseVariadic(std::vector<std::wstring> &out, T t, Args... args)
     out.push_back(std::to_wstring(t));
     parseVariadic(out, args...);
 }
-
 
 template<typename... Args>
 void Logger::log(LogType logType, std::wstring message, Args... args)
@@ -116,7 +119,7 @@ void Logger::log(LogType logType, std::wstring message, Args... args)
 
     for(auto& arg : arguments)
     {
-        message = replaceString(message, L"{}", arg);
+        message = Global::replaceString(message, L"{}", arg);
     }
     
     // Write out logtype with item

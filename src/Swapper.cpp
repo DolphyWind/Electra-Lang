@@ -32,8 +32,8 @@ bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(current->stackPtr->size() < 2)
         return true;
 
-    var_t first = popStack(current->stackPtr);
-    var_t second = popStack(current->stackPtr);
+    var_t first = Global::popStack(current->stackPtr);
+    var_t second = Global::popStack(current->stackPtr);
     current->stackPtr->push(first);
     current->stackPtr->push(second);
 

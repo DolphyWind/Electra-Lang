@@ -29,6 +29,8 @@ bool Eraser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(!Cable::work(current, currentVector))
         return false;
     
-    defaultLogger.log(LogType::INFO, L"Removed {} from stack.", popStack(current->stackPtr));
+    if(current->stackPtr->empty()) return true;
+
+    defaultLogger.log(LogType::INFO, L"Removed {} from stack.", Global::popStack(current->stackPtr));
     return true;
 }

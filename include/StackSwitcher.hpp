@@ -29,8 +29,7 @@ SOFTWARE.
 #include <stack>
 #include <vector>
 
-// Moves current's stack pointer forwards or backwards
-
+// Moves current's stackPtr pointer forwards or backwards
 class StackSwitcher : public Cable
 {
 private:

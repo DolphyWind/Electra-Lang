@@ -25,7 +25,7 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pops the top value from the current stack
+// Pops the top value from the current's stackPtr.
 class Eraser : public Cable
 {
 public:

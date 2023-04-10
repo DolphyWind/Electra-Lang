@@ -24,32 +24,85 @@ SOFTWARE.
 
 #include <Global.hpp>
 
-var_t popStack(StackPtr stack, var_t defaultValue)
+namespace Global
 {
-    if(stack->empty())
+    var_t popStack(StackPtr stack, var_t defaultValue)
     {
-        defaultLogger.log(LogType::WARNING, L"The stack you tried to pop is empty. Returning {}.", defaultValue);
-        return defaultValue;
+        if(stack->empty())
+        {
+            defaultLogger.log(LogType::WARNING, L"The stack you tried to pop is empty. Returning {}.", defaultValue);
+            return defaultValue;
+        }
+
+        var_t top = stack->top();
+        stack->pop();
+        return top;
     }
 
-    var_t top = stack->top();
-    stack->pop();
-    return top;
-}
-
-std::wstring format_variable(var_t variable)
-{
-    std::wstring wstr = std::to_wstring(variable);
-    if(wstr.find(L'.') == std::wstring::npos) return wstr;
-    
-    while(wstr[wstr.length() - 1] == L'0')
+    std::wstring format_variable(var_t variable)
     {
-        wstr.pop_back();
-        if(wstr[wstr.length() - 1] == L'.')
+        std::wstring wstr = std::to_wstring(variable);
+        if(wstr.find(L'.') == std::wstring::npos) return wstr;
+        
+        while(wstr[wstr.length() - 1] == L'0')
         {
             wstr.pop_back();
-            break;
+            if(wstr[wstr.length() - 1] == L'.')
+            {
+                wstr.pop_back();
+                break;
+            }
         }
+        return wstr;
     }
-    return wstr;
-}
+
+    std::wstring remove_spaces(const std::wstring &wstr)
+    {
+        std::wstring result;
+        for(auto &c : wstr)
+        {
+            if(c != L' ') result.push_back(c);
+        }
+
+        return result;
+    }
+
+    std::vector<std::string> split(const std::string& str, const std::string& delim) 
+    {
+        std::vector<std::string> tokens;
+        std::size_t prev = 0, pos = 0;
+        do
+        {
+            pos = str.find(delim, prev);
+            if(pos == std::string::npos) pos = str.length();
+            std::string token = str.substr(prev, pos-prev);
+            tokens.push_back(token);
+            prev = pos + delim.length();
+        } while (pos < str.length() && prev < str.length());
+        return tokens;
+    }
+
+    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim)
+    {
+        std::vector<std::wstring> tokens;
+        std::size_t prev = 0, pos = 0;
+        do
+        {
+            pos = str.find(delim, prev);
+            if(pos == std::string::npos) pos = str.length();
+            std::wstring token = str.substr(prev, pos-prev);
+            tokens.push_back(token);
+            prev = pos + delim.length();
+        } while (pos < str.length() && prev < str.length());
+        return tokens;
+    }
+
+    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith)
+    {
+        std::size_t pos = originalStr.find(lookFor);
+        if(pos == std::wstring::npos)
+            return originalStr;
+        
+        return originalStr.replace(pos, lookFor.length(), replaceWith);
+    }
+} // namespace Global

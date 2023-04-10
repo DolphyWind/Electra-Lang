@@ -26,15 +26,13 @@ SOFTWARE.
 
 bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector)) return false;
-    
+    if(!Cable::work(current, currentVector))
+        return false;
     if(current->stackPtr->size() < 2) return true;
     
     var_t first, second;
-    
-    first = popStack(current->stackPtr);
-    second = popStack(current->stackPtr);
-
+    first = Global::popStack(current->stackPtr);
+    second = Global::popStack(current->stackPtr);
     var_t result = m_func(first, second);
     current->stackPtr->push(result);
     

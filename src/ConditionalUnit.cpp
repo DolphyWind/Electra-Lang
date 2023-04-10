@@ -32,7 +32,7 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
     if(current->stackPtr->empty())
         return true;
     
-    var_t x = popStack(current->stackPtr);
+    var_t x = Global::popStack(current->stackPtr);
     bool condition = (x != m_targetValue);
 
     if(condition) defaultLogger.log(LogType::INFO, L"(ConditionalUnit) {} is not equals to {}.", x, m_targetValue);

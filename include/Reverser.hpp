@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
+// Reverses the current's stackPtr.
 class Reverser : public Cable
 {
 public:

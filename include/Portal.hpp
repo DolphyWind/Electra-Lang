@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 #include <Component.hpp>
 
+// Teleports currents from a location to another location. Works like functions.
 class Portal : public Component
 {
     Position m_originalPosition;

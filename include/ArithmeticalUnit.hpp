@@ -28,9 +28,9 @@ SOFTWARE.
 #include <functional>
 #include <stack>
 
-// Pops 2 values from stack and passes them into m_func. Then pushes result back to stack.
-// If there is no two values on stack, it does nothing.
-
+// Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to current's stackPtr.
+// The first parameter that is popped is the first argument of m_func
+// If there is less than two values or no values on current's stackPtr, it does nothing.
 typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
 
 class ArithmeticalUnit : public Cable
@@ -39,9 +39,7 @@ class ArithmeticalUnit : public Cable
 public:
     ArithmeticalUnit(std::vector<Direction> directions, ArithmeticalFunc func):
         Cable(directions), m_func(func)
-    {
-
-    }
+    {}
     ~ArithmeticalUnit() { };
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;

@@ -24,9 +24,9 @@ SOFTWARE.
 
 #pragma once
 #include <Cable.hpp>
-// Pops the top value of the stack and pushes it back onto stack.
-// If there is no top value it does nothing
 
+// Pops the top value of the current's stackPtr and pushes it back onto current's stackPtr.
+// If there is no top value it does nothing
 class Cloner : public Cable
 {
 public:

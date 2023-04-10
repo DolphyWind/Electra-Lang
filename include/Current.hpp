@@ -30,6 +30,7 @@ SOFTWARE.
 #include <stack>
 #include <optional>
 
+// Instruction pointers that act like the currents in electricity
 class Current
 {
 private:

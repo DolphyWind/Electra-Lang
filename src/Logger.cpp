@@ -33,13 +33,4 @@ Logger::Logger()
     m_filename = ss.str();
 }
 
-std::wstring Logger::replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith)
-{
-    std::size_t pos = originalStr.find(lookFor);
-    if(pos == std::wstring::npos)
-        return originalStr;
-    
-    return originalStr.replace(pos, lookFor.length(), replaceWith);
-}
-
 Logger defaultLogger = Logger();

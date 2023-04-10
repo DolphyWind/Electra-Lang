@@ -25,9 +25,8 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pops the value on top of the stack, if top==targetValue it kills the signal if invert is false.
-// If invert is true, it kills the signal when top!=targetValue
-
+// Pops the value on top of the current's stackPtr, if top==targetValue it kills the signal if invert is false.
+// If invert is true, it kills the signal when top!=targetValue.
 class ConditionalUnit : public Cable
 {
     var_t m_targetValue;

@@ -37,6 +37,10 @@ SOFTWARE.
 #include <Logger.hpp>
 
 // Simple argument parser
+// Parses arguments into three categories:
+// Arguments that store bool: They store true if they are present
+// Arguments that store string: They store the next argument unless the next argument is not an argument
+// Alone arguments: Arguments that are not specified to store anything
 class Argparser
 {
 private:

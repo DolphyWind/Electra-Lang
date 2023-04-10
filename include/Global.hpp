@@ -24,14 +24,31 @@ SOFTWARE.
 
 #pragma once
 #include <stack>
+#include <algorithm>
 #include <Logger.hpp>
 
 typedef double var_t;
 typedef std::stack<var_t>* StackPtr;
 typedef wchar_t char_t;
 
-// Pops the top value of stack. Returns defaultValue if there is no item.
-var_t popStack(StackPtr stack, var_t defaultValue = 0);
+namespace Global
+{
 
-// Removes unnecessery zeros in the mantissa
-std::wstring format_variable(var_t variable);
+    // Pops the top value of stack. Returns defaultValue if there is no item.
+    var_t popStack(StackPtr stack, var_t defaultValue = 0);
+
+    // Removes unnecessery zeros in the mantissa
+    std::wstring format_variable(var_t variable);
+
+    // Removes spaces from wstring
+    std::wstring remove_spaces(const std::wstring& wstr);
+
+    // Splits a string based on a given delimiter
+    std::vector<std::string> split(const std::string& str, const std::string& delim);
+
+    // Splits a wstring based on a given delimeter
+    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
+
+    // Replaces "lookFor" with "replaceWith" in "originalStr"
+    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
+}
