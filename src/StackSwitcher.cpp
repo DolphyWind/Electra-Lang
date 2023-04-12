@@ -26,19 +26,30 @@ SOFTWARE.
 
 bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
+    bool stack_empty = current->stackPtr->empty();
+    var_t top = 0;
+    if(!stack_empty && m_moveValue) top = Global::popStack(current->stackPtr);
+    std::wstring message = L"(StackSwitcher) Moving one stack {}. ";
+
     if(m_moveForward)
     {
         if((++current->stackPtr) == &(*m_stacks->end())) current->stackPtr = &(*m_stacks->begin());
-        defaultlogger.log(LogType::INFO, L"(StackSwitcher) Moving one stack forward.");
     }
     else
     {
         if(current->stackPtr == &(*m_stacks->begin())) current->stackPtr = &(*(m_stacks->end() - 1));
-        defaultlogger.log(LogType::INFO, L"(StackSwitcher) Moving one stack backward.");
+        else current->stackPtr--;
     }
+    
+    if(!stack_empty && m_moveValue) 
+    {
+        current->stackPtr->push(top);
+        message += L"With value {}.";
+    }
+    defaultlogger.log(LogType::INFO, message, (m_moveForward ? L"forward" : L"backward"), top);
 
-    return true;
+    return Cable::work(current, currentVector);
 }

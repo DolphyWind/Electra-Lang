@@ -29,15 +29,18 @@ SOFTWARE.
 #include <stack>
 #include <vector>
 
-// Moves current's stackPtr pointer forwards or backwards
+// Moves current's stackPtr pointer forwards or backwards.
+// If moveValue is true, it pops the top value before moving the stackPtr and pushes that value after moving.
+// It does not push anything if there is nothing to pop.
 class StackSwitcher : public Cable
 {
 private:
     std::vector<std::stack<var_t>> *m_stacks;
     bool m_moveForward = true;
+    bool m_moveValue = false;
 public:
-    StackSwitcher(std::vector<Direction> directions, bool moveForward, std::vector<std::stack<var_t>> *stacks):
-        Cable(directions), m_moveForward(moveForward), m_stacks(stacks)
+    StackSwitcher(std::vector<Direction> directions, bool moveForward, std::vector<std::stack<var_t>> *stacks, bool moveValue):
+        Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
     {}
     ~StackSwitcher() {}
 

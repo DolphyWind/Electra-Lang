@@ -229,8 +229,10 @@ Electra::Electra(int argc, char* argv[])
     m_components[L')'] = std::make_unique<StackChecker>( bin2dir(0b01000100), false);
 
     // Initializes stack switchers
-    m_components[L'F'] = std::make_unique<StackSwitcher>( bin2dir(0b00111111), true, &m_stacks);
-    m_components[L'B'] = std::make_unique<StackSwitcher>( bin2dir(0b11111110), false, &m_stacks);
+    m_components[L'F'] = std::make_unique<StackSwitcher>( bin2dir(0b00111111), true, &m_stacks, false);
+    m_components[L'f'] = std::make_unique<StackSwitcher>( bin2dir(0b01010111), true, &m_stacks, true);
+    m_components[L'B'] = std::make_unique<StackSwitcher>( bin2dir(0b11111110), false, &m_stacks, false);
+    m_components[L'b'] = std::make_unique<StackSwitcher>( bin2dir(0b11111001), false, &m_stacks, true);
 
     // Initializes keys
     m_components[L'~'] = std::make_unique<Key>( bin2dir(0b00010001), bin2dir(0b01000100), m_sourceCode, L'-');
