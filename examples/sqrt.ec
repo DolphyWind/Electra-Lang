@@ -17,10 +17,10 @@
 
 
 
-? The function '√' Calculates the squareroot of the first number on stack ?
+? The function "√" Calculates the squareroot of the first number on stack ?
 ? Uses four stacks ?
 ? First one stores 10 ?
-? Second one stores 1e-6 ?
+? Second one stores 1e-9 ?
 ? Third one stores 1 and gets divided by 10 (first cell) time to time ?
 ? Forth one stores the initial number ?
 ? Fifth one calculates the squareroot ?
@@ -31,11 +31,11 @@
                                                        +--------------------------------+
                                                        |                                |
                                                        |                                E
-+√-ffff+ +--O                                          |       +E--}+-----+  +-Q-#      |
-|      B |  |                                          |       |    n     B  $   |      U
-|      B |  I              +QQQQQQ-+                   |       |    |     B  f   B +-FF}+
-|      B |  I    A         I       |                   |       g    +L    |  f   # |    |
-|      +-+  ###MM *#f######O       |                   |   A   |     |    #  #   f |    |
++√-ffff+ +--O       +--------------+                   |       +E--}+-----+  +-Q-#      |
+|      B |  |       |              |                   |       |    n     B  $   |      U
+|      B |  I       +QQQQQQQQQ+    |                   |       |    |     B  f   B +-FF}+
+|      B |  I    A            I    |                   |       g    +L    |  f   # |    |
+|      +-+  ###MM *#f#########O    |                   |   A   |     |    #  #   f |    |
 |                                  FO                  |  * *+-#   +-#    |  B   $ +L   |
 |                                   I        ##--+     |  f    |   S |    f  B   S  |   +bbbbb--F×F×F×F×F×+
 +-------------------------------+   FFO+     |   |     |  f    G   $ l    f  |   +--#                     |

@@ -129,7 +129,7 @@ public:
     std::vector<std::wstring> includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start = 0, std::size_t end = std::wstring::npos);
 
     /// @brief Removes comments from the source code.
-    void removeComments();
+    [[nodiscard]] std::vector<std::wstring> removeComments(std::vector<std::wstring>&& block);
 
     /// @brief Creates generators from source code
     void createGenerators();

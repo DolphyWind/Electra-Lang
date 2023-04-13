@@ -299,7 +299,7 @@ Electra::~Electra()
 void Electra::run()
 {
     m_sourceCode = includeFile(m_currentPath, Electra::wstring_converter.from_bytes(m_filename));
-    removeComments();
+    m_sourceCode = removeComments(std::move(m_sourceCode));
     createGenerators();
     createPortals();
     mainLoop();
@@ -385,9 +385,10 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         contents = Global::split_wstr(fileData, L"\n");
         if(end > contents.size()) end = contents.size();
         contents = std::vector<std::wstring>(contents.begin() + start, contents.begin() + end);
+        contents = removeComments(std::move(contents));
 
         // Include other files if there is any
-        std::wregex include_pattern(L"^\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
+        std::wregex include_pattern(L"\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
         std::wsmatch match; 
         for(std::size_t i = contents.size() - 1; i >= 0 && i != std::wstring::npos; i--)
         {
@@ -453,10 +454,10 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     return contents;
 }
 
-void Electra::removeComments()
+std::vector<std::wstring> Electra::removeComments(std::vector<std::wstring>&& block)
 {
     // Replaces each comment with spaces
-    for(auto &line : m_sourceCode)
+    for(auto &line : block)
     {
         bool replace_with_space = false;
         for(std::size_t i = 0; i < line.length(); i++)
@@ -472,6 +473,7 @@ void Electra::removeComments()
             }
         }
     }
+    return block;
 }
 
 void Electra::createGenerators()
