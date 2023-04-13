@@ -1,6 +1,6 @@
 # Electra 2.0
 
-+ Add more examples
++ Prevent re-inclusion
 + Remove comments during inclusion
 + Greatly modify README.md
 + Add stable branch
