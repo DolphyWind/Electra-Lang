@@ -113,7 +113,7 @@ std::wstring std::to_wstring(const std::vector<Direction> &directions)
     for(std::size_t i = 0; i < directions.size(); i++)
     {
         result += std::to_wstring(directions[i]);
-        if(i == directions.size() - 1) result += L", ";
+        if(i != directions.size() - 1) result += L", ";
     }
     result += L"}";
     return result;

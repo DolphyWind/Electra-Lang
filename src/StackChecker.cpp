@@ -26,7 +26,7 @@ SOFTWARE.
 
 bool StackChecker::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     if(current->stackPtr->empty())
@@ -36,7 +36,7 @@ bool StackChecker::work(CurrentPtr current, std::vector<CurrentPtr> *currentVect
         else
             defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
         
-        return m_returnIfEmpty;
+        return m_returnIfEmpty && Cable::work(current, currentVector);
     }
 
     if(!m_returnIfEmpty)
@@ -44,5 +44,5 @@ bool StackChecker::work(CurrentPtr current, std::vector<CurrentPtr> *currentVect
     else
         defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
     
-    return !m_returnIfEmpty;
+    return !m_returnIfEmpty && Cable::work(current, currentVector);
 }

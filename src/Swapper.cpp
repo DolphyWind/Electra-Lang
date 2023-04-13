@@ -26,11 +26,11 @@ SOFTWARE.
 
 bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     if(current->stackPtr->size() < 2)
-        return true;
+        return Cable::work(current, currentVector);
 
     var_t first = Global::popStack(current->stackPtr);
     var_t second = Global::popStack(current->stackPtr);
@@ -39,5 +39,5 @@ bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 
     defaultlogger.log(LogType::INFO, L"Swapping {} and {} on the stack.", first, second);
 
-    return true;
+    return Cable::work(current, currentVector);
 }

@@ -45,6 +45,7 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         newCurrent->setPortalStack(portalStack);
         currentVector->push_back(newCurrent);
     }
-    
-    return true;
+    // std::wcout << std::to_wstring(currentDir) << std::endl;
+    // std::wcout << std::to_wstring(m_directions) << std::endl;
+    return m_is_one_directional || (std::find(m_directions.begin(), m_directions.end(), currentDir) != this->m_directions.end());
 }

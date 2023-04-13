@@ -26,7 +26,7 @@ SOFTWARE.
 
 bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     if(m_getInputAsChar)
@@ -43,5 +43,5 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         current->stackPtr->push(v);
         defaultlogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", v);
     }
-    return true;
+    return Cable::work(current, currentVector);
 }

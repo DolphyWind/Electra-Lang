@@ -26,9 +26,9 @@ SOFTWARE.
 
 bool Bomb::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     *m_isRunningPtr = false;
-    return true;
+    return Cable::work(current, currentVector);
 }

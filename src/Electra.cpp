@@ -183,10 +183,10 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'┴'] = std::make_unique<Cable>( bin2dir(0b00010101) );
 
     // I ran out of good ascii characters :(
-    m_components[L'{'] = std::make_unique<Cable>( bin2dir(0b00000001) );
-    m_components[L'}'] = std::make_unique<Cable>( bin2dir(0b00010000) );
-    m_components[L'U'] = std::make_unique<Cable>( bin2dir(0b00000100) );
-    m_components[L'n'] = std::make_unique<Cable>( bin2dir(0b01000000) );
+    m_components[L'{'] = std::make_unique<Cable>( bin2dir(0b00000001), true );
+    m_components[L'}'] = std::make_unique<Cable>( bin2dir(0b00010000), true );
+    m_components[L'U'] = std::make_unique<Cable>( bin2dir(0b00000100), true );
+    m_components[L'n'] = std::make_unique<Cable>( bin2dir(0b01000000), true );
     
     // Initializes Printers
     m_components[L'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);

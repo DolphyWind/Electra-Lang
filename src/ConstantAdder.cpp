@@ -26,15 +26,15 @@ SOFTWARE.
 
 bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
-    if(current->stackPtr->empty()) return true;
+    if(current->stackPtr->empty()) return Cable::work(current, currentVector);
     
     var_t var = Global::popStack(current->stackPtr);
     var += m_constant;
     current->stackPtr->push(var);
 
     defaultlogger.log(LogType::INFO, L"(ConstantAdder) Added {} to the top value.", m_constant);
-    return true;
+    return Cable::work(current, currentVector);
 }

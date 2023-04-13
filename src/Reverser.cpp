@@ -26,7 +26,7 @@ SOFTWARE.
 
 bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     std::stack<var_t> newStack;
@@ -38,5 +38,5 @@ bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     *current->stackPtr = newStack;
     defaultlogger.log(LogType::INFO, L"Reversed the entire stack.");
 
-    return true;
+    return Cable::work(current, currentVector);
 }

@@ -46,7 +46,7 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         return true;
     }
 
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     // If not in activator directions move the current back
@@ -54,5 +54,5 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     current->setPosition(newPos);
     defaultlogger.log(LogType::INFO, L"(Key) Key at ({}, {}) is not activated. The is being moved to ({}, {})", curPos.x, curPos.y, newPos.x, newPos.y);
 
-    return true;
+    return Cable::work(current, currentVector);
 }

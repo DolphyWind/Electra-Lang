@@ -26,10 +26,10 @@ SOFTWARE.
 
 bool ConstantPusher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
-    if(!Cable::work(current, currentVector))
+    if(!Component::work(current, currentVector))
         return false;
     
     current->stackPtr->push(m_constant);
     defaultlogger.log(LogType::INFO, L"(ConstantPusher) Pushed {} to the stack.", m_constant);
-    return true;
+    return Cable::work(current, currentVector);
 }
