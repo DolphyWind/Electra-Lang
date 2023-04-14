@@ -85,6 +85,8 @@ class Electra
     std::string m_filename;
     fs::path m_currentPath;
     std::vector<std::wstring> m_sourceCode;
+    bool allow_reinclusion = false;
+    std::unordered_map<std::wstring, std::pair<std::size_t, std::size_t>> m_includedParts;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
     std::vector<std::size_t> m_deadCurrentIndexes;

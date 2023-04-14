@@ -21,23 +21,23 @@
 ? Uses four stacks ?
 ? First one stores 10 ?
 ? Second one stores 1e-9 ?
-? Third one stores 1 and gets divided by 10 (first cell) time to time ?
+? Third one stores 10000 and gets divided by 10 (first cell) time to time ?
 ? Forth one stores the initial number ?
 ? Fifth one calculates the squareroot ?
 ? Then squareroot gets pushed to stack before the first stack ?
 ? Lastly it clears up all of the stacks it uses ?
-? Returns -1 if the number is negative ?
+? Returns -10000 if the number is negative ?
                                                        
                                                        +--------------------------------+
                                                        |                                |
                                                        |                                E
-+√-ffff+ +--O       +--------------+                   |       +E--}+-----+  +-Q-#      |
-|      B |  |       |              |                   |       |    n     B  $   |      U
-|      B |  I       +QQQQQQQQQ+    |                   |       |    |     B  f   B +-FF}+
-|      B |  I    A            I    |                   |       g    +L    |  f   # |    |
-|      +-+  ###MM *#f#########O    |                   |   A   |     |    #  #   f |    |
-|                                  FO                  |  * *+-#   +-#    |  B   $ +L   |
-|                                   I        ##--+     |  f    |   S |    f  B   S  |   +bbbbb--F×F×F×F×F×+
++√-ffff+ +--O       ODDDDDDDDDDODM#M#M+                |       +E--}+-----+  +-Q-#      |
+|      B |  |       |                 |                |       |    n     B  $   |      U
+|      B |  I       FQQQQQQQQQ+     +-+                |       |    |     B  f   B +-FF}+
+|      B |  I    A            I     |                  |       g    +L    |  f   # |    |
+|      +-+  ###MM *#f#########O     |                  |   A   |     |    #  #   f |    |
+|                                   |                  |  * *+-#   +-#    |  B   $ +L   |
+|                                   |        ##--+     |  f    |   S |    f  B   S  |   +bbbbb--F×F×F×F×F×+
 +-------------------------------+   FFO+     |   |     |  f    G   $ l    f  |   +--#                     |
                                 |      U     | +-+-+   |  f    |   f |    $  B      |                     B
                                 |    +}#²B   | [   ]   |  #    |   f B    S  B      l                     B

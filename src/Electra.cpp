@@ -45,6 +45,7 @@ Electra::Electra(int argc, char* argv[])
     parser.addArgument("--log", "-l", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
     parser.addArgument("--stack", "-s", false, "Specify the inital values of stack.");
     parser.addArgument("--stack-count", "-sc", false, "Specify the total stack count that electra uses. Must be greater than or equal to one.");
+    parser.addArgument("--allow-reinclusion", "-ar", true, "Allow re-including files.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
@@ -72,6 +73,8 @@ Electra::Electra(int argc, char* argv[])
         defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
         safe_exit(1);
     }
+
+    allow_reinclusion = bool_map["allow-reinclusion"];
 
     std::string stack_count_str = string_map["stack-count"];
     long stack_count = 0;
@@ -350,9 +353,25 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     // Start cannot be greater then the end
     if(start >= end)
     {
-        std::wcerr << L"Start index must be less than the end index." << std::endl;
-        defaultlogger.log(LogType::ERROR, L"Start index must be less than the end index.");
+        std::wcerr << L"Inclusion failed: Start index must be less than the end index." << std::endl;
+        defaultlogger.log(LogType::ERROR, L"Inclusion failed: Start index must be less than the end index.");
         safe_exit(1);
+    }
+
+    if(!allow_reinclusion)
+    {
+        std::wstring total_path = (currentPath / filename).wstring();
+        if(m_includedParts.find(total_path) != m_includedParts.end())
+        {
+            // Check if reinclusion happened
+            auto &range = m_includedParts[total_path];
+            if( (range.first <= start && start < range.second) || (range.first <= end - 1 && end - 1 < range.second))
+            {
+                defaultlogger.log(LogType::WARNING, L"Prevented reincluding {}. Please pass --allow-reinclusion as command line argument to enable reinclusion.", total_path);
+                return {};
+            }
+        }
+        m_includedParts[total_path] = {start, end};
     }
 
     // Start reading source code
@@ -377,7 +396,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         if(fileData.find(L'\t') != std::string::npos) 
         {
             defaultlogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
-            std::wcerr << "ERROR: Source code contains tab!" << std::endl;
+            std::wcerr << "Error while reading file: Source code contains tab!" << std::endl;
             safe_exit(1);
         }
 

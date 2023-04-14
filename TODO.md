@@ -1,6 +1,12 @@
 # Electra 2.0
 
-+ Prevent re-inclusion
 + Greatly modify README.md
+    + Titles
+        + Building Electra
+            Building instructions for electra
+        + Electra Interpereter
+            + How electra interpereter works
+        + How Electra works?
+            + Memory management, Currents, Generators, Components
+
 + Add stable branch
-    + Explain how Electra 2.0 works including multiple stacks and each current having its own stackPtr
