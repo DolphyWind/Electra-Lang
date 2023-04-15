@@ -85,7 +85,6 @@ class Electra
     std::string m_filename;
     fs::path m_currentPath;
     std::vector<std::wstring> m_sourceCode;
-    bool allow_reinclusion = false;
     std::unordered_map<std::wstring, std::pair<std::size_t, std::size_t>> m_includedParts;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
@@ -128,7 +127,7 @@ public:
     /// @param start The start index of the slice
     /// @param end The end index of the slice
     /// @return Contents of recursively inclusion
-    std::vector<std::wstring> includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start = 0, std::size_t end = std::wstring::npos);
+    std::vector<std::wstring> includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start = 0, std::size_t end = std::wstring::npos, bool allow_reinclusion=false);
 
     /// @brief Removes comments from the source code.
     [[nodiscard]] std::vector<std::wstring> removeComments(std::vector<std::wstring>&& block);

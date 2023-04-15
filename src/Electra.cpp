@@ -45,7 +45,6 @@ Electra::Electra(int argc, char* argv[])
     parser.addArgument("--log", "-l", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
     parser.addArgument("--stack", "-s", false, "Specify the inital values of stack.");
     parser.addArgument("--stack-count", "-sc", false, "Specify the total stack count that electra uses. Must be greater than or equal to one.");
-    parser.addArgument("--allow-reinclusion", "-ar", true, "Allow re-including files.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
@@ -73,8 +72,6 @@ Electra::Electra(int argc, char* argv[])
         defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
         safe_exit(1);
     }
-
-    allow_reinclusion = bool_map["allow-reinclusion"];
 
     std::string stack_count_str = string_map["stack-count"];
     long stack_count = 0;
@@ -348,7 +345,7 @@ void Electra::safe_exit(int exit_code)
     std::exit(exit_code);
 }
 
-std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end)
+std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
 {
     // Start cannot be greater then the end
     if(start >= end)
@@ -457,8 +454,11 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     }
                 }
 
+                bool allow_reinclusion = (new_filename[0] == L'!');
+                if(allow_reinclusion) new_filename.erase(new_filename.begin());
+
                 contents.erase(contents.begin() + i);
-                auto new_content = includeFile(currentPath, new_filename, new_start, new_end);
+                auto new_content = includeFile(currentPath, new_filename, new_start, new_end, allow_reinclusion);
                 contents.insert(contents.begin() + i, new_content.begin(), new_content.end());
             }
         }
