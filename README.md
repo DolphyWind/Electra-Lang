@@ -4,7 +4,7 @@
 
 # What is Electra?
 
-Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity.  
+Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity.  
 
 # How to get electra?
 
