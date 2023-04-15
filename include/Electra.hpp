@@ -95,7 +95,7 @@ class Electra
 
     // Stacks that language will use for memory manager
     std::vector<std::stack<var_t>> m_stacks;
-    const std::size_t default_stack_count = 16;
+    const std::size_t default_stack_count = 64;
 
     // A map object that holds portals
     std::unordered_map<char_t, Position> m_portalMap;

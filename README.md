@@ -17,7 +17,7 @@ If you are on a Linux distrubution that is not Arch Linux based, or using comple
 
 ## Building on Unix-Like Operating Systems
 
-If you are on a Unix-Like operating system such as Linux, MacOS, BSD etc. To build electra from source, use the commands down below.
+If you are on a Unix-Like operating system such as Linux, MacOS, BSD etc. To build electra from source, first, install git, cmake and make using your package manager. Then type these commands in a terminal
 
 ```bash
 # Clone the repository and cd into it
@@ -36,7 +36,7 @@ sudo make install
 
 ## Building on Windows
 
-If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), [Mingw-w64](https://www.mingw-w64.org/downloads/), [CMake](https://cmake.org/download/) and add them to your PATH. Building with Visual Studio is currently NOT supported. Also, please note that Windows build is a bit unstable and might not work in your system. It worked on my Windows 10 and Windows 11 machines but for some reason it doesn't work on virtual machines. To build electra on windows, follow the steps below.
+If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), [Mingw-w64](https://www.mingw-w64.org/downloads/), [CMake](https://cmake.org/download/) and add them to your PATH. Building with Visual Studio is currently NOT supported. Also, please note that Windows build is a bit unstable and might not work in your system. It worked on my Windows 10 and Windows 11 machines but for some reason it doesn't work on my virtual machines. To build electra on windows, follow the steps below.
 
 ```bash
 # Clone the repository and cd into it
@@ -53,7 +53,7 @@ make
 
 # How Electra works?
 
-Electra has Currents, Generators and Components. Currents are instruction pointers that acts like the currents in electricity, Generators generate currents and Components interperate currents to make code function. Electra has two types defined. Electra uses multiple stacks of doubles for memory management. Electra also supports commenting your code in line and including other code files. To comment a portion of your code, encapsulate your comments with question marks ?like this?. To include other files in your code, use double quotes: "file.ec" x:y. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. That operation replaces that line with corresponding file content so it has to be used with cauton.
+Electra has Currents, Generators and Components. Currents are instruction pointers that acts like the currents in electricity, Generators generate currents and Components interperate currents to make code function. Electra uses list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of interpreter. Every current has its own stack pointer. That way doing some manuplations to different stacks at the same time is possible. Electra also supports commenting your code in line and including other code files. To comment a portion of your code, use question marks ? like this ? (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes: "file.ec" x:y. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: "!file.ec" x:y. But use this with caution.
 
 ## **Currents**
 Currents are instruction pointers in Electra. They call `work()` function of the component that they are on. They hold a pointer to a stack and a component's `work()` function uses that stack if it does some stack operations. A `work()` function returns a boolean value. If it is false current gets killed.
@@ -74,9 +74,9 @@ Generators generate currents at the beginning of the program and become unused a
 
 >**Northwest Generator (↖):** Generates a current with northwest direction.
 
->**Southeast Generator (↙):** Generates a current with southeast direction.
+>**Southwest Generator (↙):** Generates a current with southwest direction.
 
->**Southwest Generator (↘):** Generates a current with southwest direction.
+>**Southeast Generator (↘):** Generates a current with southeast direction.
 
 >**Horizontal Bidirectional Generator (↔):** Generates two currents with east and west directions.
 
@@ -118,64 +118,88 @@ The regular four directional cable (+) has a current that is coming from west he
 
 >**South One Directional Cable (U):** Only lets current flowing to south direction.
 
->**Other Cables (╰, └, ╯, ┘, ╭, ┌, ┐, ╮, ├ ,┤ ,┬ ,┴):** These cables are not special they just have no name. They let current based on how they look like.
+>**Other Cables (╰, └, ╯, ┘, ╭, ┌, ┐, ╮, ├ ,┤ ,┬ ,┴):** These cables are not special they just have no name. They flow current based on how they look like.
 
 ### **Printers**
-Printers lets Electra print out the variables in the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
+Printers lets Electra print out the variables in the stack. They can print a variable either as a number or a character.
 
 #### **Printer Types**
->**Number Printer (N):** Supports east, west, southeast, southwest, northeast and northwest direction. Pops the top value off the current's stack and prints it as number. If the stack is empty it does nothing.
+>**Number Printer (N):** Supports east, northeast, northwest, west, southwest and southeast directions. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
 
->**Character Printer (P):** Supports north, west, east, northeast, northwest and southwest directions. Pops the top value off the current's stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
+>**Character Printer (P):** Supports east, northeast, north, northwest, west, and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units**
-Arithmetical units lets Electra do arithmetical calculations. They inherit from Cable class and return false if `Cable::work()` returns false.
+Arithmetical units lets Electra do arithmetical calculations. If there is less than two values on the stack they do nothing.
 
 #### **Arithmetical Unit Types**
->**Adder (A):** Supports north, southeast and southwest directions. Pops two values off the stack and pushes first+second back. If there is at least no two values on the stack, it does nothing.
+>**Adder (A):** Supports north, southwest and southeast directions. Pops two values off the stack and pushes first+second back. 
 
->**Subtracter (S):** Supports north, south, southwest and northeast directions. Pops two values off the stack and pushes first-second back. If there is at least no two values on the stack, it does nothing.
+>**Subtracter (S):** Supports northeast, north, southwest and south directions. Pops two values off the stack and pushes first-second back. 
 
->**Multiplier (M):** Supports east, west, south, southeast, southwest, northeast and northwest directions. Pops two values off the stack and pushes first*second back. If there is at least no two values on the stack, it does nothing.
+>**Multiplier (M):** Supports east, northeast, northwest, west, southwest, south and southeast directions. Pops two values off the stack and pushes first*second back. 
 
->**Divider (Q):** Supports north, south, east, west and southeast directions. Pops two values off the stack and pushes first/second back. If there is at least no two values on the stack, it does nothing.
+>**Divider (Q):** Supports east, north, west, south and southeast directions. Pops two values off the stack and pushes first/second back. 
 
->**Modder (%):** Supports northeast and southwest directions. Pops two values off the stack and pushes `std::fmod(first, second)` back. If there is at least no two values on the stack, it does nothing.
+>**Modder (%):** Supports northeast and southwest directions. Pops two values off the stack and pushes `std::fmod(first, second)` back. 
 
 ### **Constant Adders (I, D)**
-Constant adders adds a constant value to the top value of the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
+Constant adders adds a constant value to the top value of the stack. 
 
 #### **Constant Adder Types**
 >**Increaser (I):** Supports north and south directions. Pops the top value off the stack and adds one to it. Then pushes the result back. It does nothing if the stack is empty.
 
->**Decreaser (D):** Supports east, west, north, south southwest and northwest directions. Pops the top value off the stack and subtracts one from it. Then pushes the result back. It does nothing if the stack is empty.
+>**Decreaser (D):** Supports east, north, northwest, west, southwest and south directions. Pops the top value off the stack and subtracts one from it. Then pushes the result back. It does nothing if the stack is empty.
 
 ### **Cloner (#)**
-Cloner, clones the value on top of the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, west and east directions. It does nothing if the stack is empty.
+Cloner, clones the value on top of the stack. It supports east, north, west and south directions. It does nothing if the stack is empty.
 
-### **Constant Pushers (O, @, &)**
-Constant pushers push a constant value to the stack. Some of them takes an input from the user and pushes that to the stack. They inherit from Cable class and return false if `Cable::work()` returns false.
+### **Constant Pusher (O)**
+Constant pusher, pushes a constant value to the stack. There is currently only one constant pusher and it pushes 0 to the stack. Supports all eight directions.
 
-#### **Constant Pusher Types**
->**Zero Pusher (O):** Supports all eight directions. Pushes zero to the stack. 
+#### **Reader Types** 
+>**Number Reader (@):** Supports east, northeast, north, northwest, west, southwest and south directions. Takes an input from user as number and pushes it to the stack.
 
->**Number Pusher (@):** Supports north, south, east, west, northeast, northwest and southwest directions. Takes an input from user as `var_t` and pushes it to the stack.
-
->**Character Pusher (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as `char_t` and converts it to `var_t`. Then pushes it to the stack.
+>**Character Reader (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as chaacter and converts it to number. Then pushes it to the stack.
 
 ### **Swapper ($)**
-Swapper, swaps the top two vale on the stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
+Swapper, swaps the top two vale on the stack. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
 
-### **Conditional Units ([, ])**
-Conditional units, kills or spares currents based on the value on top of the stack. They inherit from Cable class and return false if `Cable::work()` returns false. They do nothing if the stack is empty.
+### **Conditional Units**
+Conditional units, kills or spares currents based on the value on top of the stack. They do nothing if the stack is empty.
 
 #### **Conditional Unit Types**
->**Regular Conditional Unit ([):** Pops the top value off the stack. Kills the current if the top value is zero.
+>**Equals Conditional Unit (]):** Supports north and south directions. Pops the top value off the stack. Lets the current flow if the top value is equals zero.
 
->**Inverted Conditional Unit (]):** Pops the top value off the stack. Kills the current if the top value is not zero.
+>**Not Equals Conditional Unit ([):** Supports north and south directions. Pops the top value off the stack. Lets the current flow if the top value is not equals zero.
 
-### **Keys (~, !)**
-Keys transform to the other components when they are activated. They will stop current (Technically they move current one step back) if they are not activated. To activate a key, a current must be touch the key from its activator directions. They inherit from Cable class but does not call 'Cable::work()' immidiately.
+>**Greater Than Conditional Unit (G):** Supports east, north, northwest, west, southwest, south and southeast directions. Pops the top value off the stack. Lets the current flow if the top value is greater than zero.
+
+>**Not Greater Than Conditional Unit (g):** Supports northeast, north, northwest, southwest, south and southeast directions. Pops the top value off the stack. Lets the current flow if the top value is not greater than zero.
+
+>**Less Than Conditional Unit (L):** Supports northwest, west, southwest, south and southeast directions. Pops the top value off the stack. Lets the current flow if the top value is less than zero.
+
+>**Not Less Than Conditional Unit (l):** Supports north and south directions. Pops the top value off the stack. Lets the current flow if the top value is not less than zero.
+
+### **Stack Checkers**
+Stack checker checks the stack if empty or not. 
+
+>**Regular Stack Checker( ( ):** Supports north and south directions. Lets the current flow if the stack is empty.
+
+>**Regular Stack Checker( ) ):** Supports north and south directions. Lets the current flow if the stack is not empty.
+
+### **Stack Switchers**
+Stack switcher moves current's stack pointer forwards or backwards in a list. Some of them pops the top value and moves it to next stack.
+
+>**Forward Stack Switcher (F):** Supports east, northeast, north, northwest, west and southwest directions. Moves current's stack pointer forward. Does not move top value to the next stack.
+
+>**Forward Moving Stack Switcher (f):** Supports east, northeast, north, west and south directions. Moves current's stack pointer forward. Does move top value to the next stack if stack is not empty.
+
+>**Forward Stack Switcher (B):** Supports northeast, north, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does not move top value to the next stack.
+
+>**Backward Moving Stack Switcher (b):** Supports east, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does move top value to the next stack if stack is not empty.
+
+### **Keys**
+Keys transform to the other components when they are activated. They will stop current (Technically they move current one step back) if they are not activated. To activate a key, a current must be touch the key from its activator directions. 
 
 #### **Key Types**
 >**Horizontal Key (~):** Supports east and west directions. Becomes a horizontal cable when activated. Gets activated when a current touches it from north or south directions.
@@ -183,7 +207,13 @@ Keys transform to the other components when they are activated. They will stop c
 >**Vertical Key (!):** Supports north and south directions. Becomes a vertical cable when activated. Gets activated when a current touches it from east and west directions.
 
 ### **Reverser (R)**
-Reverser, reverses the entire stack. It inherits from Cable class and return false if `Cable::work()` returns false. It supports north, east, northeast northwest, southwest and southeast directions.
+Supports north, east, northeast northwest, southwest and southeast directions. Reverser, reverses the entire stack.
+
+### **Eraser (E)**
+Supports all eight directions. Eraser, erases the top value from the stack. 
+
+### **Bomb (o)**
+Supports all eight directions. Finishes the program execution.
 
 ### **Portals**
 Every other character in Electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
