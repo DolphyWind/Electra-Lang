@@ -34,5 +34,5 @@
 # Custom
 output/
 .vscode/
-build/
+build*/
 .cache/
