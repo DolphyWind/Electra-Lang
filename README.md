@@ -156,6 +156,9 @@ Cloner, clones the value on top of the stack. It supports east, north, west and 
 ### **Constant Pusher (O)**
 Constant pusher, pushes a constant value to the stack. There is currently only one constant pusher and it pushes 0 to the stack. Supports all eight directions.
 
+### **Readers**
+Readers are components that can read user's input.
+
 #### **Reader Types** 
 >**Number Reader (@):** Supports east, northeast, north, northwest, west, southwest and south directions. Takes an input from user as number and pushes it to the stack.
 
