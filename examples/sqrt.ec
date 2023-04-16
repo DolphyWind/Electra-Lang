@@ -18,7 +18,7 @@
 
 
 ? The function "√" Calculates the squareroot of the first number on stack ?
-? Uses four stacks ?
+? Uses five stacks ?
 ? First one stores 10 ?
 ? Second one stores 1e-9 ?
 ? Third one stores 10000 and gets divided by 10 (first cell) time to time ?
