@@ -101,7 +101,7 @@ std::string std::to_string(const std::vector<Direction> &directions)
     for(std::size_t i = 0; i < directions.size(); i++)
     {
         result += std::to_string(directions[i]);
-        if(i == directions.size() - 1) result += ", ";
+        if(i != directions.size() - 1) result += ", ";
     }
     result += "}";
     return result;
