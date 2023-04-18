@@ -222,7 +222,7 @@ Supports all eight directions. Finishes the program execution.
 Every other character in Electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
 
 # Examples 
-Here's some example programs written in Electra:
+Here are some example programs written in Electra:
 
 ### **Hello World!**
 A program that prints the phrase "Hello World!" to the terminal screen.
