@@ -4,7 +4,7 @@
 
 # What is Electra?
 
-Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity.  
+Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity. [Here's](https://esolangs.org/wiki/Electra) the esolang wiki page if you are interested.  
 
 # How to get electra?
 
@@ -220,3 +220,134 @@ Supports all eight directions. Finishes the program execution.
 
 ### **Portals**
 Every other character in Electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
+
+# Examples 
+Here's some example programs written in Electra:
+
+### **Hello World!**
+A program that prints the phrase "Hello World!" to the terminal screen.
+```
+    >O    +-+     +-+     +-+                                     Q-PO
+     I    I I   #P+ I     I I                                     $  I
+     I +MPO I   I   I     O I                                     I  I +P
+     I I    I #M+   I     | $                                     I  I I
+     I I    I I     I   #P# QDDDDD#P+DDDO                         I  #M+
+     I O    I I     I   I               I    #PDDDDDD#PDDDDDDDD#PDO    
+     I |    I I     I   I               I    I
+     #M+    +-+     I   I               I    I
+                    ##PP+               $    I
+                                        +MP#P+
+```
+
+### **truth-machine**
+truth-machine, takes an input from user; halts if the input is zero, prints one indefinitely if the input is one. truth-machine is used to test any esolang (or any other programming languages) whether if it is capable of doing this four basic operations:
+1. Input
+2. Output
+3. Looping
+4. Termination
+```
+    >@
+    
+    +->--#N+
+    |      |
+    |      #
+    |      [
+    +------+
+```
+
+### **FizzBuzz** 
+A FizzBuzz program, starts to loop from 1 to N. For each number; prints "Fizz" if the number is divisible by 3, prints "Buzz" if the number is divisible by 5, prints "FizzBuzz" if the number is both divisible by 3 and 5. Prints the number if the number is not divisible by either 3 or 5.
+
+```
+    +-0-O         +-1-O         +-2-O     +-+  
+    |   I         |   I         |   I     D D  
+    |   I         |   I         |   I     D D  
+    |   I         |   I         |   I     D D  
+    |   I         P   I         |   I     D D     +---+
+    |   I        *    I         |   I     D D     I   I
+    |   I        |    I         |   I  #P-# D     I   #M+
+    |   I        A    I         |   I  I    D   +5O     I
+    |   I         *   I DM#--P  |   I  I    D   |       |
+    |   I         Q   I D   /   |   #M-+    D   +-----P-+
+    |   I #PP+    $   I D  *    |           D  
+    |   I I  |    I   #-+  #    |           A  
+    |   #M+  |    I        O    +------P---*   
+    |        |    +--------+    
+    +--------+ 
+    
+    +3-1-0-+ +4-2-0-+
+    |      | |      |
+    +------+ +------+
+    
+    >---O
+        I
+        I      ####MMMMP+
+        I      I        |
+        I      I        |
+        |      O        |
+        |      |        |
+        ##MMDDP+        |
+                        |
+        +---------------+
+        @
+        I
+        #
+        #
+        O
+    +>--~--+
+    |      I
+    |      $
+    |      S
+    |      ##-----+--+
+    |             [  ]
+    |             |  
+    |             |
+    |             |
+    |             |
+    |             |
+    |             $
+    |             S
+    |             $
+    |             #
+    |             #
+    |            #R
+    |            |
+    |            O
+    |            I
+    |            I
+    |            I *-#-+
+    |            $%  [ ]
+    |            *   | +-3+
+    |              +-+    |
+    |              |      |
+    |          +-O-#      |
+    |          I          |
+    |          I          |
+    |          I          |
+    |          I          |
+    |          I *-#-+    |
+    |          $%  [ ]    |
+    |          *   | |    |
+    |              | |    |
+    |            +N# |    |
+    |            U   |    |
+    |            +{--+    |
+    |            |        |
+    |            +----+   |
+    |                 U   |
+    |             +-O-#{--+
+    |             I
+    |             I
+    |             I
+    |             I
+    |             I *-#-+
+    |             $%  [ ]
+    |             *   | +-4+
+    |                 |    |
+    |                 U    |
+    |               +-+{---+
+    |               |
+    |               +-5+
+    |                  |
+    +------------------+
+```
