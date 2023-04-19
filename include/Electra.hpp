@@ -72,6 +72,7 @@ typedef std::vector<Direction> GeneratorData;
 
 class Electra
 {
+private:
     // Maps some chars to corresponding components.
     std::unordered_map<char_t, std::unique_ptr<Component>> m_components;
     
@@ -101,18 +102,24 @@ class Electra
     std::unordered_map<char_t, Position> m_portalMap;
 
     // Signal handling.
-    static bool isRunning;
     static void sigHandler(int signal);
 
     // Wstring converter
     static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> wstring_converter;
     
+protected:
+    Electra() {}
 public:
     /// @brief Parses command line arguments, and initializes component and generators.
     /// 
     /// @param argc Command line argument count
     /// @param argv Command line arguments
-    Electra(int argc, char* argv[]);
+    void initialize(int argc, char* argv[]);
+
+    // Delete the copy constructor
+    Electra(const Electra&) = delete;
+
+    static Electra &instance();
 
     /// @brief Clears components and generators
     ~Electra();

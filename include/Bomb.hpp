@@ -25,15 +25,14 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 #include <direction.hpp>
+#include <Electra.hpp>
 
 // Ends the program.
 class Bomb : public Cable
 {
-private:
-    bool* m_isRunningPtr;
 public:
-    Bomb(std::vector<Direction> directions, bool* isRunningPtr):
-        Cable(directions), m_isRunningPtr(isRunningPtr)
+    Bomb(std::vector<Direction> directions):
+        Cable(directions)
     {}
     ~Bomb() {};
 

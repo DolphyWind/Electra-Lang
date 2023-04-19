@@ -25,10 +25,9 @@ SOFTWARE.
 #include <Electra.hpp>
 #define _VARIADIC_MAX INT_MAX
 
-bool Electra::isRunning = true;
 std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> Electra::wstring_converter;
 
-Electra::Electra(int argc, char* argv[])
+void Electra::initialize(int argc, char* argv[])
 {
     // Get the current folder
     m_currentPath = fs::current_path();
@@ -245,7 +244,7 @@ Electra::Electra(int argc, char* argv[])
     m_components[L'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Initializes Bomb
-    m_components[L'o'] = std::make_unique<Bomb>( bin2dir(0b11111111), &isRunning );
+    m_components[L'o'] = std::make_unique<Bomb>( bin2dir(0b11111111));
 
     // Saves generator characters and their directions and toggler directions in a map
     m_generatorDataMap[L'>'] = bin2dir(0b00000001);
@@ -291,6 +290,12 @@ Electra::Electra(int argc, char* argv[])
     #endif
 }
 
+Electra &Electra::instance()
+{
+    static Electra m_instance;
+    return m_instance;
+}
+
 Electra::~Electra()
 {
     cleanup();
@@ -321,7 +326,7 @@ void Electra::mainLoop()
         createCurrents();
 
         tickCount ++;
-    }while (!m_currents.empty() && Electra::isRunning);
+    }while (!m_currents.empty());
 
     defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
@@ -333,6 +338,10 @@ void Electra::cleanup()
     m_generatorChars.clear();
     m_generators.clear();
     m_currents.clear();
+    m_filename.clear();
+    m_currentPath.clear();
+    m_sourceCode.clear();
+    m_includedParts.clear();
     m_deadCurrentIndexes.clear();
     m_newCurrents.clear();
     m_stacks.clear();
@@ -669,5 +678,5 @@ void Electra::createCurrents()
 
 void Electra::sigHandler(int signal)
 {
-    Electra::isRunning = false;
+    Electra::instance().safe_exit(0);
 }

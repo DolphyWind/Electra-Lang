@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 	std::wcin.imbue(std::locale(std::wcin.getloc(), new std::codecvt_utf8<char_t>));
 	#endif
 	std::wcout << std::setprecision(15);
-	Electra electra(argc, argv);
-	electra.run();
+
+	Electra::instance().initialize(argc, argv);
+	Electra::instance().run();
 	return 0;
 }
