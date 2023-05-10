@@ -22,20 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <Cable.hpp>
-#include <direction.hpp>
-#include <Electra.hpp>
 #include <SilentException.hpp>
 
-// Ends the program.
-class Bomb : public Cable
+SilentException::SilentException(int exit_code): m_exitCode(exit_code)
 {
-public:
-    Bomb(std::vector<Direction> directions):
-        Cable(directions)
-    {}
-    ~Bomb() {};
+}
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
-};
+int SilentException::getExitCode() const
+{
+    return m_exitCode;
+}

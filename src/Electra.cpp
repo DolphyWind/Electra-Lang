@@ -55,21 +55,21 @@ void Electra::initialize(int argc, char* argv[])
     {
         parser.printHelpMessage();
         defaultlogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
-        safe_exit(0);
+        throw SilentException();
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
         defaultlogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
-        safe_exit(0);
+        throw SilentException();
     }
     
     if(alone_args.size() == 0)
     {
         parser.printHelpMessage();
         defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
-        safe_exit(1);
+        throw SilentException(1);
     }
 
     std::string stack_count_str = string_map["stack-count"];
@@ -93,14 +93,16 @@ void Electra::initialize(int argc, char* argv[])
     catch (const std::invalid_argument &e)
     {
         defaultlogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
-        std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is invalid for stack-count.\n";
-        safe_exit(1);
+        std::stringstream ss;
+        ss << '\"' << stack_count_str << "\" is invalid for stack-count.";
+        throw std::runtime_error(ss.str());
     }
     catch (const std::out_of_range &e)
     {
         defaultlogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
-        std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is out of range for stack-count." << std::endl;
-        safe_exit(1);
+        std::stringstream ss;
+        ss << '\"' << stack_count_str << "\" is out of range for stack-count.";
+        throw std::runtime_error(ss.str());
     }
 
     // Parses --stack argument
@@ -110,9 +112,10 @@ void Electra::initialize(int argc, char* argv[])
     auto splitted_by_comma = Global::split(string_map["stack"], ",");
     if(splitted_by_comma.size() > m_stacks.size())
     {
-        std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
+        std::stringstream ss;
+        ss << "You've entered inital values for " << splitted_by_comma.size() << " stacks but stack count is " << m_stacks.size() << "!";
         defaultlogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
-        safe_exit(1);
+        throw std::runtime_error(ss.str());
     }
     for(auto &splitted : splitted_by_comma)
     {
@@ -127,14 +130,16 @@ void Electra::initialize(int argc, char* argv[])
             catch(const std::out_of_range &e)
             {
                 defaultlogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
-                std::wcerr << L"The value " << std::to_wstring(i) << L" is too big or small for var_t." << std::endl;
-                safe_exit(1);
+                std::stringstream ss;
+                ss << "The value " << i << " is too big or small for var_t.";
+                throw std::runtime_error(ss.str());
             }
             catch(const std::invalid_argument &e)
             {
                 defaultlogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
-                std::wcerr << L"Can\'t convert " << std::to_wstring(i) << L" to var_t." << std::endl;
-                safe_exit(1);
+                std::stringstream ss;
+                ss << "Can\'t convert " << i << " to var_t.";
+                throw std::runtime_error(ss.str());
             }
         }
         index ++;
@@ -298,7 +303,6 @@ Electra &Electra::instance()
 
 Electra::~Electra()
 {
-    cleanup();
 }
 
 void Electra::run()
@@ -331,37 +335,13 @@ void Electra::mainLoop()
     defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-void Electra::cleanup()
-{
-    m_components.clear();
-    m_generatorDataMap.clear();
-    m_generatorChars.clear();
-    m_generators.clear();
-    m_currents.clear();
-    m_filename.clear();
-    m_currentPath.clear();
-    m_sourceCode.clear();
-    m_includedParts.clear();
-    m_deadCurrentIndexes.clear();
-    m_newCurrents.clear();
-    m_stacks.clear();
-    m_portalMap.clear();
-}
-
-void Electra::safe_exit(int exit_code)
-{
-    cleanup();
-    std::exit(exit_code);
-}
-
 std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
 {
     // Start cannot be greater then the end
     if(start >= end)
     {
-        std::wcerr << L"Inclusion failed: Start index must be less than the end index." << std::endl;
         defaultlogger.log(LogType::ERROR, L"Inclusion failed: Start index must be less than the end index.");
-        safe_exit(1);
+        throw std::runtime_error("Inclusion failed: Start index must be less than the end index.");
     }
 
     if(!allow_reinclusion)
@@ -402,8 +382,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         if(fileData.find(L'\t') != std::string::npos) 
         {
             defaultlogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
-            std::wcerr << "Error while reading file: Source code contains tab!" << std::endl;
-            safe_exit(1);
+            throw std::runtime_error("Error while reading file: Source code contains tab!");
         }
 
         // Split by the new line and slice file according to given parameters
@@ -445,9 +424,10 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     }
                     catch (const std::exception &e)
                     {
-                        std::wcerr << L"Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
                         defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
-                        safe_exit(1);
+                        std::stringstream ss;
+                        ss << "Cannot convert \"" << wstring_converter.to_bytes(split_from_colon.at(0)) << "\" to a number.";
+                        throw std::runtime_error(ss.str());
                     }
 
                     try
@@ -457,9 +437,10 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     }
                     catch (const std::exception &e)
                     {
-                        std::wcerr << L"Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
                         defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
-                        safe_exit(1);
+                        std::stringstream ss;
+                        ss << "Cannot convert \"" << wstring_converter.to_bytes(split_from_colon.at(1)) << "\" to a number.";
+                        throw std::runtime_error(ss.str());
                     }
                 }
 
@@ -474,9 +455,10 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     }
     else
     {
-        std::wcerr << L"Cannot open \"" << filename << L"\"" << std::endl;
         defaultlogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
-        safe_exit(1);
+        std::stringstream ss;
+        ss << "Cannot open \"" << wstring_converter.to_bytes(filename) << "\"";
+        throw std::runtime_error(ss.str());
     }
 
     return contents;
@@ -678,5 +660,5 @@ void Electra::createCurrents()
 
 void Electra::sigHandler(int signal)
 {
-    Electra::instance().safe_exit(0);
+    throw SilentException();
 }

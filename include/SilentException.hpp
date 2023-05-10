@@ -23,19 +23,13 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Cable.hpp>
-#include <direction.hpp>
-#include <Electra.hpp>
-#include <SilentException.hpp>
 
-// Ends the program.
-class Bomb : public Cable
+// Does absolutely nothing. Gets thrown to safely end the program.
+class SilentException
 {
+private:
+    int m_exitCode;
 public:
-    Bomb(std::vector<Direction> directions):
-        Cable(directions)
-    {}
-    ~Bomb() {};
-
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    SilentException(int exit_code=0);
+    int getExitCode() const;
 };

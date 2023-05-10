@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include <Current.hpp>
 #include <Component.hpp>
 #include <Generator.hpp>
@@ -153,12 +154,6 @@ public:
     /// - Remove marked currents
     /// - Create new currents
     void mainLoop();
-
-    /// @brief cleans up maps, vectors etc.
-    void cleanup();
-
-    /// @brief Safely exits the program
-    void safe_exit(int exit_code);
 
     // Methods for mainLoop() method.
     void moveCurrents();
