@@ -26,7 +26,6 @@ SOFTWARE.
 #include <Cable.hpp>
 #include <direction.hpp>
 #include <Electra.hpp>
-#include <SilentException.hpp>
 
 // Ends the program.
 class Bomb : public Cable

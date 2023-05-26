@@ -47,25 +47,7 @@ int main(int argc, char *argv[])
 	#endif
 	std::wcout << std::setprecision(15);
 
-	try
-	{
-		Electra::instance().initialize(argc, argv);
-		Electra::instance().run();
-	}
-	catch (const SilentException& be)
-	{
-		// Just end the program
-		return be.getExitCode();
-	}
-	catch (const std::runtime_error &re)
-	{
-		std::wcerr << L"Error: " << re.what() << std::endl;
-		return EXIT_FAILURE;
-	}
-	catch (const std::exception &e)
-	{
-		std::wcerr << L"An unexpected error has occured: " << e.what() << std::endl;
-		return EXIT_FAILURE;
-	}
-	return EXIT_SUCCESS;
+	Electra::instance().initialize(argc, argv);
+	Electra::instance().run();
+	return 0;
 }
