@@ -298,7 +298,7 @@ Electra &Electra::instance()
 
 Electra::~Electra()
 {
-    cleanup();
+    
 }
 
 void Electra::run()
@@ -331,26 +331,8 @@ void Electra::mainLoop()
     defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-void Electra::cleanup()
-{
-    m_components.clear();
-    m_generatorDataMap.clear();
-    m_generatorChars.clear();
-    m_generators.clear();
-    m_currents.clear();
-    m_filename.clear();
-    m_currentPath.clear();
-    m_sourceCode.clear();
-    m_includedParts.clear();
-    m_deadCurrentIndexes.clear();
-    m_newCurrents.clear();
-    m_stacks.clear();
-    m_portalMap.clear();
-}
-
 void Electra::safe_exit(int exit_code)
 {
-    cleanup();
     std::exit(exit_code);
 }
 

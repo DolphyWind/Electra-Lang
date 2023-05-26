@@ -154,9 +154,6 @@ public:
     /// - Create new currents
     void mainLoop();
 
-    /// @brief cleans up maps, vectors etc.
-    void cleanup();
-
     /// @brief Safely exits the program
     void safe_exit(int exit_code);
 
