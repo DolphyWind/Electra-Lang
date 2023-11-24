@@ -32,6 +32,7 @@ typedef double var_t;
 typedef std::stack<var_t>* StackPtr;
 typedef wchar_t char_t;
 
+class Electra;
 namespace Global
 {
     // Pops the top value of stack. Returns defaultValue if there is no item.
@@ -51,6 +52,8 @@ namespace Global
 
     // Replaces "lookFor" with "replaceWith" in "originalStr"
     std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
+
+    void safe_exit(int exit_code, int sig_code=-1);
 
     // Empty struct
     struct Empty{};

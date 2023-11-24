@@ -29,6 +29,6 @@ bool Bomb::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(!Component::work(current, currentVector))
         return false;
     
-    Electra::instance().safe_exit(0);
+    Global::safe_exit(0);
     return Cable::work(current, currentVector);
 }

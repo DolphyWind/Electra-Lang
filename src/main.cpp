@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	#endif
 	std::wcout << std::setprecision(15);
 
-	Electra::instance().initialize(argc, argv);
-	Electra::instance().run();
+	Electra electraInterpreter(argc, argv);
+	electraInterpreter.run();
 	return 0;
 }

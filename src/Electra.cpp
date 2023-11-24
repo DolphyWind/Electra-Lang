@@ -27,7 +27,7 @@ SOFTWARE.
 
 std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> Electra::wstring_converter;
 
-void Electra::initialize(int argc, char* argv[])
+Electra::Electra(int argc, char** argv)
 {
     // Get the current folder
     m_currentPath = fs::current_path();
@@ -55,21 +55,21 @@ void Electra::initialize(int argc, char* argv[])
     {
         parser.printHelpMessage();
         defaultlogger.log(LogType::INFO, L"Printed help message. Exiting with code 0.");
-        safe_exit(0);
+        Global::safe_exit(0);
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
         defaultlogger.log(LogType::INFO, L"Printed current version of electra. Exiting with code 0.");
-        safe_exit(0);
+        Global::safe_exit(0);
     }
     
     if(alone_args.size() == 0)
     {
         parser.printHelpMessage();
         defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
-        safe_exit(1);
+        Global::safe_exit(1);
     }
 
     std::string stack_count_str = string_map["stack-count"];
@@ -94,13 +94,13 @@ void Electra::initialize(int argc, char* argv[])
     {
         defaultlogger.log(LogType::ERROR, L"\"{}\" is invalid for stack-count.\n");
         std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is invalid for stack-count.\n";
-        safe_exit(1);
+        Global::safe_exit(1);
     }
     catch (const std::out_of_range &e)
     {
         defaultlogger.log(LogType::ERROR, L"\"{}\" is out of range for stack-count.", stack_count_str);
         std::wcerr << L'\"' << std::to_wstring(stack_count_str) << L"\" is out of range for stack-count." << std::endl;
-        safe_exit(1);
+        Global::safe_exit(1);
     }
 
     // Parses --stack argument
@@ -112,7 +112,7 @@ void Electra::initialize(int argc, char* argv[])
     {
         std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
         defaultlogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
-        safe_exit(1);
+        Global::safe_exit(1);
     }
     for(auto &splitted : splitted_by_comma)
     {
@@ -128,13 +128,13 @@ void Electra::initialize(int argc, char* argv[])
             {
                 defaultlogger.log(LogType::ERROR, L"The value {} is too big or small for var_t.", i);
                 std::wcerr << L"The value " << std::to_wstring(i) << L" is too big or small for var_t." << std::endl;
-                safe_exit(1);
+                Global::safe_exit(1);
             }
             catch(const std::invalid_argument &e)
             {
                 defaultlogger.log(LogType::ERROR, L"Can\'t convert {} to var_t.", i);
                 std::wcerr << L"Can\'t convert " << std::to_wstring(i) << L" to var_t." << std::endl;
-                safe_exit(1);
+                Global::safe_exit(1);
             }
         }
         index ++;
@@ -290,17 +290,6 @@ void Electra::initialize(int argc, char* argv[])
     #endif
 }
 
-Electra &Electra::instance()
-{
-    static Electra m_instance;
-    return m_instance;
-}
-
-Electra::~Electra()
-{
-    
-}
-
 void Electra::run()
 {
     m_sourceCode = includeFile(m_currentPath, Electra::wstring_converter.from_bytes(m_filename));
@@ -331,11 +320,6 @@ void Electra::mainLoop()
     defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-void Electra::safe_exit(int exit_code)
-{
-    std::exit(exit_code);
-}
-
 std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
 {
     // Start cannot be greater then the end
@@ -343,7 +327,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     {
         std::wcerr << L"Inclusion failed: Start index must be less than the end index." << std::endl;
         defaultlogger.log(LogType::ERROR, L"Inclusion failed: Start index must be less than the end index.");
-        safe_exit(1);
+        Global::safe_exit(1);
     }
 
     if(!allow_reinclusion)
@@ -385,7 +369,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         {
             defaultlogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
             std::wcerr << "Error while reading file: Source code contains tab!" << std::endl;
-            safe_exit(1);
+            Global::safe_exit(1);
         }
 
         // Split by the new line and slice file according to given parameters
@@ -429,7 +413,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
                         defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(0));
-                        safe_exit(1);
+                        Global::safe_exit(1);
                     }
 
                     try
@@ -441,7 +425,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                     {
                         std::wcerr << L"Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
                         defaultlogger.log(LogType::ERROR, L"Cannot convert \"{}\" to a number.", split_from_colon.at(1));
-                        safe_exit(1);
+                        Global::safe_exit(1);
                     }
                 }
 
@@ -458,7 +442,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
     {
         std::wcerr << L"Cannot open \"" << filename << L"\"" << std::endl;
         defaultlogger.log(LogType::ERROR, L"Cannot open \"{}\". Exiting with code 1.", filename);
-        safe_exit(1);
+        Global::safe_exit(1);
     }
 
     return contents;
@@ -660,5 +644,5 @@ void Electra::createCurrents()
 
 void Electra::sigHandler(int signal)
 {
-    Electra::instance().safe_exit(0);
+    Global::safe_exit(1, signal);
 }

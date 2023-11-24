@@ -34,12 +34,27 @@ SOFTWARE.
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include <Logger.hpp>
 #include <tuple>
-#include <Printer.hpp>
 #include <stack>
-#include <ArithmeticalUnit.hpp>
 #include <cmath>
+#include <csignal>
+#include <regex>
+#include <codecvt>
+#include <stdexcept>
+#include <cstring>
+#if __has_include(<filesystem>)
+  #include <filesystem>
+  namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+  #include <experimental/filesystem> 
+  namespace fs = std::experimental::filesystem;
+#else
+  #error "Missing the <filesystem> header."
+#endif
+
+#include <Logger.hpp>
+#include <Printer.hpp>
+#include <ArithmeticalUnit.hpp>
 #include <ConstantAdder.hpp>
 #include <Cloner.hpp>
 #include <ConstantPusher.hpp>
@@ -54,19 +69,6 @@ SOFTWARE.
 #include <Reader.hpp>
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
-#include <csignal>
-#include <regex>
-#include <codecvt>
-#include <stdexcept>
-#if __has_include(<filesystem>)
-  #include <filesystem>
-  namespace fs = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-  #include <experimental/filesystem> 
-  namespace fs = std::experimental::filesystem;
-#else
-  #error "Missing the <filesystem> header."
-#endif
 
 typedef std::vector<Direction> GeneratorData;
 
@@ -107,24 +109,17 @@ private:
     // Wstring converter
     static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> wstring_converter;
     
-protected:
-    Electra() {}
 public:
+
     /// @brief Parses command line arguments, and initializes component and generators.
     /// 
     /// @param argc Command line argument count
     /// @param argv Command line arguments
-    void initialize(int argc, char* argv[]);
+    Electra(int argc, char** argv);
 
-    // Delete the copy constructor
-    Electra(const Electra&) = delete;
+    ~Electra() = default;
 
-    static Electra &instance();
-
-    /// @brief Clears components and generators
-    ~Electra();
-
-    /// @brief Runs the electra
+    /// @brief Runs the electra code.
     void run();
 
     /// @brief Recursively includes a file. 
@@ -153,9 +148,6 @@ public:
     /// - Remove marked currents
     /// - Create new currents
     void mainLoop();
-
-    /// @brief Safely exits the program
-    void safe_exit(int exit_code);
 
     // Methods for mainLoop() method.
     void moveCurrents();
