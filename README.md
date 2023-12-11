@@ -53,7 +53,7 @@ make
 
 # How Electra works?
 
-Electra has Currents, Generators and Components. Currents are instruction pointers that acts like the currents in electricity, Generators generate currents and Components interperate currents to make code function. Electra uses list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of interpreter. Every current has its own stack pointer. That way doing some manuplations to different stacks at the same time is possible. Electra also supports commenting your code in line and including other code files. To comment a portion of your code, use question marks ? like this ? (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes: "file.ec" x:y. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: "!file.ec" x:y. But use this with caution.
+Electra has Currents, Generators and Components. Currents are instruction pointers that acts like the currents in electricity, Generators generate currents and Components interpret currents to make code function. Electra uses list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of the Electra interpreter. Every current has its own stack pointer. That way doing some maniplations to different stacks at the same time is possible. Electra also supports commenting your code in line and including other files. To comment a portion of your code, use question marks `? like this ?` (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes: `"file.ec" x:y`. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: `"!file.ec" x:y`. But remember to use this with caution.
 
 ## **Currents**
 Currents are instruction pointers in Electra. They call `work()` function of the component that they are on. They hold a pointer to a stack and a component's `work()` function uses that stack if it does some stack operations. A `work()` function returns a boolean value. If it is false current gets killed.
@@ -121,12 +121,12 @@ The regular four directional cable (+) has a current that is coming from west he
 >**Other Cables (╰, └, ╯, ┘, ╭, ┌, ┐, ╮, ├ ,┤ ,┬ ,┴):** These cables are not special they just have no name. They flow current based on how they look like.
 
 ### **Printers**
-Printers lets Electra print out the variables in the stack. They can print a variable either as a number or a character.
+Printers print out the variables on the stack. They can print a variable either as a number or as a character.
 
 #### **Printer Types**
 >**Number Printer (N):** Supports east, northeast, northwest, west, southwest and southeast directions. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
 
->**Character Printer (P):** Supports east, northeast, north, northwest, west, and southwest directions. Pops the top value off the stack, converts it to char_t and prints it as a character. If the stack is empty it does nothing.
+>**Character Printer (P):** Supports east, northeast, north, northwest, west, and southwest directions. Pops the top value off the stack and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units**
 Arithmetical units lets Electra do arithmetical calculations. If there is less than two values on the stack they do nothing.
@@ -165,10 +165,10 @@ Readers are components that can read user's input.
 >**Character Reader (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as chaacter and converts it to number. Then pushes it to the stack.
 
 ### **Swapper ($)**
-Swapper, swaps the top two vale on the stack. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
+Swapper, swaps the top two values on the stack. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
 
 ### **Conditional Units**
-Conditional units, kills or spares currents based on the value on top of the stack. They do nothing if the stack is empty.
+Conditional units, kill the current or let it flow based on the value on top of the stack. They do nothing if the stack is empty.
 
 #### **Conditional Unit Types**
 >**Equals Conditional Unit (]):** Supports north and south directions. Pops the top value off the stack. Lets the current flow if the top value is equals zero.
@@ -184,20 +184,20 @@ Conditional units, kills or spares currents based on the value on top of the sta
 >**Not Less Than Conditional Unit (l):** Supports north and south directions. Pops the top value off the stack. Lets the current flow if the top value is not less than zero.
 
 ### **Stack Checkers**
-Stack checker checks the stack if empty or not. 
+Stack checkers, check whether the current stack is empty or not. 
 
 >**Regular Stack Checker( ( ):** Supports north and south directions. Lets the current flow if the stack is empty.
 
->**Regular Stack Checker( ) ):** Supports north and south directions. Lets the current flow if the stack is not empty.
+>**Inverted Stack Checker( ) ):** Supports north and south directions. Lets the current flow if the stack is not empty.
 
 ### **Stack Switchers**
-Stack switcher moves current's stack pointer forwards or backwards in a list. Some of them pops the top value and moves it to next stack.
+Stack switchers move the current's stack pointer forwards or backwards. Some of them pops the top value and moves it to next stack.
 
 >**Forward Stack Switcher (F):** Supports east, northeast, north, northwest, west and southwest directions. Moves current's stack pointer forward. Does not move top value to the next stack.
 
 >**Forward Moving Stack Switcher (f):** Supports east, northeast, north, west and south directions. Moves current's stack pointer forward. Does move top value to the next stack if stack is not empty.
 
->**Forward Stack Switcher (B):** Supports northeast, north, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does not move top value to the next stack.
+>**Backward Stack Switcher (B):** Supports northeast, north, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does not move top value to the next stack.
 
 >**Backward Moving Stack Switcher (b):** Supports east, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does move top value to the next stack if stack is not empty.
 
@@ -219,7 +219,7 @@ Supports all eight directions. Eraser, erases the top value from the stack.
 Supports all eight directions. Finishes the program execution.
 
 ### **Portals**
-Every other character in Electra is considered as a portal. Portals support all eight directions. Portals are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects to portal that the current last used (the portal that teleported current to the original portal). If there is no last used portal, flowing a current on original portal does nothing. I chose this behaviour because It was closest I can get to a function-like behaviour.
+Every other character in Electra is considered as a portal. Portals support all eight directions. They are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects back to the portal that teleported current to the original portal. If there is no last used portal, flowing a current on original portal does nothing. Think of them as the functions in Electra.
 
 # Examples 
 Here are some example programs written in Electra:
