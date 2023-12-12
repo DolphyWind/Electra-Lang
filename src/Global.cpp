@@ -104,12 +104,9 @@ namespace Global
         return originalStr.replace(pos, lookFor.length(), replaceWith);
     }
 
-    void safe_exit(int exit_code, int sig_code)
+    void safe_exit(int exit_code)
     {
-        if(sig_code != -1)
-        {
-            defaultlogger.log(LogType::ERROR, L"Got signal {}. Exiting...", ::strsignal(sig_code));
-        }
+        // There used to be code here
 
         std::exit(exit_code);
     }

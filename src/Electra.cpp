@@ -644,5 +644,5 @@ void Electra::createCurrents()
 
 void Electra::sigHandler(int signal)
 {
-    Global::safe_exit(1, signal);
+    Global::safe_exit(1);
 }

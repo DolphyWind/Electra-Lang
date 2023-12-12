@@ -53,7 +53,7 @@ namespace Global
     // Replaces "lookFor" with "replaceWith" in "originalStr"
     std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
 
-    void safe_exit(int exit_code, int sig_code=-1);
+    void safe_exit(int exit_code);
 
     // Empty struct
     struct Empty{};
