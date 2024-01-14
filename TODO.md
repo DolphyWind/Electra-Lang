@@ -1,6 +1,12 @@
-# Electra 2.0
-
-+ [] I might write Electra standard library or something like that if I have lots of free time
+# Electra 2.1
 + [] File I/O
-+ [] Performance Improvements
-+ [] Loading components from dlls. Like how lua does it
++ [] Complete rewrite of I/O stuff. (For MSVC support)
+
+# Electra 2.2
++ [] Loading components from shared libraries. Like how lua does it
+
+# Future Plans
++ [] Electra standard library
++ [] Performance Improvements to brainfuck interpreter
++ [] Test gmpxx's floats. Do some benchmarking and if it is suitable, use them to be able to store big numbers.
++ [] Modify README.md move implementation details at the bottom of the file

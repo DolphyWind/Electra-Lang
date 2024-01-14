@@ -4,7 +4,7 @@
 
 # What is Electra?
 
-Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that acts like currents in electricity. [Here's](https://esolangs.org/wiki/Electra) the esolang wiki page if you are interested.  
+Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that act like currents in electricity. [Here's](https://esolangs.org/wiki/Electra) the esolang wiki page if you are interested.  
 
 # How to get electra?
 
@@ -53,13 +53,15 @@ make
 
 # How Electra works?
 
-Electra has Currents, Generators and Components. Currents are instruction pointers that acts like the currents in electricity, Generators generate currents and Components interpret currents to make code function. Electra uses list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of the Electra interpreter. Every current has its own stack pointer. That way doing some maniplations to different stacks at the same time is possible. Electra also supports commenting your code in line and including other files. To comment a portion of your code, use question marks `? like this ?` (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes: `"file.ec" x:y`. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: `"!file.ec" x:y`. But remember to use this with caution.
+Electra has Currents, Generators and Components. Currents are instruction pointers that act like the currents in electricity, Generators generate currents and Components interpret currents to give Electra its functionality. Electra uses a list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of the Electra interpreter. Every current has its own stack pointer. That way, doing some manipulations to different stacks at the same time is possible (although it can be pretty confusing and unreliable). 
+
+Electra also supports commenting out your code inline and including other files. To add a comment to your code, use question marks `? like this ?` (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes and optionally, specify a range: `"file.ec" x:y`. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: `"!file.ec" x:y`. But remember to use this with caution.
 
 ## **Currents**
 Currents are instruction pointers in Electra. They call `work()` function of the component that they are on. They hold a pointer to a stack and a component's `work()` function uses that stack if it does some stack operations. A `work()` function returns a boolean value. If it is false current gets killed.
 
 ## **Generators**
-Generators generate currents at the beginning of the program and become unused after that. They generate current based on how they look like. To make looping easier, generators also lets current flowing on them. They support the direction in which they generate current and its opposite.
+Generators generate currents at the beginning of the program and do nothing after. They generate current based on the direction that they are facing. To make looping easier, generators also let currents flowing on them. They support the direction in which they generate current and its opposite.
 
 #### **Generator Types**
 >**East Generator (>, →):** Generates a current with east direction.
@@ -83,10 +85,10 @@ Generators generate currents at the beginning of the program and become unused a
 >**Vertical Bidirectional Generator (↕):** Generates two currents with north and south directions.
 
 ## **Components**
-Components are the elements that gives Electra its functionality. Each component has its own job and can generate or kill existing currents. Each component except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from Component class). And Cable class always calls `Component::work()` and immidiately returns false if it returns false thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false otherwise. 
+Components are the elements that give Electra its functionality. Each component has its own job and can generate or kill existing currents. Each component, except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from the Component class). And Cable class always calls `Component::work()` and immidiately returns false if `Component::work()` returns false, thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false otherwise. 
 
 ### **Cables**
-Cables are the simplest components of the Electra and every component except portals inherits from them. Some cables also clone currents.
+Cables are the simplest components of Electra and every component except portals inherits from them. Some cables also clone currents.
 
 For example:
 
