@@ -34,9 +34,10 @@ SOFTWARE.
 // Clones the currents if the cable is multi-directional.
 class Cable : public Component
 {
-bool m_is_one_directional = false;
 public:
-    Cable(std::vector<Direction> directions, bool is_one_directional=false) : Component(directions), m_is_one_directional(is_one_directional) {};
-    ~Cable() {};
+    explicit Cable(const std::vector<Direction>& directions, bool is_one_directional=false);
+    ~Cable() = default;
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    bool m_is_one_directional = false;
 };

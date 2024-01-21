@@ -27,18 +27,20 @@ SOFTWARE.
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <thirdparty/utf8.h>
 
 typedef double var_t;
 typedef std::stack<var_t>* StackPtr;
 typedef wchar_t char_t;
+typedef std::string string_t;
 
 class Electra;
 namespace Global
 {
-    // Pops the top value of stack. Returns defaultValue if there is no item.
+    // Pops the top value from the given stack. Returns defaultValue if the stack is empty.
     var_t popStack(StackPtr stack, var_t defaultValue = 0);
 
-    // Removes unnecessery zeros in the mantissa
+    // Removes unnecessary zeros in the mantissa
     std::wstring format_variable(var_t variable);
 
     // Removes spaces from wstring

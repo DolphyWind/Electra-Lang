@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Generator.hpp>
 
+Generator::Generator(const std::vector<Direction>& directions, Position position):
+    m_directions(directions), m_position(position)
+{}
+
 void Generator::generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr)
 {
     for(auto& dir : m_directions)
@@ -33,11 +37,16 @@ void Generator::generate(std::vector<CurrentPtr> *currentVector, StackPtr stackP
         Position resultPos = m_position + deltaPos;
 
         currentVector->push_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultlogger.log(LogType::INFO, L"Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        defaultlogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
     }
 }
 
-std::vector<Direction> Generator::getDirections()
+const std::vector<Direction>& Generator::getDirections() const
+{
+    return m_directions;
+}
+
+std::vector<Direction>& Generator::getDirections()
 {
     return m_directions;
 }

@@ -24,6 +24,11 @@ SOFTWARE.
 
 #include <ConditionalUnit.hpp>
 
+ConditionalUnit::ConditionalUnit(const std::vector<Direction>& directions, var_t targetValue, bool isInverted,
+                                 bool checkEqual, bool checkLess, bool checkGreater):
+    Cable(directions), m_targetValue(targetValue), m_inverted(isInverted), m_checkEqual(checkEqual), m_checkLess(checkLess), m_checkGreater(checkGreater)
+{}
+
 bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -37,8 +42,8 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
     result = result && (m_checkEqual ? (top == m_targetValue) : true);
     result = result && (m_checkLess ? (top < m_targetValue) : true);
     result = result && (m_checkGreater ? (top > m_targetValue) : true);
-    result = (m_invert ? !result : result);
+    result = (m_inverted ? !result : result);
 
-    defaultlogger.log(LogType::INFO, L"(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_invert, m_checkEqual, m_checkLess, m_checkGreater);
+    defaultlogger.log(LogType::INFO, "(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_invert, m_checkEqual, m_checkLess, m_checkGreater);
     return result && Cable::work(current, currentVector);
 }

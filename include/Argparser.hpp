@@ -35,6 +35,7 @@ SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include <Logger.hpp>
+#include <string_conversions.hpp>
 
 // Simple argument parser
 // Parses arguments into three categories:
@@ -58,7 +59,7 @@ private:
     std::vector<std::string> m_aloneArguments;
 
 public:
-    Argparser(int argc, char *argv[]);
+    Argparser(int argc, char **argv);
     
     std::wstring_view binary_name;
     std::wstring_view program_name;

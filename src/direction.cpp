@@ -24,24 +24,32 @@ SOFTWARE.
 
 #include <direction.hpp>
 
-bool Position::operator==(Position& right)
+Position::Position():
+    x(0), y(0)
+{}
+
+Position::Position(int _x, int _y):
+    x(_x), y(_y)
+{}
+
+bool Position::operator==(Position& right) const
 {
     return this->x == right.x && this->y == right.y;
 }
 
-bool Position::operator!=(Position& right)
+bool Position::operator!=(Position& right) const
 {
     return !operator==(right);
 }
 
-Position Position::operator+(const Position& right)
+Position Position::operator+(const Position& right) const
 {
     return {this->x + right.x, this->y + right.y};
 }
 
 Position directionToPosition(const Direction &direction)
 {
-    // -1 on y coordinate mean up since the origin of the array is on the top left corner.
+    // negative y value means up
 
     switch (direction)
     {
@@ -78,9 +86,11 @@ Position directionToPosition(const Direction &direction)
 
 Direction invertDirection(const Direction &direction)
 {
-    if(direction == Direction::NONE) return Direction::NONE;
-    int dirAsInt = (int)direction;
-    return (Direction)((dirAsInt + 4) % 8);
+    if(direction == Direction::NONE) {
+        return Direction::NONE;
+    }
+    int dirAsInt = static_cast<int>(direction);
+    return static_cast<Direction>((dirAsInt + 4) & 0b111); // Add 4 and take mod 8
 }
 
 std::vector<Direction> bin2dir(std::size_t num)
@@ -89,7 +99,11 @@ std::vector<Direction> bin2dir(std::size_t num)
     std::size_t index = 0;
     while(num)
     {
-        if(num & 0x1) output.push_back((Direction)index);
+        if(num & 0x1)
+        {
+            output.push_back(static_cast<Direction>(index));
+        }
+
         num >>= 1;
         index ++;
     }

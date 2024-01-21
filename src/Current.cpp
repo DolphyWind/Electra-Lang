@@ -24,9 +24,37 @@ SOFTWARE.
 
 #include <Current.hpp>
 
+Current::Current(Direction direction):
+    m_direction(direction)
+{}
+
+Current::Current(Direction direction, Position position, StackPtr stackPtr):
+    m_position(position), m_direction(direction), stackPtr(stackPtr)
+{}
+
 void Current::iterate()
 {
     m_position = m_position + directionToPosition(m_direction);
+}
+
+void Current::setDirection(Direction direction)
+{
+    m_direction = direction;
+}
+
+Direction Current::getDirection()
+{
+    return m_direction;
+}
+
+void Current::setPosition(Position position)
+{
+    m_position = position;
+}
+
+Position Current::getPosition()
+{
+    return m_position;
 }
 
 void Current::addVisitedPortal(Position position)
@@ -41,4 +69,19 @@ std::optional<Position> Current::popLastPortal()
     Position top = m_visitedPortalStack.top();
     m_visitedPortalStack.pop();
     return top;
+}
+
+void Current::setPortalStack(const std::stack<Position>& stack)
+{
+    m_visitedPortalStack = stack;
+}
+
+const std::stack<Position>& Current::getPortalStack() const
+{
+    return m_visitedPortalStack;
+}
+
+std::stack<Position>& Current::getPortalStack()
+{
+    return m_visitedPortalStack;
 }

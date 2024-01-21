@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Printer.hpp>
 
+Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
+    Cable(directions), m_printAsChar(printAsChar)
+{}
+
 bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -35,12 +39,12 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(m_printAsChar)
     {
         std::wcout << (char_t)top << std::flush;
-        defaultlogger.log(LogType::INFO, L"Printed {} to screen.", std::wstring(1, (char_t)top));
+        defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::wstring(1, (char_t)top));
     }
     else
     {
         std::wcout << Global::format_variable(top) << std::flush;
-        defaultlogger.log(LogType::INFO, L"Printed {} to screen.", top);
+        defaultlogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     
     return Cable::work(current, currentVector);

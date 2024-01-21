@@ -43,18 +43,20 @@ struct Position
 {
     int x = 0;
     int y = 0;
-    
-    Position(int _x = 0, int _y = 0): x(_x), y(_y) {};
-    bool operator==(Position& right);
-    bool operator!=(Position& right);
-    Position operator+(const Position &right);
+
+    Position();
+    Position(int _x, int _y);
+
+    bool operator==(Position& right) const;
+    bool operator!=(Position& right) const;
+    Position operator+(const Position &right) const;
 };
 
-// Converts direction to position
+// Converts a direction to a position
 Position directionToPosition(const Direction &direction);
 
 // Inverts the given direction
 Direction invertDirection(const Direction &direction);
 
-// Converts any number to vector direction
+// Converts any number to a vector of directions
 std::vector<Direction> bin2dir(std::size_t num);

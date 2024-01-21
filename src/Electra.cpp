@@ -23,9 +23,10 @@ SOFTWARE.
 */
 
 #include <Electra.hpp>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 #define _VARIADIC_MAX INT_MAX
-
-std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> Electra::wstring_converter;
 
 Electra::Electra(int argc, char** argv)
 {
@@ -65,7 +66,7 @@ Electra::Electra(int argc, char** argv)
         Global::safe_exit(0);
     }
     
-    if(alone_args.size() == 0)
+    if(alone_args.empty())
     {
         parser.printHelpMessage();
         defaultlogger.log(LogType::INFO, L"No arguments specified. Printing help message. Exiting with code 1.");
@@ -87,7 +88,7 @@ Electra::Electra(int argc, char** argv)
         m_stacks.reserve(stack_count);
         for(std::size_t i = 0; i < stack_count; i++)
         {
-            m_stacks.push_back({});
+            m_stacks.emplace_back();
         }
     }
     catch (const std::invalid_argument &e)
@@ -110,8 +111,8 @@ Electra::Electra(int argc, char** argv)
     auto splitted_by_comma = Global::split(string_map["stack"], ",");
     if(splitted_by_comma.size() > m_stacks.size())
     {
-        std::wcerr << L"You entered inital values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
-        defaultlogger.log(LogType::ERROR, L"You entered inital values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
+        std::wcerr << L"You entered initial values for " << splitted_by_comma.size() << L" stacks but stack count is " << m_stacks.size() << L"!" << std::endl;
+        defaultlogger.log(LogType::ERROR, L"You entered initial values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
         Global::safe_exit(1);
     }
     for(auto &splitted : splitted_by_comma)
@@ -266,10 +267,12 @@ Electra::Electra(int argc, char** argv)
     m_generatorDataMap[L'↙'] = bin2dir(0b00100000);
     m_generatorDataMap[L'↘'] = bin2dir(0b10000000);
     
-    // Saves generator chars seperately
+    // Saves generator chars separately
     for(auto &p : m_generatorDataMap)
+    {
         m_generatorChars.push_back(p.first);
-    
+    }
+
     #ifdef SIGTERM
     signal(SIGTERM, &Electra::sigHandler);
     #endif
@@ -292,7 +295,7 @@ Electra::Electra(int argc, char** argv)
 
 void Electra::run()
 {
-    m_sourceCode = includeFile(m_currentPath, Electra::wstring_converter.from_bytes(m_filename));
+    m_sourceCode = includeFile(m_currentPath, m_filename);
     m_sourceCode = removeComments(std::move(m_sourceCode));
     createGenerators();
     createPortals();
@@ -308,8 +311,8 @@ void Electra::mainLoop()
     do
     {
         defaultlogger.log(LogType::INFO, L"Tick: {}", tickCount);
-        
-        interpreteCurrents();
+
+        interpretCurrents();
         moveCurrents();
         removeCurrents();    
         createCurrents();
@@ -320,13 +323,13 @@ void Electra::mainLoop()
     defaultlogger.log(LogType::INFO, L"Program finished. Total ticks: {}", tickCount);
 }
 
-std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
+std::vector<string_t> Electra::includeFile(fs::path currentPath, const string_t& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
 {
-    // Start cannot be greater then the end
+    // Start cannot be greater than the end
     if(start >= end)
     {
-        std::wcerr << L"Inclusion failed: Start index must be less than the end index." << std::endl;
-        defaultlogger.log(LogType::ERROR, L"Inclusion failed: Start index must be less than the end index.");
+        std::cerr << "Inclusion failed: Start line number has to be less than the end line number." << std::endl;
+        defaultlogger.log(LogType::ERROR, "Inclusion failed: Start line number has to be less than the end line number.");
         Global::safe_exit(1);
     }
 
@@ -335,11 +338,11 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         std::wstring total_path = (currentPath / filename).wstring();
         if(m_includedParts.find(total_path) != m_includedParts.end())
         {
-            // Check if reinclusion happened
+            // Check if a re-inclusion has happened
             auto &range = m_includedParts[total_path];
             if( (range.first <= start && start < range.second) || (range.first <= end - 1 && end - 1 < range.second))
             {
-                defaultlogger.log(LogType::WARNING, L"Prevented reincluding {}. Please pass --allow-reinclusion as command line argument to enable reinclusion.", total_path);
+                defaultlogger.log(LogType::WARNING, "Prevented re-including {}. Please pass --allow-reinclusion as command line argument to enable re-inclusion.", total_path);
                 return {};
             }
         }
@@ -348,8 +351,9 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
 
     // Start reading source code
     std::vector<std::wstring> contents;
-    defaultlogger.log(LogType::INFO, L"Reading \"{}\".", filename);
+    defaultlogger.log(LogType::INFO, "Reading \"{}\".", filename);
     currentPath /= filename;
+
     std::wifstream file(currentPath);
     currentPath = currentPath.parent_path();
     
@@ -364,7 +368,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         fileData = wss.str();
         file.close();
 
-        // If there is tab character exit immidiately since tabsize may vary editor to editor
+        // If there is tab character exit immediately since tabsize may vary editor to editor
         if(fileData.find(L'\t') != std::string::npos) 
         {
             defaultlogger.log(LogType::ERROR, L"Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
@@ -381,7 +385,7 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
         // Include other files if there is any
         std::wregex include_pattern(L"\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
         std::wsmatch match; 
-        for(std::size_t i = contents.size() - 1; i >= 0 && i != std::wstring::npos; i--)
+        for(std::size_t i = contents.size() - 1; true; i--)
         {
             if(std::regex_search(contents[i], match, include_pattern))
             {
@@ -436,6 +440,8 @@ std::vector<std::wstring> Electra::includeFile(fs::path currentPath, const std::
                 auto new_content = includeFile(currentPath, new_filename, new_start, new_end, allow_reinclusion);
                 contents.insert(contents.begin() + i, new_content.begin(), new_content.end());
             }
+
+            if(i == 0) break;
         }
     }
     else
@@ -545,7 +551,7 @@ void Electra::moveCurrents()
         cur->iterate();
 }
 
-void Electra::interpreteCurrents()
+void Electra::interpretCurrents()
 {
     for(std::size_t i = 0; i < m_currents.size(); i++)
     {

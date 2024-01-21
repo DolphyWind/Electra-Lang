@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <ArithmeticalUnit.hpp>
 
+ArithmeticalUnit::ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func):
+    Cable(directions), m_func(std::move(func))
+{}
+
 bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -36,6 +40,6 @@ bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *current
     var_t result = m_func(first, second);
     current->stackPtr->push(result);
     
-    defaultlogger.log(LogType::INFO, L"(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
+    defaultlogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
     return Cable::work(current, currentVector);
 }

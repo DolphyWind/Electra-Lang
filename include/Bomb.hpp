@@ -25,16 +25,13 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 #include <direction.hpp>
-#include <Electra.hpp>
 
 // Ends the program.
 class Bomb : public Cable
 {
 public:
-    Bomb(std::vector<Direction> directions):
-        Cable(directions)
-    {}
-    ~Bomb() {};
+    explicit Bomb(const std::vector<Direction>& directions);
+    ~Bomb() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

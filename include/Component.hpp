@@ -34,12 +34,13 @@ SOFTWARE.
 // Base electrical component class. Checks if the current's direction is supported.
 class Component
 {
+public:
+    explicit Component(const std::vector<Direction>& directions);
+    ~Component() = default;
+
+    virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector);
 protected:
     std::vector<Direction> m_directions;
-public:
-    Component(std::vector<Direction> directions): m_directions(directions) {};
-    ~Component() {};
-    virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector);
 };
 
 typedef std::shared_ptr<Component> ComponentPtr;

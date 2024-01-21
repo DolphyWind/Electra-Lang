@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Eraser.hpp>
 
+Eraser::Eraser(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
+
 bool Eraser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -31,6 +35,7 @@ bool Eraser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     
     if(current->stackPtr->empty()) return Cable::work(current, currentVector);
 
-    defaultlogger.log(LogType::INFO, L"Removed {} from stack.", Global::popStack(current->stackPtr));
+    var_t popped_value = Global::popStack(current->stackPtr);
+    defaultlogger.log(LogType::INFO, "Removed {} from stack.", popped_value);
     return Cable::work(current, currentVector);
 }

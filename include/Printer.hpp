@@ -32,15 +32,11 @@ SOFTWARE.
 // If there is no top value, it does nothing.
 class Printer : public Cable
 {
-private:
-    bool m_printAsChar = false;
 public:
-    Printer(std::vector<Direction> directions, bool printAsChar):
-        Cable(directions), m_printAsChar(printAsChar)
-    {
-
-    }
-    ~Printer() {};
+    Printer(const std::vector<Direction>& directions, bool printAsChar);
+    ~Printer() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    bool m_printAsChar = false;
 };

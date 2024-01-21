@@ -28,19 +28,18 @@ SOFTWARE.
 #include <functional>
 #include <stack>
 
+typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
+
 // Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to current's stackPtr.
 // The first parameter that is popped is the first argument of m_func
 // If there is less than two values or no values on current's stackPtr, it does nothing.
-typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
-
 class ArithmeticalUnit : public Cable
 {
-    ArithmeticalFunc m_func;
 public:
-    ArithmeticalUnit(std::vector<Direction> directions, ArithmeticalFunc func):
-        Cable(directions), m_func(func)
-    {}
-    ~ArithmeticalUnit() { };
+    ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
+    ~ArithmeticalUnit() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    ArithmeticalFunc m_func;
 };

@@ -24,12 +24,16 @@ SOFTWARE.
 
 #include <ConstantPusher.hpp>
 
+ConstantPusher::ConstantPusher(const std::vector<Direction>& directions, var_t constant):
+    Cable(directions), m_constant(constant)
+{}
+
 bool ConstantPusher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
         return false;
     
     current->stackPtr->push(m_constant);
-    defaultlogger.log(LogType::INFO, L"(ConstantPusher) Pushed {} to the stack.", m_constant);
+    defaultlogger.log(LogType::INFO, "(ConstantPusher) Pushed {} to the stack.", m_constant);
     return Cable::work(current, currentVector);
 }

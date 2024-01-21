@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <StackSwitcher.hpp>
 
+StackSwitcher::StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue):
+    Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
+{}
+
 bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -32,7 +36,7 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     bool stack_empty = current->stackPtr->empty();
     var_t top = 0;
     if(!stack_empty && m_moveValue) top = Global::popStack(current->stackPtr);
-    std::wstring message = L"(StackSwitcher) Moving one stack {}. ";
+    std::string message = "(StackSwitcher) Moving one stack {}.";
 
     if(m_moveForward)
     {
@@ -47,9 +51,9 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     if(!stack_empty && m_moveValue) 
     {
         current->stackPtr->push(top);
-        message += L"With value {}.";
+        message += std::format(" With value {}.", top);
     }
-    defaultlogger.log(LogType::INFO, message, (m_moveForward ? L"forward" : L"backward"), top);
+    defaultlogger.log(LogType::INFO, message, (m_moveForward ? "forward" : "backward"));
 
     return Cable::work(current, currentVector);
 }

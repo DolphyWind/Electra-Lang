@@ -29,16 +29,11 @@ SOFTWARE.
 #include <direction.hpp>
 #include <Global.hpp>
 
-namespace std
+namespace sconv
 {
-    std::string to_string(const Direction &direction);
-    std::string to_string(const std::vector<Direction> &directions);
-    std::string to_string(const std::string &str);
-
-    std::wstring to_wstring(const Direction &direction);
-    std::wstring to_wstring(const std::vector<Direction> &directions);
-    std::wstring to_wstring(const std::wstring &str);
-    std::wstring to_wstring(const std::string &str);
-    std::wstring to_wstring(const bool &b);
-    std::wstring to_wstring(const Global::Empty &e);
+    std::string to_string(const Direction& direction);
+    std::string to_string(const std::vector<Direction>& directions);
+    std::string to_string(const std::string& str);
+    std::string to_string(bool b);
+    std::string to_string(const Global::Empty& e);
 }

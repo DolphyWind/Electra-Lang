@@ -36,3 +36,5 @@ output/
 .vscode/
 build*/
 .cache/
+cmake-build-debug/
+.idea/

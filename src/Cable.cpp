@@ -24,11 +24,15 @@ SOFTWARE.
 
 #include <Cable.hpp>
 
+Cable::Cable(const std::vector<Direction>& directions, bool is_one_directional):
+    Component(directions), m_is_one_directional(is_one_directional)
+{};
+
 bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
     {
-        defaultlogger.log(LogType::INFO, L"The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
+        defaultlogger.log(LogType::INFO, "The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
         current->getPosition().x, current->getPosition().y, current->getDirection(), this->m_directions);
         return false;
     }

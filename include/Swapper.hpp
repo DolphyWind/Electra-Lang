@@ -30,9 +30,8 @@ SOFTWARE.
 class Swapper : public Cable
 {
 public:
-    Swapper(std::vector<Direction> directions):
-        Cable(directions) {}
-    ~Swapper(){};
+    explicit Swapper(const std::vector<Direction>& directions);
+    ~Swapper() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

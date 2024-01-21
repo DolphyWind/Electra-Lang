@@ -29,12 +29,11 @@ SOFTWARE.
 // If there is no value on the current's stackPtr, it does nothing.
 class ConstantAdder : public Cable
 {
-    var_t m_constant;
 public:
-    ConstantAdder(std::vector<Direction> directions, var_t constant):
-        Cable(directions), m_constant(constant)
-    {}
-    ~ConstantAdder() {};
+    ConstantAdder(const std::vector<Direction>& directions, var_t constant);
+    ~ConstantAdder() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    var_t m_constant;
 };

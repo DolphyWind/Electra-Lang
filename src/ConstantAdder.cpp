@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <ConstantAdder.hpp>
 
+ConstantAdder::ConstantAdder(const std::vector<Direction>& directions, var_t constant):
+    Cable(directions), m_constant(constant)
+{}
+
 bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -35,6 +39,6 @@ bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     var += m_constant;
     current->stackPtr->push(var);
 
-    defaultlogger.log(LogType::INFO, L"(ConstantAdder) Added {} to the top value.", m_constant);
+    defaultlogger.log(LogType::INFO, "(ConstantAdder) Added {} to the top value.", m_constant);
     return Cable::work(current, currentVector);
 }

@@ -28,12 +28,11 @@ SOFTWARE.
 // Pushes m_constant to the current's stackPtr.
 class ConstantPusher : public Cable
 {
-    var_t m_constant;
 public:
-    ConstantPusher(std::vector<Direction> directions, var_t constant):
-        Cable(directions), m_constant(constant)
-    {}
-    ~ConstantPusher() {};
+    ConstantPusher(const std::vector<Direction>& directions, var_t constant);
+    ~ConstantPusher() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    var_t m_constant;
 };

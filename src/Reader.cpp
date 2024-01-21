@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Reader.hpp>
 
+Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
+    Cable(directions), m_getInputAsChar(getInputAsChar)
+{}
+
 bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))

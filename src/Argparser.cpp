@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include <Argparser.hpp>
 
-Argparser::Argparser(int argc, char* argv[])
+Argparser::Argparser(int argc, char** argv)
 {
     if(argc == 1) return;
     for(int i = 1; i < argc; i++)
