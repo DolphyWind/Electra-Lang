@@ -72,11 +72,8 @@ class Electra
 {
 public:
 
-    /// @brief Parses command line arguments, and initializes component and generators.
-    /// 
-    /// @param argc Command line argument count
-    /// @param argv Command line arguments
-    Electra(int argc, char** argv);
+    /// @brief Parses command line arguments, and initializes components and generators.
+    explicit Electra(const std::vector<std::string>& args);
 
     ~Electra() = default;
 

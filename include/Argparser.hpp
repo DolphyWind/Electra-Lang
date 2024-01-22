@@ -60,7 +60,7 @@ private:
     std::vector<std::string> m_aloneArguments;
 
 public:
-    Argparser(int argc, char **argv);
+    explicit Argparser(const std::vector<std::string>& args);
     
     std::string_view binary_name;
     std::string_view program_name;

@@ -24,13 +24,10 @@ SOFTWARE.
 
 #include <Argparser.hpp>
 
-Argparser::Argparser(int argc, char** argv)
+Argparser::Argparser(const std::vector<std::string>& args):
+    m_argsEntered(args)
 {
-    if(argc == 1) return;
-    for(int i = 1; i < argc; i++)
-    {
-        m_argsEntered.push_back(std::string(argv[i]));
-    }
+    m_argsEntered.erase(m_argsEntered.begin());
 }
 
 void Argparser::addArgument(const std::string &name, const std::string &shortName, bool store_boolean, const std::string &argumentDesc)

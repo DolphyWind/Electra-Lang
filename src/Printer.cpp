@@ -43,7 +43,7 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         std::u32string u32str(1, static_cast<char32_t>(top));
         std::string str_to_print;
         utf8::utf32to8(u32str.begin(), u32str.end(), std::back_inserter(str_to_print));
-        
+
         std::cout << str_to_print << std::flush;
         defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }

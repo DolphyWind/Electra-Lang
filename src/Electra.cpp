@@ -29,13 +29,13 @@ SOFTWARE.
 #define _VARIADIC_MAX INT_MAX
 using namespace std::string_literals;
 
-Electra::Electra(int argc, char** argv)
+Electra::Electra(const std::vector<std::string>& args)
 {
     // Get the current folder
     m_currentPath = fs::current_path();
 
     // Creates argument parser and parses command line arguments.
-    Argparser parser(argc, argv);
+    Argparser parser(std::move(args));
     parser.program_name = "Electra";
     parser.binary_name = "electra";
     parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
