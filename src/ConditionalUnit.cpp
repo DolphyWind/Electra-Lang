@@ -44,6 +44,6 @@ bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentV
     result = result && (m_checkGreater ? (top > m_targetValue) : true);
     result = (m_inverted ? !result : result);
 
-    defaultlogger.log(LogType::INFO, "(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_invert, m_checkEqual, m_checkLess, m_checkGreater);
+    defaultlogger.log(LogType::INFO, "(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_inverted, m_checkEqual, m_checkLess, m_checkGreater);
     return result && Cable::work(current, currentVector);
 }

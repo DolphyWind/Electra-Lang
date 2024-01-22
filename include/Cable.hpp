@@ -36,7 +36,7 @@ class Cable : public Component
 {
 public:
     explicit Cable(const std::vector<Direction>& directions, bool is_one_directional=false);
-    ~Cable() = default;
+    virtual ~Cable() = default;
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 private:
     bool m_is_one_directional = false;

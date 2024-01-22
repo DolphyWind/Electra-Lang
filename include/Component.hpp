@@ -36,7 +36,7 @@ class Component
 {
 public:
     explicit Component(const std::vector<Direction>& directions);
-    ~Component() = default;
+    virtual ~Component() = default;
 
     virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector);
 protected:

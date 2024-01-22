@@ -31,19 +31,21 @@ Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
 bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     if(current->stackPtr->empty()) return true;
     var_t top = Global::popStack(current->stackPtr);
 
     if(m_printAsChar)
     {
-        std::wcout << (char_t)top << std::flush;
-        defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::wstring(1, (char_t)top));
+        std::cout << utf8::utf32to8(std::u32string(1, static_cast<char32_t>(top))) << std::flush;
+        defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
-        std::wcout << Global::format_variable(top) << std::flush;
+        std::cout << Global::format_variable(top) << std::flush;
         defaultlogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     

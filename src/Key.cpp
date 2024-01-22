@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include <Key.hpp>
 
-Key::Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::wstring>& sourceCode, char_t transformTo):
+Key::Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo):
     Cable(directions), m_activatorDirections(activatorDirections), m_sourceCode(sourceCode), m_transformTo(transformTo)
 {}
 

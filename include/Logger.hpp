@@ -31,6 +31,7 @@ SOFTWARE.
 #include <ctime>
 #include <sstream>
 #include <format>
+#include <string_conversions.hpp>
 
 enum class LogType
 {
@@ -87,18 +88,19 @@ void Logger::log(LogType logType, const string_t& message, Args&&... args)
 template<typename T, typename... Args>
 std::string Logger::format(std::string& message, T&& t, Args&&... args)
 {
-    constexpr std::string_view brackets = "{}";
-    std::size_t pos = message.find(brackets);
-    message.replace(pos, brackets.size(), std::to_string(t));
+    constexpr std::string_view curly_braces = "{}";
+    std::size_t pos = message.find(curly_braces);
+    message.replace(pos, curly_braces.size(), sconv::to_string(t));
+
     return format(message, std::forward<Args>(args)...);
 }
 
 template<typename T>
 std::string Logger::format(std::string& message, T&& t)
 {
-    constexpr std::string_view brackets = "{}";
-    std::size_t pos = message.find(brackets);
-    message.replace(pos, brackets.size(), std::to_string(t));
+    constexpr std::string_view curly_braces = "{}";
+    std::size_t pos = message.find(curly_braces);
+    message.replace(pos, curly_braces.size(), sconv::to_string(t));
 
     return message;
 }

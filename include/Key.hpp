@@ -29,12 +29,12 @@ SOFTWARE.
 class Key : public Cable
 {
 public:
-    Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::wstring>& sourceCode, char_t transformTo);
+    Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo);
     ~Key() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 private:
     std::vector<Direction> m_activatorDirections;
-    std::vector<std::wstring>& m_sourceCode;
-    char_t m_transformTo;
+    std::vector<std::u32string>& m_sourceCode;
+    char32_t m_transformTo;
 };

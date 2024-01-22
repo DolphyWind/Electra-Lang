@@ -56,16 +56,36 @@ std::string sconv::to_string(const std::vector<Direction>& directions)
     std::string result = "{";
     for(std::size_t i = 0; i < directions.size(); i++)
     {
-        result += string_conversion::to_string(directions[i]);
+        result += sconv::to_string(directions[i]);
         if(i != directions.size() - 1) result += ", ";
     }
     result += "}";
     return result;
 }
 
-std::string sconv::to_string(const std::string &str)
+std::string sconv::to_string(const std::string& str)
 {
     return str;
+}
+
+std::string sconv::to_string(const std::u32string& str)
+{
+    return utf8::utf32to8(str);
+}
+
+std::string sconv::to_string(double d)
+{
+    return std::to_string(d);
+}
+
+std::string sconv::to_string(std::size_t s)
+{
+    return std::to_string(s);
+}
+
+std::string sconv::to_string(int i)
+{
+    return std::to_string(i);
 }
 
 std::string sconv::to_string(bool b)

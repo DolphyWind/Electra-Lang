@@ -31,9 +31,14 @@ Cloner::Cloner(const std::vector<Direction>& directions):
 bool Cloner::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
-    if(current->stackPtr->empty()) return Cable::work(current, currentVector);
+    }
+
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
     
     var_t top = current->stackPtr->top();
     current->stackPtr->push(top);

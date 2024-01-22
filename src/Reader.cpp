@@ -31,21 +31,23 @@ Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
 bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
+    }
     
     if(m_getInputAsChar)
     {
-        char_t c;
-        std::wcin >> c;
-        current->stackPtr->push(c);
-        defaultlogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", std::wstring(1, c));
+        char c;
+        std::cin >> c;
+        current->stackPtr->push(static_cast<var_t>(c));
+        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", std::string(1, c));
     }
     else
     {
         var_t v;
-        std::wcin >> v;
+        std::cin >> v;
         current->stackPtr->push(v);
-        defaultlogger.log(LogType::INFO, L"(Reader) Read {} from user and pushed onto stack.", v);
+        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", v);
     }
     return Cable::work(current, currentVector);
 }

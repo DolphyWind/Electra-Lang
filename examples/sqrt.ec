@@ -17,15 +17,15 @@
 
 
 
-? The function "√" Calculates the squareroot of the first number on stack ?
+? The function "√" Calculates the square root of the first number on the stack ?
 ? Uses five stacks ?
 ? First one stores 10 ?
 ? Second one stores 1e-9 ?
-? Third one stores 10000 and gets divided by 10 (first cell) time to time ?
+? Third one stores 10000 and gets divided by 10 (first cell) when needed ?
 ? Forth one stores the initial number ?
 ? Fifth one calculates the squareroot ?
-? Then squareroot gets pushed to stack before the first stack ?
-? Lastly it clears up all of the stacks it uses ?
+? Then squareroot gets pushed to the stack on the left of the first stack ?
+? Lastly it clears up all 5 of the stacks that it uses ?
 ? Returns -10000 if the number is negative ?
                                                        
                                                        +--------------------------------+

@@ -28,12 +28,24 @@ SOFTWARE.
 #include <string>
 #include <direction.hpp>
 #include <Global.hpp>
+#include <thirdparty/utfcpp/utf8.h>
 
 namespace sconv
 {
     std::string to_string(const Direction& direction);
     std::string to_string(const std::vector<Direction>& directions);
     std::string to_string(const std::string& str);
+    std::string to_string(const std::u32string& str);
+    std::string to_string(double d);
+    std::string to_string(std::size_t s);
+    std::string to_string(int i);
     std::string to_string(bool b);
     std::string to_string(const Global::Empty& e);
+
+
+//    template<typename T>
+//    std::string to_string(const T& item)
+//    {
+//        return std::to_string(item);
+//    }
 }

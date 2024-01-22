@@ -83,17 +83,17 @@ public:
     /// @brief Runs the electra code.
     void run();
 
-    /// @brief Recursively includes a file. 
-    /// 
+private:
+    /// @brief Recursively includes a file.
     /// @param currentPath Current folder of the file. Helps when including files from some other direction.
     /// @param filename File to include
     /// @param start The start index of the slice
     /// @param end The end index of the slice
     /// @return Contents of recursively inclusion
-    std::vector<string_t> includeFile(fs::path currentPath, const string_t& filename, std::size_t start = 0, std::size_t end = std::wstring::npos, bool allow_reinclusion=false);
+    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, std::size_t start = 0, std::size_t end = std::string::npos, bool allow_reinclusion=false);
 
     /// @brief Removes comments from the source code.
-    [[nodiscard]] std::vector<std::wstring> removeComments(std::vector<std::wstring>&& block);
+    void removeComments(std::vector<std::string>& block);
 
     /// @brief Creates generators from source code
     void createGenerators();
@@ -117,21 +117,20 @@ public:
     void removeCurrents();
     void createCurrents();
 
-private:
     // Maps some chars to corresponding components.
-    std::unordered_map<char_t, std::unique_ptr<Component>> m_components;
+    std::unordered_map<char32_t, std::unique_ptr<Component>> m_components;
 
     // Variables for generators and currents
-    std::unordered_map<char_t, GeneratorData> m_generatorDataMap;
-    std::vector<char_t> m_generatorChars;
+    std::unordered_map<char32_t, GeneratorData> m_generatorDataMap;
+    std::vector<char32_t> m_generatorChars;
     std::vector<GeneratorPtr> m_generators;
     std::vector<CurrentPtr> m_currents;
 
     // Related to files
     std::string m_filename;
     fs::path m_currentPath;
-    std::vector<std::wstring> m_sourceCode;
-    std::unordered_map<std::wstring, std::pair<std::size_t, std::size_t>> m_includedParts;
+    std::vector<std::u32string> m_sourceCode;
+    std::unordered_map<std::string, std::pair<std::size_t, std::size_t>> m_includedParts;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
     std::vector<std::size_t> m_deadCurrentIndexes;
@@ -143,8 +142,8 @@ private:
     std::vector<std::stack<var_t>> m_stacks;
     static constexpr std::size_t default_stack_count = 64;
 
-    // A map object that holds portals
-    std::unordered_map<char_t, Position> m_portalMap;
+    // A map object that holds positions of original portals as its values
+    std::unordered_map<char32_t, Position> m_portalMap;
 
     // Signal handling.
     static void sigHandler(int signal);

@@ -29,8 +29,8 @@ SOFTWARE.
 class Eraser : public Cable
 {
 public:
-    Eraser(const std::vector<Direction>& directions);
-    ~Eraser() = defalut;
+    explicit Eraser(const std::vector<Direction>& directions);
+    ~Eraser() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

@@ -31,8 +31,10 @@ StackSwitcher::StackSwitcher(const std::vector<Direction>& directions, bool move
 bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     bool stack_empty = current->stackPtr->empty();
     var_t top = 0;
     if(!stack_empty && m_moveValue) top = Global::popStack(current->stackPtr);
@@ -53,7 +55,14 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
         current->stackPtr->push(top);
         message += std::format(" With value {}.", top);
     }
-    defaultlogger.log(LogType::INFO, message, (m_moveForward ? "forward" : "backward"));
+
+    std::string forwardBackwardMessage = "backward";
+    if(m_moveForward)
+    {
+        forwardBackwardMessage = "forward";
+    }
+
+    defaultlogger.log(LogType::INFO, message, forwardBackwardMessage);
 
     return Cable::work(current, currentVector);
 }

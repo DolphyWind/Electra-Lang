@@ -27,11 +27,11 @@ SOFTWARE.
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <thirdparty/utf8.h>
+#include <thirdparty/utfcpp/utf8.h>
 
 typedef double var_t;
 typedef std::stack<var_t>* StackPtr;
-typedef wchar_t char_t;
+//typedef char32_t char_t;
 typedef std::string string_t;
 
 class Electra;
@@ -41,19 +41,13 @@ namespace Global
     var_t popStack(StackPtr stack, var_t defaultValue = 0);
 
     // Removes unnecessary zeros in the mantissa
-    std::wstring format_variable(var_t variable);
+    std::string format_variable(var_t variable);
 
-    // Removes spaces from wstring
-    std::wstring remove_spaces(const std::wstring& wstr);
+    // Removes spaces from a string
+    std::string remove_spaces(const std::string& str);
 
     // Splits a string based on a given delimiter
     std::vector<std::string> split(const std::string& str, const std::string& delim);
-
-    // Splits a wstring based on a given delimeter
-    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim);
-
-    // Replaces "lookFor" with "replaceWith" in "originalStr"
-    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith);
 
     void safe_exit(int exit_code);
 
