@@ -302,7 +302,10 @@ void Electra::run()
     m_sourceCode.reserve(sourceCodeUtf8.size());
     for(const auto& line : sourceCodeUtf8)
     {
-        m_sourceCode.push_back(utf8::utf8to32(line));
+        std::u32string str;
+        utf8::utf8to32(line.begin(), line.end(), str.begin());
+
+        m_sourceCode.push_back(str);
     }
     createGenerators();
     createPortals();
@@ -343,7 +346,7 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     // Fix here
     if(!allow_reinclusion)
     {
-        std::string total_path = (currentPath / filename);
+        std::string total_path = (currentPath / filename).string();
         if(m_includedParts.contains(total_path))
         {
             // Check if a re-inclusion has happened

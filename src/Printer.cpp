@@ -40,7 +40,11 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 
     if(m_printAsChar)
     {
-        std::cout << utf8::utf32to8(std::u32string(1, static_cast<char32_t>(top))) << std::flush;
+        std::string result;
+        std::u32string str(1, static_cast<char32_t>(top));
+        utf8::utf32to8(str.begin(), str.end(), result.begin());
+
+        std::cout << result << std::flush;
         defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
