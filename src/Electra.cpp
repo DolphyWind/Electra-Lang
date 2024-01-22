@@ -302,7 +302,10 @@ void Electra::run()
     m_sourceCode.reserve(sourceCodeUtf8.size());
     for(const auto& line : sourceCodeUtf8)
     {
-        m_sourceCode.push_back(utf8::utf8to32(line));
+        std::u32string lineU32;
+        utf8::utf8to32(line.begin(), line.end(), std::back_inserter(lineU32));
+
+        m_sourceCode.emplace_back(std::move(lineU32));
     }
     createGenerators();
     createPortals();
