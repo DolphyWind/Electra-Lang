@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 	std::wcout.imbue(std::locale(std::wcout.getloc(), new std::codecvt_utf8<char_t>));
 	std::wcerr.imbue(std::locale(std::wcerr.getloc(), new std::codecvt_utf8<char_t>));
 	std::wcin.imbue(std::locale(std::wcin.getloc(), new std::codecvt_utf8<char_t>));
-	#endif
-	std::wcout << std::setprecision(15);*/
+	#endif*/
+//	std::wcout << std::setprecision(15);
 	std::cout << std::setprecision(15);
 
 	Electra electraInterpreter(argc, argv);

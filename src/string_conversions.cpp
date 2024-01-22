@@ -70,9 +70,7 @@ std::string sconv::to_string(const std::string& str)
 
 std::string sconv::to_string(const std::u32string& str)
 {
-    std::string result;
-    utf8::utf32to8(str.begin(), str.end(), result.begin());
-    return result;
+    return utf8::utf32to8(str);
 }
 
 std::string sconv::to_string(double d)
