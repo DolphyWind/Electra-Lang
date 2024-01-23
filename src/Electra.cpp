@@ -26,6 +26,7 @@ SOFTWARE.
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <boost/regex.hpp>
 #define _VARIADIC_MAX INT_MAX
 using namespace std::string_literals;
 
@@ -392,17 +393,17 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
         removeComments(content);
 
         // Include other files if there is any
-        std::regex include_pattern("\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
-        std::smatch match;
+        boost::regex include_pattern("\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
+        boost::smatch match;
         for(std::size_t i = content.size() - 1; true; i--)
         {
-            if(std::regex_search(content[i], match, include_pattern))
+            if(boost::regex_search(content[i], match, include_pattern))
             {
                 std::string match_str = match.str();
 
-                std::regex filename_pattern("^\"([^\"]*)\"");
-                std::smatch filename_match;
-                std::regex_search(match_str, filename_match, filename_pattern);
+                boost::regex filename_pattern("^\"([^\"]*)\"");
+                boost::smatch filename_match;
+                boost::regex_search(match_str, filename_match, filename_pattern);
 
                 std::string new_filename = filename_match.str();
                 new_filename = std::string(new_filename.begin() + 1, new_filename.end() - 1);

@@ -12,6 +12,10 @@ file(GLOB SOURCE_FILES "./src/*.cpp")
 add_executable(electra ${SOURCE_FILES})
 
 target_include_directories(electra PUBLIC include)
+
+set(BOOST_REGEX_STANDALONE ON)
+add_subdirectory(include/thirdparty/regex)
+target_link_libraries(electra PRIVATE Boost::regex)
 if(NOT WIN32)
     install(TARGETS electra DESTINATION bin)
 endif()

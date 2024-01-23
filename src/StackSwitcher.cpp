@@ -53,7 +53,9 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
     if(!stack_empty && m_moveValue) 
     {
         current->stackPtr->push(top);
-        message += std::format(" With value {}.", top);
+        std::stringstream msgss;
+        msgss << " With value " << top << '.';
+        message += msgss.str();
     }
 
     std::string forwardBackwardMessage = "backward";

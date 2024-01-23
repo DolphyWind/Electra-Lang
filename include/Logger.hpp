@@ -30,7 +30,6 @@ SOFTWARE.
 #include <Global.hpp>
 #include <ctime>
 #include <sstream>
-#include <format>
 #include <string_conversions.hpp>
 
 enum class LogType
