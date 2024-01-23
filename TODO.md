@@ -1,8 +1,9 @@
 # Electra 2.1
-+ [] File I/O
-+ [] Complete rewrite of I/O stuff. (For MSVC support)
++ [X] Complete rewrite of I/O stuff. (For MSVC support)
++ [] Update README.md separate implementation details from language spec
 
 # Electra 2.2
++ [] File I/O
 + [] Loading components from shared libraries. Like how lua does it
 
 # Future Plans
