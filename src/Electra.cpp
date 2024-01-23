@@ -36,7 +36,7 @@ Electra::Electra(const std::vector<std::string>& args)
     m_currentPath = fs::current_path();
 
     // Creates argument parser and parses command line arguments.
-    Argparser parser(std::move(args));
+    Argparser parser(args);
     parser.program_name = "Electra";
     parser.binary_name = "electra";
     parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
@@ -347,7 +347,7 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     // Fix here
     if(!allow_reinclusion)
     {
-        std::string total_path = (currentPath / filename);
+        std::string total_path = (currentPath / filename).string();
         if(m_includedParts.contains(total_path))
         {
             // Check if a re-inclusion has happened
@@ -549,7 +549,7 @@ void Electra::generateGenerators()
 {
     for(auto &gen : m_generators)
     {
-        gen->generate(&m_currents, &m_stacks[0]);
+        gen->generate(&m_currents, m_stacks.begin());
     }
 }
 

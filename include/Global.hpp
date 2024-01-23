@@ -30,7 +30,7 @@ SOFTWARE.
 #include <thirdparty/utfcpp/utf8.h>
 
 typedef double var_t;
-typedef std::stack<var_t>* StackPtr;
+typedef std::vector<std::stack<var_t>>::iterator StackPtr;
 //typedef char32_t char_t;
 typedef std::string string_t;
 

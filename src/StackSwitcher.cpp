@@ -42,11 +42,11 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
 
     if(m_moveForward)
     {
-        if((++current->stackPtr) == &(*m_stacks->end())) current->stackPtr = &(*m_stacks->begin());
+        if((++current->stackPtr) == m_stacks->end()) current->stackPtr = m_stacks->begin();
     }
     else
     {
-        if(current->stackPtr == &(*m_stacks->begin())) current->stackPtr = &(*(m_stacks->end() - 1));
+        if(current->stackPtr == m_stacks->begin()) current->stackPtr = std::prev(m_stacks->end());
         else current->stackPtr--;
     }
     
