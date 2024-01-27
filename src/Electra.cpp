@@ -22,11 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "Global.hpp"
+#include "Logger.hpp"
 #include <Electra.hpp>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <boost/regex.hpp>
+#include <stdexcept>
 #define _VARIADIC_MAX INT_MAX
 using namespace std::string_literals;
 
@@ -336,6 +340,14 @@ void Electra::mainLoop()
 
 std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::string& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
 {
+    fs::path total_path = currentPath / filename;
+    if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
+    {
+        std::cerr << "Invalid file: " << total_path.string() << std::endl;
+        defaultlogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
+        Global::safe_exit(1);
+    }
+
     // Start cannot be greater than the end
     if(start >= end)
     {
@@ -347,18 +359,18 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     // Fix here
     if(!allow_reinclusion)
     {
-        std::string total_path = (currentPath / filename).string();
-        if(m_includedParts.contains(total_path))
+        std::string total_path_str = total_path.string();
+        if(m_includedParts.contains(total_path_str))
         {
             // Check if a re-inclusion has happened
-            auto &range = m_includedParts[total_path];
+            auto &range = m_includedParts[total_path_str];
             if( (range.first <= start && start < range.second) || (range.first <= end - 1 && end - 1 < range.second))
             {
-                defaultlogger.log(LogType::WARNING, "Prevented re-including {}. Pass --allow-reinclusion as a command line argument to enable re-inclusion.", total_path);
+                defaultlogger.log(LogType::WARNING, "Prevented re-including {}. Pass --allow-reinclusion as a command line argument to enable re-inclusion.", total_path_str);
                 return {};
             }
         }
-        m_includedParts[total_path] = {start, end};
+        m_includedParts[total_path_str] = {start, end};
     }
 
     // Start reading source code

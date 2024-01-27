@@ -5,6 +5,7 @@
 # Electra 2.2
 + [] File I/O
 + [] Loading components from shared libraries. Like how lua does it
++ [] Visual Mode: See your code in action!
 
 # Future Plans
 + [] Electra standard library

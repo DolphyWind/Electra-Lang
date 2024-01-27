@@ -8,12 +8,12 @@ Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language)
 
 # How to get electra?
 
-If you are on Arch Linux or a Linux distrubution that is based on Arch Linux, you can download Electra using the [AUR](https://aur.archlinux.org). To download electra from AUR, install an AUR helper like `yay`. Then type the command below into the terminal to install Electra.
+If you are on Arch Linux or a Linux distribution that is based on Arch Linux, you can download Electra using the [AUR](https://aur.archlinux.org). To download electra from AUR, install an AUR helper like `yay`. Then type the command below into the terminal to install Electra.
 
 ```bash
 yay -S electra-git
 ```  
-If you are on a Linux distrubution that is not Arch Linux based, or using completely different operating system. Currently the only option to get Electra running on your system is building Electra from source. To build Electra from source, open up a terminal and follow the steps below.
+If you are on a Linux distribution that is not Arch Linux based, or using completely different operating system. Currently the only option to get Electra running on your system is building Electra from source. To build Electra from source, open up a terminal and follow the steps below.
 
 ## Building on Unix-Like Operating Systems
 
@@ -36,7 +36,7 @@ sudo make install
 
 ## Building on Windows
 
-If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), [Mingw-w64](https://www.mingw-w64.org/downloads/), [CMake](https://cmake.org/download/) and add them to your PATH. Building with Visual Studio is currently NOT supported. Also, please note that Windows build is a bit unstable and might not work in your system. It worked on my Windows 10 and Windows 11 machines but for some reason it doesn't work on my virtual machines. To build electra on windows, follow the steps below.
+If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), and [CMake](https://cmake.org/download/) alongside a C++ compiler and add them to your PATH. MSVC is now supported. To build electra on Windows, follow the steps below.
 
 ```bash
 # Clone the repository and cd into it
@@ -45,23 +45,28 @@ cd Electra-Lang
 # Create a build directory
 mkdir build
 cd build
-# Run cmake to generate build files with MinGW Configuration
-cmake .. -G "MinGW Makefiles"
-# Build Electra with make. If make gives an error, try it with mingw32-make or mingw64-make.
-make
+# Run cmake to generate build files
+cmake ..
+# Build Electra 
+cmake --build . --config="Release"
 ```
 
 # How Electra works?
-
-Electra has Currents, Generators and Components. Currents are instruction pointers that act like the currents in electricity, Generators generate currents and Components interpret currents to give Electra its functionality. Electra uses a list of stacks of doubles for memory management. The total stack count is 64 by default but can be manuplated with `--stack-count` argument of the Electra interpreter. Every current has its own stack pointer. That way, doing some manipulations to different stacks at the same time is possible (although it can be pretty confusing and unreliable). 
-
-Electra also supports commenting out your code inline and including other files. To add a comment to your code, use question marks `? like this ?` (The last one is not required if you want a comment lasting a whole line). To include other files in your code, use double quotes and optionally, specify a range: `"file.ec" x:y`. This will include the lines in range from x to y (x-inclusive, y-exclusive). If you don't specify any lines electra will include whole file into your code. By default, reincluding a part is disabled. If you want to reinclude a part, add `!` before filename: `"!file.ec" x:y`. But remember to use this with caution.
+Electra has three main components: Currents, Generators and Components. Electra uses a list of 64 stacks of doubles for its memory management.
+(This implementation has a command line argument that lets you change the stack count)
 
 ## **Currents**
-Currents are instruction pointers in Electra. They call `work()` function of the component that they are on. They hold a pointer to a stack and a component's `work()` function uses that stack if it does some stack operations. A `work()` function returns a boolean value. If it is false current gets killed.
+Currents are instruction pointers in Electra. They all have a direction, a position, a stack that holds visited portals and a stack pointer.
+A direction can take one of these eight values: East, Northeast, North, Northwest, West, Southwest, South, Southeast.
+On each iteration of Electra's main loop, each current moves one step forward.
+When a current touches a component, if the component supports a current coming from that direction,
+component does its work and uses that current's stack pointer when doing stack manipulations.
+A current can either be generated by a generator, or be cloned by other components.
 
 ## **Generators**
-Generators generate currents at the beginning of the program and do nothing after. They generate current based on the direction that they are facing. To make looping easier, generators also let currents flowing on them. They support the direction in which they generate current and its opposite.
+Generators generate currents at the beginning of an Electra program and become useless immediately.
+They generate current based on the direction that they are facing. To make looping easier, generators also let currents flowing on them.
+They support the direction in which they generate current and its opposite. (e.g. an east generator supports both east and west directions)
 
 #### **Generator Types**
 >**East Generator (>, →):** Generates a current with east direction.
@@ -85,17 +90,23 @@ Generators generate currents at the beginning of the program and do nothing afte
 >**Vertical Bidirectional Generator (↕):** Generates two currents with north and south directions.
 
 ## **Components**
-Components are the elements that give Electra its functionality. Each component has its own job and can generate or kill existing currents. Each component, except portals, inherit from Cable class which inherits from Component class (Portals directly inherit from the Component class). And Cable class always calls `Component::work()` and immidiately returns false if `Component::work()` returns false, thus kills the current. `Component::work()` checks the current's direction and component's supported directions and returns true if component supports a current coming from that direction, returns false otherwise. 
+Components are the elements that give Electra its functionality.
+Each component has its own job and can clone or kill existing currents.  
+If a current flows into a component from an unsupported direction, that current gets killed.
+But components can also kill a current after they've done their work.
+If a current lives and the component supports directions that are different from the current's direction or its opposite, it gets cloned.
+This will be explained better in the following section.
 
 ### **Cables**
-Cables are the simplest components of Electra and every component except portals inherits from them. Some cables also clone currents.
+Cables are used to transmit currents in Electra. Some cables also clone currents.
 
 For example:
 
     >-----+-
           |
 
-The regular four directional cable (+) has a current that is coming from west heading to east. It will create 2 more copies of that current with directions north and south. The current with direction north will get killed in the next iteration. Cables clone and support currents based on how they look like.
+The regular four directional cable (+) has a current flowing from west and heading to east. It will create 2 more copies of that current with directions north and south.
+The current with direction north will die in the next iteration.
 
 #### **Cable Types**
 >**Horizontal Cable (-):** Supports east and west directions. Simple cable for flowing current horizontally.
@@ -123,7 +134,7 @@ The regular four directional cable (+) has a current that is coming from west he
 >**Other Cables (╰, └, ╯, ┘, ╭, ┌, ┐, ╮, ├ ,┤ ,┬ ,┴):** These cables are not special they just have no name. They flow current based on how they look like.
 
 ### **Printers**
-Printers print out the variables on the stack. They can print a variable either as a number or as a character.
+Printers print the value on top of the stack. They can print a variable either as a number or as a character.
 
 #### **Printer Types**
 >**Number Printer (N):** Supports east, northeast, northwest, west, southwest and southeast directions. Pops the top value off the stack and prints it as number. If the stack is empty it does nothing.
@@ -131,21 +142,21 @@ Printers print out the variables on the stack. They can print a variable either 
 >**Character Printer (P):** Supports east, northeast, north, northwest, west, and southwest directions. Pops the top value off the stack and prints it as a character. If the stack is empty it does nothing.
 
 ### **Arithmetical Units**
-Arithmetical units lets Electra do arithmetical calculations. If there is less than two values on the stack they do nothing.
+Arithmetical units let Electra do arithmetical calculations. If there are less than two values on the stack, they do nothing.
 
 #### **Arithmetical Unit Types**
->**Adder (A):** Supports north, southwest and southeast directions. Pops two values off the stack and pushes first+second back. 
+>**Adder (A):** Supports north, southwest and southeast directions. Pops two values off the stack and pushes `first+second` back. 
 
->**Subtracter (S):** Supports northeast, north, southwest and south directions. Pops two values off the stack and pushes first-second back. 
+>**Subtracter (S):** Supports northeast, north, southwest and south directions. Pops two values off the stack and pushes `first-second` back. 
 
->**Multiplier (M):** Supports east, northeast, northwest, west, southwest, south and southeast directions. Pops two values off the stack and pushes first*second back. 
+>**Multiplier (M):** Supports east, northeast, northwest, west, southwest, south and southeast directions. Pops two values off the stack and pushes `first*second` back. 
 
->**Divider (Q):** Supports east, north, west, south and southeast directions. Pops two values off the stack and pushes first/second back. 
+>**Divider (Q):** Supports east, north, west, south and southeast directions. Pops two values off the stack and pushes `first/second` back. 
 
 >**Modder (%):** Supports northeast and southwest directions. Pops two values off the stack and pushes `std::fmod(first, second)` back. 
 
 ### **Constant Adders (I, D)**
-Constant adders adds a constant value to the top value of the stack. 
+Constant adders adds a constant value to the value that is on top of the stack. 
 
 #### **Constant Adder Types**
 >**Increaser (I):** Supports north and south directions. Pops the top value off the stack and adds one to it. Then pushes the result back. It does nothing if the stack is empty.
@@ -159,12 +170,12 @@ Cloner, clones the value on top of the stack. It supports east, north, west and 
 Constant pusher, pushes a constant value to the stack. There is currently only one constant pusher and it pushes 0 to the stack. Supports all eight directions.
 
 ### **Readers**
-Readers are components that can read user's input.
+Readers, read user's input.
 
 #### **Reader Types** 
->**Number Reader (@):** Supports east, northeast, north, northwest, west, southwest and south directions. Takes an input from user as number and pushes it to the stack.
+>**Number Reader (@):** Supports east, northeast, north, northwest, west, southwest and south directions. Takes an input from user as a number and pushes it onto the stack.
 
->**Character Reader (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as chaacter and converts it to number. Then pushes it to the stack.
+>**Character Reader (&):** Supports north, south, east, southeast and southwest directions. Takes an input from user as character and converts it to a number. Then pushes it onto the stack.
 
 ### **Swapper ($)**
 Swapper, swaps the top two values on the stack. It supports north, south, northeast and southwest directions. There must be at least two values on the stack for swapper to work.
@@ -193,7 +204,7 @@ Stack checkers, check whether the current stack is empty or not.
 >**Inverted Stack Checker( ) ):** Supports north and south directions. Lets the current flow if the stack is not empty.
 
 ### **Stack Switchers**
-Stack switchers move the current's stack pointer forwards or backwards. Some of them pops the top value and moves it to next stack.
+Stack switchers move the current's stack pointer forwards or backwards. Some of them pops the top value and moves it to the next stack.
 
 >**Forward Stack Switcher (F):** Supports east, northeast, north, northwest, west and southwest directions. Moves current's stack pointer forward. Does not move top value to the next stack.
 
@@ -204,7 +215,7 @@ Stack switchers move the current's stack pointer forwards or backwards. Some of 
 >**Backward Moving Stack Switcher (b):** Supports east, northwest, west, southwest, south and southeast directions. Moves current's stack pointer backward. Does move top value to the next stack if stack is not empty.
 
 ### **Keys**
-Keys transform to the other components when they are activated. They will stop current (Technically they move current one step back) if they are not activated. To activate a key, a current must be touch the key from its activator directions. 
+Keys transform to the other components when they are activated. They will keep the current still until they are activated. To activate a key, a current must be touch the key from its activator directions. 
 
 #### **Key Types**
 >**Horizontal Key (~):** Supports east and west directions. Becomes a horizontal cable when activated. Gets activated when a current touches it from north or south directions.
@@ -215,13 +226,17 @@ Keys transform to the other components when they are activated. They will stop c
 Supports north, east, northeast northwest, southwest and southeast directions. Reverser, reverses the entire stack.
 
 ### **Eraser (E)**
-Supports all eight directions. Eraser, erases the top value from the stack. 
+Supports all eight directions. Eraser, pops off the top value from the stack. 
 
 ### **Bomb (o)**
 Supports all eight directions. Finishes the program execution.
 
 ### **Portals**
-Every other character in Electra is considered as a portal. Portals support all eight directions. They are used for teleporting currents. When Electra reads the source code, it marks first instance of a portal as the original portal. Every other portal connects to the original portal and original portal always connects back to the portal that teleported current to the original portal. If there is no last used portal, flowing a current on original portal does nothing. Think of them as the functions in Electra.
+Every other character in Electra is considered a portal. Portals support all eight directions.
+They are used for teleporting currents. When Electra reads the source code, it marks the first instance of a portal as the original portal.
+When you flow a current to an unoriginal portal, the portal gets pushed to that current's visited portals stack, and the current gets teleported
+to the original portal. Flowing a current to the original portal teleports the current back to the last visited portal and pops it off the stack.
+If the stack is empty, flowing a current to the original portal does nothing. Think of them like functions in other programming languages.
 
 # Examples 
 Here are some example programs written in Electra:

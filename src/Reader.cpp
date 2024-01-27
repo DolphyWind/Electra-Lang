@@ -39,6 +39,10 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     {
         char c;
         std::cin >> c;
+//        if (c == 0)
+//        {
+//            c = -1;
+//        }// Add cmdline argument
         current->stackPtr->push(static_cast<var_t>(c));
         defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", std::string(1, c));
     }
