@@ -1,6 +1,6 @@
 # Electra 2.1
 + [X] Complete rewrite of I/O stuff. (For MSVC support)
-+ [] Update README.md separate implementation details from language spec
++ [X] Update README.md separate implementation details from language spec
 
 # Electra 2.2
 + [] File I/O
@@ -11,4 +11,3 @@
 + [] Electra standard library
 + [] Performance Improvements to brainfuck interpreter
 + [] Test gmpxx's floats. Do some benchmarking and if it is suitable, use them to be able to store big numbers.
-+ [] Modify README.md move implementation details at the bottom of the file

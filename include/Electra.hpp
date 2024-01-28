@@ -37,6 +37,7 @@ SOFTWARE.
 #include <regex>
 #include <stdexcept>
 #include <cstring>
+#include <set>
 #if __has_include(<filesystem>)
   #include <filesystem>
   namespace fs = std::filesystem;
@@ -65,6 +66,7 @@ SOFTWARE.
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
 #include <string_conversions.hpp>
+#include <LineRange.hpp>
 
 typedef std::vector<Direction> GeneratorData;
 
@@ -87,7 +89,7 @@ private:
     /// @param start The start index of the slice
     /// @param end The end index of the slice
     /// @return Contents of recursively inclusion
-    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, std::size_t start = 0, std::size_t end = std::string::npos, bool allow_reinclusion=false);
+    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
 
     /// @brief Removes comments from the source code.
     void removeComments(std::vector<std::string>& block);
@@ -117,7 +119,7 @@ private:
     // Maps some chars to corresponding components.
     std::unordered_map<char32_t, std::unique_ptr<Component>> m_components;
 
-    // Variables for generators and currents
+    // Generators and currents
     std::unordered_map<char32_t, GeneratorData> m_generatorDataMap;
     std::vector<char32_t> m_generatorChars;
     std::vector<GeneratorPtr> m_generators;
@@ -127,15 +129,15 @@ private:
     std::string m_filename;
     fs::path m_currentPath;
     std::vector<std::u32string> m_sourceCode;
-    std::unordered_map<std::string, std::pair<std::size_t, std::size_t>> m_includedParts;
+    std::unordered_map<std::string, std::set<LineRange>> m_includedParts;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
-    std::vector<std::size_t> m_deadCurrentIndexes;
+    std::vector<std::size_t> m_deadCurrentIndices;
 
-    // Currents that are going to be created via components.
+    // Holds the list of Currents that are going to be created at the end of the loop. Components update this list.
     std::vector<CurrentPtr> m_newCurrents;
 
-    // Stacks that language will use for memory manager
+    // Memory management
     std::vector<std::stack<var_t>> m_stacks;
     static constexpr std::size_t default_stack_count = 64;
 

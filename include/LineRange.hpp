@@ -22,42 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Reader.hpp>
+#pragma once
+#include <cstdint>
+#include <limits>
+#include <compare>
 
-Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
-    Cable(directions), m_getInputAsChar(getInputAsChar)
-{}
-
-bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+class LineRange
 {
-    if(!Component::work(current, currentVector))
-    {
-        return false;
-    }
-    
-    if(m_getInputAsChar)
-    {
-        char c = 0;
-        std::cin >> c;
-        if(std::cin.eof())
-        {
-            c = 0;
-        }
+public:
+    LineRange();
+    explicit LineRange(std::size_t begin, std::size_t end=std::numeric_limits<std::size_t>::max());
+    LineRange(const LineRange&) = default;
+    LineRange(LineRange&&) = default;
+    LineRange& operator=(const LineRange&) = default;
+    LineRange& operator=(LineRange&&) = default;
+    ~LineRange() = default;
 
-        current->stackPtr->push(static_cast<var_t>(c));
-        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", std::string(1, c));
-    }
-    else
-    {
-        var_t v;
-        std::cin >> v;
-        if(std::cin.eof())
-        {
-            v = 0;
-        }
+    [[nodiscard]] bool intersects(const LineRange& other) const;
+    [[nodiscard]] std::size_t getBegin() const;
+    [[nodiscard]] std::size_t getEnd() const;
+    void setBegin(std::size_t begin);
+    void setEnd(std::size_t end);
+    std::strong_ordering operator<=>(const LineRange& other) const;
 
-        current->stackPtr->push(v);
-        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", v);
-    }
-    return Cable::work(current, currentVector);
-}
+private:
+    std::size_t m_begin;
+    std::size_t m_end;
+};

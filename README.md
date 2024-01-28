@@ -55,6 +55,37 @@ cmake --build . --config="Release"
 Electra has three main components: Currents, Generators and Components. Electra uses a list of 64 stacks of doubles for its memory management.
 (This implementation has a command line argument that lets you change the stack count)
 
+## **Comments and Including Other Files**
+In Electra, you can comment out your code using question marks. 
+```
+? This is a comment ? >-+ 
+                        & ? This is also a comment. It lasts a whole line
+                         *P
+```
+
+To include other files in your code, use quotation marks.
+```
+? Copies the contents of file.ec and pastes it all into current file ?
+"file.ec"
+
+? Electra will prevent you from reincluding a file. This will do nothing ?
+"file.ec"
+
+? Putting '!' before filename forces Electra to reinclude a file ?
+"!file.ec" 
+
+? You can also specify a range when including a file ?
+? (x < y) ?
+"mylib.ec" x:y ? Includes the lines between line x and line y (x-inclusive, y-exclusive) ?
+"otherlib.ec" x: ? Includes the lines after line x (x-inclusive) ?
+"anotherlib.ec" :y ? Includes the lines befor line y (y-inclusive) ?
+
+? Electra prevents you to reincluding a line that has already been included ?
+"foo.ec" 10:15
+"foo.ec" 5:12 ? This will do nothing ?
+"!foo.ec" 5:12 ? You can always do a force include ?
+```
+
 ## **Currents**
 Currents are instruction pointers in Electra. They all have a direction, a position, a stack that holds visited portals and a stack pointer.
 A direction can take one of these eight values: East, Northeast, North, Northwest, West, Southwest, South, Southeast.
@@ -368,3 +399,16 @@ A FizzBuzz program, starts to loop from 1 to N. For each number; prints "Fizz" i
     |                  |
     +------------------+
 ```
+
+# About This Implementation
+This interpreter has implemented Electra by using OOP and inheritance. There is a class named Component.
+Every component has a `work()` function and currents call the work function of the components that they are sitting on.
+The Cable class inherits from Component class and clones the currents in its `work()` function.
+Every other component inherits from Cable class except for Portal, it directly inherits from Component.
+
+The interpreter has these command line arguments:
+- `--help` or `-h`: Prints a help message and exits.
+- `--version` or `-v`: Prints the version and exits.
+- `--log` or `-l`: Enables logging. Electra interpreter logs each step of the program and saves it into a file.
+- `--stack <arg>` or `-s <arg>`: Specifies some initial values for stacks. For example, `-s "0 1 2,3 4 5"` Pushes 0,1 and 2 to the first stack and 3, 4 and 5 to the second stack.
+- `--stack-count <arg>` or `-sc <arg>`: Sets the stack count. The default stack count is 64.

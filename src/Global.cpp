@@ -82,7 +82,7 @@ namespace Global
             prev_pos = current_pos + delim.size();
         }
 
-        //result.push_back(str.substr(prev_pos, current_pos));
+        result.push_back(str.substr(prev_pos));
         return result;
     }
 

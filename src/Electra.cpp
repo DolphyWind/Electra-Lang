@@ -303,6 +303,7 @@ void Electra::run()
 {
     std::vector<std::string> sourceCodeUtf8 = includeFile(m_currentPath, m_filename);
     removeComments(sourceCodeUtf8);
+    std::reverse(sourceCodeUtf8.begin(), sourceCodeUtf8.end());
 
     m_sourceCode.reserve(sourceCodeUtf8.size());
     for(const auto& line : sourceCodeUtf8)
@@ -338,9 +339,11 @@ void Electra::mainLoop()
     defaultlogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
 
-std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::string& filename, std::size_t start, std::size_t end, bool allow_reinclusion)
+std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange, bool allow_reinclusion)
 {
     fs::path total_path = currentPath / filename;
+    std::string total_path_str = total_path.string();
+
     if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
     {
         std::cerr << "Invalid file: " << total_path.string() << std::endl;
@@ -349,29 +352,32 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     }
 
     // Start cannot be greater than the end
-    if(start >= end)
-    {
-        std::cerr << "Inclusion failed: Start line number has to be less than the end line number." << std::endl;
-        defaultlogger.log(LogType::ERROR, "Inclusion failed: Start line number has to be less than the end line number.");
-        Global::safe_exit(1);
-    }
+//    if(lineRange.getEnd() == lineRange.getBegin())
+//    {
+//        std::cerr << "Inclusion failed: Start line number has to be less than the end line number." << std::endl;
+//        defaultlogger.log(LogType::ERROR, "Inclusion failed: First line number has to be less than the second line number.");
+//        Global::safe_exit(1);
+//    }
 
-    // Fix here
+    // TODO: Test here
     if(!allow_reinclusion)
     {
-        std::string total_path_str = total_path.string();
         if(m_includedParts.contains(total_path_str))
         {
             // Check if a re-inclusion has happened
-            auto &range = m_includedParts[total_path_str];
-            if( (range.first <= start && start < range.second) || (range.first <= end - 1 && end - 1 < range.second))
+            auto &range_set = m_includedParts[total_path_str];
+
+            for(auto& range : range_set)
             {
-                defaultlogger.log(LogType::WARNING, "Prevented re-including {}. Pass --allow-reinclusion as a command line argument to enable re-inclusion.", total_path_str);
-                return {};
+                if(range.intersects(lineRange))
+                {
+                    defaultlogger.log(LogType::WARNING, "Prevented re-including {}.", total_path_str);
+                    return {};
+                }
             }
         }
-        m_includedParts[total_path_str] = {start, end};
     }
+    m_includedParts[total_path_str].insert(lineRange);
 
     // Start reading source code
     std::vector<std::string> content;
@@ -381,99 +387,110 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     std::ifstream file(currentPath);
     currentPath = currentPath.parent_path();
 
-    if(file.good())
-    {
-        // Read file content into wss
-        std::string fileData;
-        std::stringstream ss;
-        ss << file.rdbuf();
-        fileData = ss.str();
-        file.close();
-
-        // If there is tab character exit immediately since tabsize may vary editor to editor
-        if(fileData.find('\t') != std::string::npos)
-        {
-            defaultlogger.log(LogType::ERROR, "Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
-            std::cerr << "Error while reading file: Source code contains tab!" << std::endl;
-            Global::safe_exit(1);
-        }
-
-        // Split by the new line and slice file according to given parameters
-        content = Global::split(fileData, "\n");
-        if(end > content.size()) end = content.size();
-        content = std::vector<std::string>(content.begin() + start, content.begin() + end);
-        removeComments(content);
-
-        // Include other files if there is any
-        boost::regex include_pattern("\".*?\"\\s*(?:[^:]?+:[^']?+)?"); // The regex pattern to match text within double quotation marks
-        boost::smatch match;
-        for(std::size_t i = content.size() - 1; true; i--)
-        {
-            if(boost::regex_search(content[i], match, include_pattern))
-            {
-                std::string match_str = match.str();
-
-                boost::regex filename_pattern("^\"([^\"]*)\"");
-                boost::smatch filename_match;
-                boost::regex_search(match_str, filename_match, filename_pattern);
-
-                std::string new_filename = filename_match.str();
-                new_filename = std::string(new_filename.begin() + 1, new_filename.end() - 1);
-                std::size_t new_start = 0;
-                std::size_t new_end = std::string::npos;
-                
-                match_str = match_str.substr(filename_match.str().size(), std::string::npos);
-                match_str = Global::remove_spaces(match_str);
-                
-                if(match_str.find(':') != std::string::npos)
-                {
-                    // Determines new_start and new_end by parsing x:y
-                    auto split_from_colon = Global::split(match_str, ":");
-
-                    try
-                    {
-                        if(split_from_colon.at(0).empty()) new_start = 0;
-                        else new_start = std::stoul(split_from_colon.at(0));
-                    }
-                    catch (const std::exception &e)
-                    {
-                        std::cerr << "Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
-                        defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(0));
-                        Global::safe_exit(1);
-                    }
-
-                    try
-                    {
-                        if(split_from_colon.size() == 1 || split_from_colon.at(1).empty()) new_end = std::string::npos;
-                        else new_end = std::stoul(split_from_colon.at(1));
-                    }
-                    catch (const std::exception &e)
-                    {
-                        std::cerr << "Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
-                        defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(1));
-                        Global::safe_exit(1);
-                    }
-                }
-
-                bool allow_reinclusion_of_new = (new_filename[0] == '!');
-                if(allow_reinclusion_of_new)
-                {
-                    new_filename.erase(new_filename.begin());
-                }
-
-                content.erase(content.begin() + i);
-                auto new_content = includeFile(currentPath, new_filename, new_start, new_end, allow_reinclusion_of_new);
-                content.insert(content.begin() + i, new_content.begin(), new_content.end());
-            }
-
-            if(i == 0) break;
-        }
-    }
-    else
+    if(!file.good())
     {
         std::cerr << "Cannot open \"" << filename << '\"' << std::endl;
         defaultlogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", filename);
         Global::safe_exit(1);
+    }
+
+    // Read file content into wss
+    std::string fileData;
+    std::stringstream ss;
+    ss << file.rdbuf();
+    fileData = ss.str();
+    file.close();
+
+    // If there is tab character exit immediately since tabsize may vary editor to editor
+    if(fileData.find('\t') != std::string::npos)
+    {
+        defaultlogger.log(LogType::ERROR, "Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
+        std::cerr << "Error while reading file: Source code contains tab!" << std::endl;
+        Global::safe_exit(1);
+    }
+
+    // Split by the new line and slice file according to given parameters
+    content = Global::split(fileData, "\n");
+    if(lineRange.getEnd() > content.size())
+    {
+        lineRange.setEnd(content.size());
+    }
+
+    if(lineRange.getEnd() <= lineRange.getBegin())
+    {
+        return {};
+    }
+    content = std::vector<std::string>(content.begin() + lineRange.getBegin() - 1, content.begin() + lineRange.getEnd() - 1);
+    removeComments(content);
+    std::reverse(content.begin(), content.end());
+
+    // Include other files if there are any
+    boost::regex include_pattern("\"([^\"]+)\"(?:\\s*([^:]+:[^\"]*))?"); // The regex pattern to match text within double quotation marks
+    boost::smatch match;
+    for(std::size_t i = content.size() - 1; true; i--)
+    {
+        if(boost::regex_search(content[i], match, include_pattern))
+        {
+            std::string match_str = match.str();
+
+            boost::regex filename_pattern("^\"([^\"]*)\"");
+            boost::smatch filename_match;
+            boost::regex_search(match_str, filename_match, filename_pattern);
+
+            std::string new_filename = filename_match.str();
+            new_filename = std::string(new_filename.begin() + 1, new_filename.end() - 1);
+            LineRange newRange;
+
+            match_str = match_str.substr(filename_match.str().size());
+            match_str = Global::remove_spaces(match_str);
+
+            if(match_str.find(':') != std::string::npos)
+            {
+                // Determines new_start and new_end by parsing x:y
+                auto split_from_colon = Global::split(match_str, ":");
+
+                try
+                {
+                    if(!split_from_colon.at(0).empty())
+                    {
+                        newRange.setBegin(std::stoul(split_from_colon.at(0)));
+                    }
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
+                    defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(0));
+                    Global::safe_exit(1);
+                }
+
+                try
+                {
+                    if(split_from_colon.size() > 1 && !split_from_colon.at(1).empty())
+                    {
+                        newRange.setEnd(std::stoul(split_from_colon.at(1)));
+                    }
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
+                    defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(1));
+                    Global::safe_exit(1);
+                }
+
+            }
+
+            bool allow_reinclusion_of_new = (new_filename[0] == '!');
+            if(allow_reinclusion_of_new)
+            {
+                new_filename.erase(new_filename.begin());
+            }
+
+            content.erase(content.begin() + i);
+            auto new_content = includeFile(currentPath, new_filename, newRange, allow_reinclusion_of_new);
+            content.insert(content.begin() + i, new_content.begin(), new_content.end());
+        }
+
+        if(i == 0) break;
     }
 
     return content;
@@ -583,13 +600,13 @@ void Electra::interpretCurrents()
         // Out of bounds check
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
-            m_deadCurrentIndexes.push_back(i);
+            m_deadCurrentIndices.push_back(i);
             defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
-            m_deadCurrentIndexes.push_back(i);
+            m_deadCurrentIndices.push_back(i);
             defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
@@ -601,7 +618,7 @@ void Electra::interpretCurrents()
             auto& comp = m_components[currentChar];
             if(!comp->work(cur, &m_newCurrents))
             {
-                m_deadCurrentIndexes.push_back(i);
+                m_deadCurrentIndices.push_back(i);
                 defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
@@ -620,13 +637,13 @@ void Electra::interpretCurrents()
             }
             if(!isAlignedWithGenerator)
             {
-                m_deadCurrentIndexes.push_back(i);
+                m_deadCurrentIndices.push_back(i);
                 defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Current isn\'t aligned with generator)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         else
         {
-            m_deadCurrentIndexes.push_back(i);
+            m_deadCurrentIndices.push_back(i);
             defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
         }
     }
@@ -634,12 +651,12 @@ void Electra::interpretCurrents()
 
 void Electra::removeCurrents()
 {
-    std::sort(m_deadCurrentIndexes.begin(), m_deadCurrentIndexes.end(), std::greater<>());
-    for(auto &i : m_deadCurrentIndexes)
+    std::sort(m_deadCurrentIndices.begin(), m_deadCurrentIndices.end(), std::greater<>());
+    for(auto &i : m_deadCurrentIndices)
     {
         m_currents.erase(m_currents.begin() + i);
     }
-    m_deadCurrentIndexes.clear();
+    m_deadCurrentIndices.clear();
 }
 
 void Electra::createCurrents()
