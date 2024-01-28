@@ -17,7 +17,7 @@ add_subdirectory(include/thirdparty/regex)
 target_link_libraries(${TARGET_BINARY_NAME} PRIVATE Boost::regex)
 
 if(WIN32)
-    target_compile_definitions(${TARGET_BINARY_NAME} PRIVATE /utf-8)
+    target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
 endif()
 
 if(NOT WIN32)
