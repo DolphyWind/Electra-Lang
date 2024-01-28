@@ -37,15 +37,47 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     
     if(m_getInputAsChar)
     {
-        char c = 0;
-        std::cin >> c;
-        if(std::cin.eof())
+	    std::stringstream readSS;
+        std::u32string combinedStr;
+
+        char firstChar;
+        std::cin >> firstChar;
+        if (std::cin.eof())
         {
-            c = 0;
+            return 0;
         }
 
-        current->stackPtr->push(static_cast<var_t>(c));
-        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", std::string(1, c));
+        readSS << firstChar;
+        if (firstChar < 0)
+        {
+            if (firstChar >= -64)
+            {
+                char secondChar;
+                std::cin >> secondChar;
+
+                readSS << secondChar;
+            }
+            if (firstChar >= -32)
+            {
+                char thirdChar;
+                std::cin >> thirdChar;
+
+                readSS << thirdChar;
+            }
+            if (firstChar >= -16)
+            {
+                char fourthChar;
+                std::cin >> fourthChar;
+
+                readSS << fourthChar;
+            }
+        }
+
+        std::string readStr = readSS.str();
+        utf8::utf8to32(readStr.begin(), readStr.end(), std::back_inserter(combinedStr));
+
+        current->stackPtr->push(static_cast<var_t>(combinedStr[0]));
+        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", readSS.str());
     }
     else
     {
