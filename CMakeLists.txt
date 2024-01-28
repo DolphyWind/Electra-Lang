@@ -20,6 +20,4 @@ if(WIN32)
     target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
 endif()
 
-if(NOT WIN32)
-    install(TARGETS ${TARGET_BINARY_NAME} DESTINATION bin)
-endif()
+install(TARGETS ${TARGET_BINARY_NAME} DESTINATION bin)
