@@ -29,10 +29,8 @@ SOFTWARE.
 class Reverser : public Cable
 {
 public:
-    Reverser(std::vector<Direction> directions):
-        Cable(directions)
-    {}
-    ~Reverser(){};
+    explicit Reverser(const std::vector<Direction>& directions);
+    ~Reverser() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_CXX_STANDARD 20)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -12,6 +12,10 @@ file(GLOB SOURCE_FILES "./src/*.cpp")
 add_executable(electra ${SOURCE_FILES})
 
 target_include_directories(electra PUBLIC include)
+
+set(BOOST_REGEX_STANDALONE ON)
+add_subdirectory(include/thirdparty/regex)
+target_link_libraries(electra PRIVATE Boost::regex)
 if(NOT WIN32)
     install(TARGETS electra DESTINATION bin)
 endif()

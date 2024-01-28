@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Reverser.hpp>
 
+Reverser::Reverser(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
+
 bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -35,8 +39,8 @@ bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         newStack.push(current->stackPtr->top());
         current->stackPtr->pop();
     }
-    *current->stackPtr = newStack;
-    defaultlogger.log(LogType::INFO, L"Reversed the entire stack.");
+    *(current->stackPtr) = newStack;
+    defaultlogger.log(LogType::INFO, "Reversed the entire stack.");
 
     return Cable::work(current, currentVector);
 }

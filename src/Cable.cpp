@@ -24,18 +24,24 @@ SOFTWARE.
 
 #include <Cable.hpp>
 
+Cable::Cable(const std::vector<Direction>& directions, bool is_one_directional):
+    Component(directions), m_is_one_directional(is_one_directional)
+{};
+
 bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
     {
-        defaultlogger.log(LogType::INFO, L"The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
-        current->getPosition().x, current->getPosition().y, current->getDirection(), this->m_directions);
+        defaultlogger.log(LogType::INFO,
+            "The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
+            current->getPosition().x, current->getPosition().y, current->getDirection(), this->m_directions
+        );
         return false;
     }
 
     Direction currentDir = current->getDirection();
     Position currentPos = current->getPosition();
-    std::stack<Position> portalStack = current->getPortalStack();
+    std::stack<Position>& portalStack = current->getPortalStack();
 
     for(auto &dir : m_directions)
     {
@@ -45,7 +51,6 @@ bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         newCurrent->setPortalStack(portalStack);
         currentVector->push_back(newCurrent);
     }
-    // std::wcout << std::to_wstring(currentDir) << std::endl;
-    // std::wcout << std::to_wstring(m_directions) << std::endl;
+    
     return m_is_one_directional || (std::find(m_directions.begin(), m_directions.end(), currentDir) != this->m_directions.end());
 }

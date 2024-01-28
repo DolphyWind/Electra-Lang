@@ -24,23 +24,33 @@ SOFTWARE.
 
 #include <Printer.hpp>
 
+Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
+    Cable(directions), m_printAsChar(printAsChar)
+{}
+
 bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     if(current->stackPtr->empty()) return true;
     var_t top = Global::popStack(current->stackPtr);
 
     if(m_printAsChar)
     {
-        std::wcout << (char_t)top << std::flush;
-        defaultlogger.log(LogType::INFO, L"Printed {} to screen.", std::wstring(1, (char_t)top));
+        std::u32string u32str(1, static_cast<char32_t>(top));
+        std::string str_to_print;
+        utf8::utf32to8(u32str.begin(), u32str.end(), std::back_inserter(str_to_print));
+
+        std::cout << str_to_print << std::flush;
+        defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
-        std::wcout << Global::format_variable(top) << std::flush;
-        defaultlogger.log(LogType::INFO, L"Printed {} to screen.", top);
+        std::cout << Global::format_variable(top) << std::flush;
+        defaultlogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     
     return Cable::work(current, currentVector);

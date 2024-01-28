@@ -24,32 +24,47 @@ SOFTWARE.
 
 #include <StackSwitcher.hpp>
 
+StackSwitcher::StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue):
+    Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
+{}
+
 bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     bool stack_empty = current->stackPtr->empty();
     var_t top = 0;
     if(!stack_empty && m_moveValue) top = Global::popStack(current->stackPtr);
-    std::wstring message = L"(StackSwitcher) Moving one stack {}. ";
+    std::string message = "(StackSwitcher) Moving one stack {}.";
 
     if(m_moveForward)
     {
-        if((++current->stackPtr) == &(*m_stacks->end())) current->stackPtr = &(*m_stacks->begin());
+        if((++current->stackPtr) == m_stacks->end()) current->stackPtr = m_stacks->begin();
     }
     else
     {
-        if(current->stackPtr == &(*m_stacks->begin())) current->stackPtr = &(*(m_stacks->end() - 1));
+        if(current->stackPtr == m_stacks->begin()) current->stackPtr = std::prev(m_stacks->end());
         else current->stackPtr--;
     }
     
     if(!stack_empty && m_moveValue) 
     {
         current->stackPtr->push(top);
-        message += L"With value {}.";
+        std::stringstream msgss;
+        msgss << " With value " << top << '.';
+        message += msgss.str();
     }
-    defaultlogger.log(LogType::INFO, message, (m_moveForward ? L"forward" : L"backward"), top);
+
+    std::string forwardBackwardMessage = "backward";
+    if(m_moveForward)
+    {
+        forwardBackwardMessage = "forward";
+    }
+
+    defaultlogger.log(LogType::INFO, message, forwardBackwardMessage);
 
     return Cable::work(current, currentVector);
 }

@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Key.hpp>
 
+Key::Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo):
+    Cable(directions), m_activatorDirections(activatorDirections), m_sourceCode(sourceCode), m_transformTo(transformTo)
+{}
+
 bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     bool inActivatorDirections = false;
@@ -42,7 +46,7 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     if(inActivatorDirections)
     {
         m_sourceCode[curPos.y][curPos.x] = m_transformTo;
-        defaultlogger.log(LogType::INFO, L"Key at ({}, {}) is now activated.", curPos.x, curPos.y);
+        defaultlogger.log(LogType::INFO, "Key at ({}, {}) is now activated.", curPos.x, curPos.y);
         return true;
     }
 
@@ -52,7 +56,7 @@ bool Key::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     // If not in activator directions move the current back
     Position newPos = curPos + directionToPosition(curDirInv);
     current->setPosition(newPos);
-    defaultlogger.log(LogType::INFO, L"(Key) Key at ({}, {}) is not activated. The is being moved to ({}, {})", curPos.x, curPos.y, newPos.x, newPos.y);
+    defaultlogger.log(LogType::INFO, "(Key) Key at ({}, {}) is not activated. The current is being moved to ({}, {})", curPos.x, curPos.y, newPos.x, newPos.y);
 
     return Cable::work(current, currentVector);
 }

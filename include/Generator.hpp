@@ -35,21 +35,19 @@ SOFTWARE.
 // Generates currents at the start of the program.
 class Generator
 {
-private:
-    /// @brief Holds position value
-    Position m_position;
-    
-    /// @brief Generator generates current from these directions.
-    std::vector<Direction> m_directions; 
 public:
-    Generator(std::vector<Direction> directions, Position position): m_directions(directions), m_position(position) {};
-    ~Generator() {};
+    Generator(const std::vector<Direction>& directions, Position position);
+    ~Generator() = default;
 
     /// @brief Generates new current if it can
     /// @param currentVector Pushes the new current in this vector
     void generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr);
 
-    std::vector<Direction> getDirections();
+    [[nodiscard]] const std::vector<Direction>& getDirections() const;
+    std::vector<Direction>& getDirections();
+private:
+    Position m_position;
+    std::vector<Direction> m_directions;
 };
 
 typedef std::shared_ptr<Generator> GeneratorPtr;

@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Component.hpp>
 
+Component::Component(const std::vector<Direction>& directions):
+    m_directions(directions)
+{};
+
 bool Component::work(CurrentPtr current, std::vector<CurrentPtr> *currentPtr)
 {
     for(auto &d : m_directions)

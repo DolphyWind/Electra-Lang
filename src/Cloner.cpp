@@ -24,16 +24,25 @@ SOFTWARE.
 
 #include <Cloner.hpp>
 
+Cloner::Cloner(const std::vector<Direction>& directions):
+    Cable(directions)
+{};
+
 bool Cloner::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
-    if(current->stackPtr->empty()) return Cable::work(current, currentVector);
+    }
+
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
     
     var_t top = current->stackPtr->top();
     current->stackPtr->push(top);
 
-    defaultlogger.log(LogType::INFO, L"(Cloner) Pushing {} to stack.", top);
+    defaultlogger.log(LogType::INFO, "(Cloner) Pushing {} to stack.", top);
     return Cable::work(current, currentVector);
 }

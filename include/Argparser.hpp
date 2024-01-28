@@ -25,8 +25,8 @@ SOFTWARE.
 #pragma once
 
 #define ELECTRA_VERSION_MAJOR 2
-#define ELECTRA_VERSION_MINOR 0
-#define ELECTRA_VERSION_PATCH 4
+#define ELECTRA_VERSION_MINOR 1
+#define ELECTRA_VERSION_PATCH 0
 
 #include <string>
 #include <vector>
@@ -35,6 +35,8 @@ SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include <Logger.hpp>
+#include <string_conversions.hpp>
+#include <thirdparty/utfcpp/utf8.h>
 
 // Simple argument parser
 // Parses arguments into three categories:
@@ -58,11 +60,11 @@ private:
     std::vector<std::string> m_aloneArguments;
 
 public:
-    Argparser(int argc, char *argv[]);
+    explicit Argparser(const std::vector<std::string>& args);
     
-    std::wstring_view binary_name;
-    std::wstring_view program_name;
-    std::wstring_view program_description;
+    std::string_view binary_name;
+    std::string_view program_name;
+    std::string_view program_description;
     void addArgument(const std::string &name, const std::string &shortName, bool store_boolean=false, const std::string &argumentDesc=std::string());
     std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> parse();
     std::vector<std::string> getAloneArguments();

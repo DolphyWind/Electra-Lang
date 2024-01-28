@@ -30,13 +30,11 @@ SOFTWARE.
 // Checks if the current's stackPtr is empty or not.
 class StackChecker : public Cable
 {
-private:
-    bool m_returnIfEmpty = false;
 public:
-    StackChecker(std::vector<Direction> directions, bool returnIfEmpty):
-        Cable(directions), m_returnIfEmpty(returnIfEmpty)
-    {}
-    ~StackChecker() {}
+    StackChecker(const std::vector<Direction>& directions, bool passIfEmpty);
+    ~StackChecker() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    bool m_passIfEmpty = false;
 };

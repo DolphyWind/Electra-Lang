@@ -34,15 +34,13 @@ SOFTWARE.
 // It does not push anything if there is nothing to pop.
 class StackSwitcher : public Cable
 {
-private:
-    std::vector<std::stack<var_t>> *m_stacks;
-    bool m_moveForward = true;
-    bool m_moveValue = false;
 public:
-    StackSwitcher(std::vector<Direction> directions, bool moveForward, std::vector<std::stack<var_t>> *stacks, bool moveValue):
-        Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
-    {}
-    ~StackSwitcher() {}
+    StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
+    ~StackSwitcher() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    std::vector<std::stack<var_t>>* m_stacks;
+    bool m_moveForward = true;
+    bool m_moveValue = false;
 };

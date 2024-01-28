@@ -31,17 +31,13 @@ SOFTWARE.
 #include <Cable.hpp>
 #include <memory>
 #include <unordered_map>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <tuple>
 #include <stack>
 #include <cmath>
 #include <csignal>
 #include <regex>
-#include <codecvt>
 #include <stdexcept>
 #include <cstring>
+#include <set>
 #if __has_include(<filesystem>)
   #include <filesystem>
   namespace fs = std::filesystem;
@@ -69,70 +65,34 @@ SOFTWARE.
 #include <Reader.hpp>
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
+#include <string_conversions.hpp>
+#include <LineRange.hpp>
 
 typedef std::vector<Direction> GeneratorData;
 
 class Electra
 {
-private:
-    // Maps some chars to corresponding components.
-    std::unordered_map<char_t, std::unique_ptr<Component>> m_components;
-    
-    // Variables for generators and currents
-    std::unordered_map<char_t, GeneratorData> m_generatorDataMap;
-    std::vector<char_t> m_generatorChars;
-    std::vector<GeneratorPtr> m_generators;
-    std::vector<CurrentPtr> m_currents;
-    
-    // Related to files
-    std::string m_filename;
-    fs::path m_currentPath;
-    std::vector<std::wstring> m_sourceCode;
-    std::unordered_map<std::wstring, std::pair<std::size_t, std::size_t>> m_includedParts;
-
-    // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
-    std::vector<std::size_t> m_deadCurrentIndexes;
-    
-    // Currents that are going to be created via components.
-    std::vector<CurrentPtr> m_newCurrents;
-
-    // Stacks that language will use for memory manager
-    std::vector<std::stack<var_t>> m_stacks;
-    const std::size_t default_stack_count = 64;
-
-    // A map object that holds portals
-    std::unordered_map<char_t, Position> m_portalMap;
-
-    // Signal handling.
-    static void sigHandler(int signal);
-
-    // Wstring converter
-    static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> wstring_converter;
-    
 public:
 
-    /// @brief Parses command line arguments, and initializes component and generators.
-    /// 
-    /// @param argc Command line argument count
-    /// @param argv Command line arguments
-    Electra(int argc, char** argv);
+    /// @brief Parses command line arguments, and initializes components and generators.
+    explicit Electra(const std::vector<std::string>& args);
 
     ~Electra() = default;
 
     /// @brief Runs the electra code.
     void run();
 
-    /// @brief Recursively includes a file. 
-    /// 
+private:
+    /// @brief Recursively includes a file.
     /// @param currentPath Current folder of the file. Helps when including files from some other direction.
     /// @param filename File to include
     /// @param start The start index of the slice
     /// @param end The end index of the slice
     /// @return Contents of recursively inclusion
-    std::vector<std::wstring> includeFile(fs::path currentPath, const std::wstring& filename, std::size_t start = 0, std::size_t end = std::wstring::npos, bool allow_reinclusion=false);
+    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
 
     /// @brief Removes comments from the source code.
-    [[nodiscard]] std::vector<std::wstring> removeComments(std::vector<std::wstring>&& block);
+    void removeComments(std::vector<std::string>& block);
 
     /// @brief Creates generators from source code
     void createGenerators();
@@ -152,7 +112,38 @@ public:
     // Methods for mainLoop() method.
     void moveCurrents();
     void generateGenerators();
-    void interpreteCurrents();
+    void interpretCurrents();
     void removeCurrents();
     void createCurrents();
+
+    // Maps some chars to corresponding components.
+    std::unordered_map<char32_t, std::unique_ptr<Component>> m_components;
+
+    // Generators and currents
+    std::unordered_map<char32_t, GeneratorData> m_generatorDataMap;
+    std::vector<char32_t> m_generatorChars;
+    std::vector<GeneratorPtr> m_generators;
+    std::vector<CurrentPtr> m_currents;
+
+    // Related to files
+    std::string m_filename;
+    fs::path m_currentPath;
+    std::vector<std::u32string> m_sourceCode;
+    std::unordered_map<std::string, std::set<LineRange>> m_includedParts;
+
+    // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
+    std::vector<std::size_t> m_deadCurrentIndices;
+
+    // Holds the list of Currents that are going to be created at the end of the loop. Components update this list.
+    std::vector<CurrentPtr> m_newCurrents;
+
+    // Memory management
+    std::vector<std::stack<var_t>> m_stacks;
+    static constexpr std::size_t default_stack_count = 64;
+
+    // A map object that holds positions of original portals as its values
+    std::unordered_map<char32_t, Position> m_portalMap;
+
+    // Signal handling.
+    static void sigHandler(int signal);
 };

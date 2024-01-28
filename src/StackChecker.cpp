@@ -24,25 +24,39 @@ SOFTWARE.
 
 #include <StackChecker.hpp>
 
+StackChecker::StackChecker(const std::vector<Direction>& directions, bool passIfEmpty):
+    Cable(directions), m_passIfEmpty(passIfEmpty)
+{}
+
 bool StackChecker::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
-        return false;
-    
-    if(current->stackPtr->empty())
     {
-        if(m_returnIfEmpty)
-            defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
-        else
-            defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
-        
-        return m_returnIfEmpty && Cable::work(current, currentVector);
+        return false;
     }
 
-    if(!m_returnIfEmpty)
-        defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will pass.");
+    if(current->stackPtr->empty())
+    {
+        if(m_passIfEmpty)
+        {
+            defaultlogger.log(LogType::INFO, "(StackChecker) Stack is empty. Current will pass.");
+        }
+        else
+        {
+            defaultlogger.log(LogType::INFO, "(StackChecker) Stack is empty. Current will not pass.");
+        }
+
+        return m_passIfEmpty && Cable::work(current, currentVector);
+    }
+
+    if(!m_passIfEmpty)
+    {
+        defaultlogger.log(LogType::INFO, "(StackChecker) Stack is empty. Current will pass.");
+    }
     else
-        defaultlogger.log(LogType::INFO, L"(StackChecker) Stack is empty. Current will not pass.");
-    
-    return !m_returnIfEmpty && Cable::work(current, currentVector);
+    {
+        defaultlogger.log(LogType::INFO, "(StackChecker) Stack is empty. Current will not pass.");
+    }
+
+    return !m_passIfEmpty && Cable::work(current, currentVector);
 }

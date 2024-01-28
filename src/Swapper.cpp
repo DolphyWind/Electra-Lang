@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Swapper.hpp>
 
+Swapper::Swapper(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
+
 bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))
@@ -37,7 +41,7 @@ bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     current->stackPtr->push(first);
     current->stackPtr->push(second);
 
-    defaultlogger.log(LogType::INFO, L"Swapping {} and {} on the stack.", first, second);
+    defaultlogger.log(LogType::INFO, "Swapping {} and {} on the stack.", first, second);
 
     return Cable::work(current, currentVector);
 }

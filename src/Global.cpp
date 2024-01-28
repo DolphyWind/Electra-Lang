@@ -37,76 +37,58 @@ namespace Global
         return top;
     }
 
-    std::wstring format_variable(var_t variable)
+    std::string format_variable(var_t variable)
     {
-        std::wstring wstr = std::to_wstring(variable);
-        if(wstr.find(L'.') == std::wstring::npos) return wstr;
-        
-        while(wstr[wstr.length() - 1] == L'0')
+        std::string str = sconv::to_string(variable);
+        if(str.find('.') == std::string::npos)
         {
-            wstr.pop_back();
-            if(wstr[wstr.length() - 1] == L'.')
+            return str;
+        }
+
+        while(str[str.length() - 1] == '0')
+        {
+            str.pop_back();
+            if(str[str.length() - 1] == '.')
             {
-                wstr.pop_back();
+                str.pop_back();
                 break;
             }
         }
-        return wstr;
+        return str;
     }
 
-    std::wstring remove_spaces(const std::wstring &wstr)
+    std::string remove_spaces(const std::string &str)
     {
-        std::wstring result;
-        for(auto &c : wstr)
+        std::string result;
+        result.reserve(str.size());
+
+        for(auto& c : str)
         {
-            if(c != L' ') result.push_back(c);
+            if(c != ' ') result.push_back(c);
         }
 
         return result;
     }
 
-    std::vector<std::string> split(const std::string& str, const std::string& delim) 
+    std::vector<std::string> split(const std::string& str, const std::string& delim)
     {
-        std::vector<std::string> tokens;
-        std::size_t prev = 0, pos = 0;
-        do
-        {
-            pos = str.find(delim, prev);
-            if(pos == std::string::npos) pos = str.length();
-            std::string token = str.substr(prev, pos-prev);
-            tokens.push_back(token);
-            prev = pos + delim.length();
-        } while (pos < str.length() && prev < str.length());
-        return tokens;
-    }
+        std::size_t current_pos = 0;
+        std::size_t prev_pos = 0;
+        std::vector<std::string> result{};
 
-    std::vector<std::wstring> split_wstr(const std::wstring& str, const std::wstring& delim)
-    {
-        std::vector<std::wstring> tokens;
-        std::size_t prev = 0, pos = 0;
-        do
+        while((current_pos = str.find(delim, prev_pos)) != std::string::npos)
         {
-            pos = str.find(delim, prev);
-            if(pos == std::string::npos) pos = str.length();
-            std::wstring token = str.substr(prev, pos-prev);
-            tokens.push_back(token);
-            prev = pos + delim.length();
-        } while (pos < str.length() && prev < str.length());
-        return tokens;
-    }
+            result.push_back(str.substr(prev_pos, current_pos - prev_pos));
+            prev_pos = current_pos + delim.size();
+        }
 
-    std::wstring replaceString(std::wstring& originalStr, const std::wstring& lookFor, const std::wstring& replaceWith)
-    {
-        std::size_t pos = originalStr.find(lookFor);
-        if(pos == std::wstring::npos)
-            return originalStr;
-        
-        return originalStr.replace(pos, lookFor.length(), replaceWith);
+        result.push_back(str.substr(prev_pos));
+        return result;
     }
 
     void safe_exit(int exit_code)
     {
-        // There used to be code here
+        // There used to be some code here
 
         std::exit(exit_code);
     }

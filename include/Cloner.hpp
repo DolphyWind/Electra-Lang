@@ -30,10 +30,8 @@ SOFTWARE.
 class Cloner : public Cable
 {
 public:
-    Cloner(std::vector<Direction> directions):
-    Cable(directions)
-    {};
-    ~Cloner() {};
+    explicit Cloner(const std::vector<Direction>& directions);
+    ~Cloner() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
 };

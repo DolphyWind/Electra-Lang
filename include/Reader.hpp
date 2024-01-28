@@ -30,13 +30,11 @@ SOFTWARE.
 // Takes input from user and pushes it on top of the current's stackPtr.
 class Reader : public Cable
 {
-private:
-    bool m_getInputAsChar = false;
 public:
-    Reader(std::vector<Direction> directions, bool getInputAsChar): 
-        Cable(directions), m_getInputAsChar(getInputAsChar)
-    {}
-    ~Reader() {}
+    Reader(const std::vector<Direction>& directions, bool getInputAsChar);
+    ~Reader() = default;
 
     bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+private:
+    bool m_getInputAsChar = false;
 };

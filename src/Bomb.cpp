@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include <Bomb.hpp>
 
+Bomb::Bomb(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
+
 bool Bomb::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
 {
     if(!Component::work(current, currentVector))

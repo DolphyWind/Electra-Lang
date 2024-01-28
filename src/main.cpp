@@ -23,31 +23,20 @@ SOFTWARE.
 */
 
 #include <iostream>
-#include <locale>
+#include <vector>
 #include <Electra.hpp>
-#include <codecvt>
-
-#ifdef _WIN32
-#include <Windows.h>
-#include <fcntl.h>
-#include <io.h>
-#endif
 
 int main(int argc, char *argv[])
 {
-	#ifdef _WIN32
-	_setmode(_fileno(stdout), _O_U16TEXT);
-	_setmode(_fileno(stderr), _O_U16TEXT);
-	_setmode(_fileno(stdin), _O_U16TEXT);
-	#else
-	std::ios_base::sync_with_stdio(false);
-	std::wcout.imbue(std::locale(std::wcout.getloc(), new std::codecvt_utf8<char_t>));
-	std::wcerr.imbue(std::locale(std::wcerr.getloc(), new std::codecvt_utf8<char_t>));
-	std::wcin.imbue(std::locale(std::wcin.getloc(), new std::codecvt_utf8<char_t>));
-	#endif
-	std::wcout << std::setprecision(15);
+	std::cout << std::setprecision(15);
+    std::vector<std::string> args;
+    args.reserve(argc);
+    for(int i = 0; i < argc; ++i)
+    {
+        args.emplace_back(argv[i]);
+    }
 
-	Electra electraInterpreter(argc, argv);
+	Electra electraInterpreter(args);
 	electraInterpreter.run();
 	return 0;
 }
