@@ -48,7 +48,7 @@ std::string_view Logger::logTypeToStr(LogType logType)
     return "";
 }
 
-void Logger::log(LogType logType, const string_t& message)
+void Logger::log(LogType logType, const std::string& message)
 {
     if(!loggingEnabled) return;
 

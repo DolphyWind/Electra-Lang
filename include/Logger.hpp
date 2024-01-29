@@ -47,8 +47,8 @@ public:
     bool loggingEnabled = false;
 
     template<typename... Args>
-    void log(LogType logType, const string_t& message, Args&&... args);
-    void log(LogType logType, const string_t& message);
+    void log(LogType logType, const std::string& message, Args&&... args);
+    void log(LogType logType, const std::string& message);
 
     template<typename T, typename... Args>
     static std::string format(std::string& message, T&& t, Args&&... args);
@@ -64,7 +64,7 @@ private:
 };
 
 template<typename... Args>
-void Logger::log(LogType logType, const string_t& message, Args&&... args)
+void Logger::log(LogType logType, const std::string& message, Args&&... args)
 {
     if(!loggingEnabled) return;
 

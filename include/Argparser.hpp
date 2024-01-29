@@ -26,7 +26,7 @@ SOFTWARE.
 
 #define ELECTRA_VERSION_MAJOR 2
 #define ELECTRA_VERSION_MINOR 1
-#define ELECTRA_VERSION_PATCH 0
+#define ELECTRA_VERSION_PATCH 1
 
 #include <string>
 #include <vector>

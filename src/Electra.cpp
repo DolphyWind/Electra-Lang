@@ -351,15 +351,6 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
         Global::safe_exit(1);
     }
 
-    // Start cannot be greater than the end
-//    if(lineRange.getEnd() == lineRange.getBegin())
-//    {
-//        std::cerr << "Inclusion failed: Start line number has to be less than the end line number." << std::endl;
-//        defaultlogger.log(LogType::ERROR, "Inclusion failed: First line number has to be less than the second line number.");
-//        Global::safe_exit(1);
-//    }
-
-    // TODO: Test here
     if(!allow_reinclusion)
     {
         if(m_includedParts.contains(total_path_str))
@@ -411,15 +402,16 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
 
     // Split by the new line and slice file according to given parameters
     content = Global::split(fileData, "\n");
-    if(lineRange.getEnd() > content.size())
+    if(lineRange.getEnd() > content.size() + 1)
     {
-        lineRange.setEnd(content.size());
+        lineRange.setEnd(content.size() + 1);
     }
 
-    if(lineRange.getEnd() <= lineRange.getBegin())
+    if(lineRange.getEnd() == lineRange.getBegin())
     {
         return {};
     }
+
     content = std::vector<std::string>(content.begin() + lineRange.getBegin() - 1, content.begin() + lineRange.getEnd() - 1);
     removeComments(content);
     std::reverse(content.begin(), content.end());

@@ -31,8 +31,6 @@ SOFTWARE.
 
 typedef double var_t;
 typedef std::vector<std::stack<var_t>>::iterator StackPtr;
-//typedef char32_t char_t;
-typedef std::string string_t;
 
 class Electra;
 namespace Global
