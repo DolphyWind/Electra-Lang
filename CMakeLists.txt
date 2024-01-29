@@ -16,7 +16,7 @@ set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(include/thirdparty/regex)
 target_link_libraries(${TARGET_BINARY_NAME} PRIVATE Boost::regex)
 
-if(WIN32)
+if(MSVC)
     target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
 endif()
 
