@@ -65,7 +65,7 @@ SOFTWARE.
 #include <Reader.hpp>
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
-#include <string_conversions.hpp>
+#include <string_utilities.hpp>
 #include <LineRange.hpp>
 
 typedef std::vector<Direction> GeneratorData;
@@ -74,31 +74,16 @@ class Electra
 {
 public:
 
-    /// @brief Parses command line arguments, and initializes components and generators.
+    /// @brief Sets up components and generators.
+    Electra();
+
+    /// @brief Parses command line arguments, and sets up components and generators.
     explicit Electra(const std::vector<std::string>& args);
 
     ~Electra() = default;
 
-    /// @brief Runs the electra code.
-    void run();
-
-private:
-    /// @brief Recursively includes a file.
-    /// @param currentPath Current folder of the file. Helps when including files from some other direction.
-    /// @param filename File to include
-    /// @param start The start index of the slice
-    /// @param end The end index of the slice
-    /// @return Contents of recursively inclusion
-    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
-
-    /// @brief Removes comments from the source code.
-    void removeComments(std::vector<std::string>& block);
-
-    /// @brief Creates generators from source code
-    void createGenerators();
-
-    /// @brief Creates portals from source code
-    void createPortals();
+    void setSourceCode(const std::vector<std::string>& sourceCode);
+    void setSourceCode(const std::vector<std::u32string>& sourceCode);
 
     /// @brief Main loop of electra
     /// Generates first set of currents before loop.
@@ -109,9 +94,38 @@ private:
     /// - Create new currents
     void mainLoop();
 
+private:
+
+    void setupComponentsAndGenerators();
+    void setupSignalHandlers();
+
+    /// @brief Cleans up some containers
+    void cleanup();
+
+    /// @brief Loads a file
+    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
+    /// @param filename File to load
+    std::vector<std::string> loadFile(fs::path currentPath, const std::string& filename);
+
+    /// @brief Recursively includes a file. Caution: Included file will have comments and will be reversed.
+    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
+    /// @param filename File to include
+    /// @param lineRange Line range to include
+    /// @return Contents of recursively inclusion
+    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
+
+    /// @brief Removes comments from given block of code.
+    void removeComments(std::vector<std::string>& block);
+
+    /// @brief Creates generators from source code
+    void createGenerators();
+
+    /// @brief Creates portals from source code
+    void createPortals();
+
     // Methods for mainLoop() method.
     void moveCurrents();
-    void generateGenerators();
+    void generateFromGenerators();
     void interpretCurrents();
     void removeCurrents();
     void createCurrents();

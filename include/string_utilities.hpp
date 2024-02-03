@@ -30,7 +30,7 @@ SOFTWARE.
 #include <Global.hpp>
 #include <thirdparty/utfcpp/utf8.h>
 
-namespace sconv
+namespace sutil
 {
     std::string to_string(const Direction& direction);
     std::string to_string(const std::vector<Direction>& directions);
@@ -40,12 +40,13 @@ namespace sconv
     std::string to_string(std::size_t s);
     std::string to_string(int i);
     std::string to_string(bool b);
-    std::string to_string(const Global::Empty& e);
 
+    // Removes unnecessary zeros in the fractional part
+    std::string format_variable(var_t variable);
 
-//    template<typename T>
-//    std::string to_string(const T& item)
-//    {
-//        return std::to_string(item);
-//    }
+    // Removes spaces from a string
+    std::string remove_spaces(const std::string& str);
+
+    // Splits a string based on a given delimiter
+    std::vector<std::string> split(const std::string& str, const std::string& delim);
 }

@@ -2,7 +2,7 @@
 ? It uses total of seven stacks. So please make sure your stack count is greater than or equal to this value
 ? This program reads the code from stdin. Please put ! to indicate the end of the code.
 ? The code gets executed after ! symbol.
-? Contains a bug. I have no idea what the bug is but some code straigt up don't work?
+? Contains a bug. I have no idea what the bug is but some code straight up don't work
 
 ? Stacks are used for these purposes:
 ? First two stacks are used for storing code.

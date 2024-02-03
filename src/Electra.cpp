@@ -31,14 +31,20 @@ SOFTWARE.
 #include <algorithm>
 #include <boost/regex.hpp>
 #include <stdexcept>
+#include <utility>
 #define _VARIADIC_MAX INT_MAX
 using namespace std::string_literals;
 
-Electra::Electra(const std::vector<std::string>& args)
+Electra::Electra():
+    m_currentPath(fs::current_path())
 {
-    // Get the current folder
-    m_currentPath = fs::current_path();
+    setupComponentsAndGenerators();
+    setupSignalHandlers();
+}
 
+Electra::Electra(const std::vector<std::string>& args):
+    Electra()
+{
     // Creates argument parser and parses command line arguments.
     Argparser parser(args);
     parser.program_name = "Electra";
@@ -114,7 +120,7 @@ Electra::Electra(const std::vector<std::string>& args)
     // Example: --stack "1 2 3,4 5 6"
     // First stack contains 123 and second stack contains 456
     std::size_t index = 0;
-    auto splitted_by_comma = Global::split(string_map["stack"], ",");
+    auto splitted_by_comma = sutil::split(string_map["stack"], ",");
     if(splitted_by_comma.size() > m_stacks.size())
     {
         std::cerr << "You entered initial values for " << splitted_by_comma.size() << " stacks but stack count is " << m_stacks.size() << "!" << std::endl;
@@ -123,7 +129,7 @@ Electra::Electra(const std::vector<std::string>& args)
     }
     for(auto &splitted : splitted_by_comma)
     {
-        for(auto &i : Global::split(splitted, " "))
+        for(auto &i : sutil::split(splitted, " "))
         {
             if(i.empty()) continue;
 
@@ -148,26 +154,67 @@ Electra::Electra(const std::vector<std::string>& args)
     }
     
     m_filename = alone_args[0];
+    std::vector<std::string> sourceCodeUtf8 = loadFile(m_currentPath, m_filename);
+    setSourceCode(sourceCodeUtf8);
+}
 
-    /// Initializes components and gereators.
-    // Initializes cables
+void Electra::setSourceCode(const std::vector<std::string>& sourceCode)
+{
+    std::vector<std::u32string> sourceCodeUtf32;
+
+    sourceCodeUtf32.reserve(sourceCode.size());
+    for(const auto& line : sourceCode)
+    {
+        std::u32string lineU32;
+        utf8::utf8to32(line.begin(), line.end(), std::back_inserter(lineU32));
+
+        sourceCodeUtf32.emplace_back(std::move(lineU32));
+    }
+    setSourceCode(sourceCodeUtf32);
+}
+
+void Electra::setSourceCode(const std::vector<std::u32string>& sourceCode)
+{
+    cleanup();
+    m_sourceCode = sourceCode;
+    // TODO: Remove comments, include files if there any
+
+    createGenerators();
+    createPortals();
+}
+
+void Electra::cleanup()
+{
+    m_generators.clear();
+    m_currents.clear();
+    m_filename.clear();
+    m_sourceCode.clear();
+    m_includedParts.clear();
+    m_deadCurrentIndices.clear();
+    m_newCurrents.clear();
+    m_portalMap.clear();
+}
+
+void Electra::setupComponentsAndGenerators()
+{
+    // Sets up cables
     m_components[U'-'] = std::make_unique<Cable>( bin2dir(0b00010001) );
     m_components[U'⎯'] = std::make_unique<Cable>( bin2dir(0b00010001) );
-    
+
     m_components[U'|'] = std::make_unique<Cable>( bin2dir(0b01000100) );
-    
+
     m_components[U'/'] = std::make_unique<Cable>( bin2dir(0b00100010) );
     m_components[U'╱'] = std::make_unique<Cable>( bin2dir(0b00100010) );
-    
+
     m_components[U'\\'] = std::make_unique<Cable>( bin2dir(0b10001000) );
     m_components[U'╲'] = std::make_unique<Cable>( bin2dir(0b10001000) );
-    
+
     m_components[U'+'] = std::make_unique<Cable>( bin2dir(0b01010101) );
     m_components[U'┼'] = std::make_unique<Cable>( bin2dir(0b01010101) );
-    
+
     m_components[U'X'] = std::make_unique<Cable>( bin2dir(0b10101010) );
     m_components[U'╳'] = std::make_unique<Cable>( bin2dir(0b10101010) );
-    
+
     m_components[U'*'] = std::make_unique<Cable>( bin2dir(0b11111111) );
     m_components[U'✱'] = std::make_unique<Cable>( bin2dir(0b11111111) );
 
@@ -188,141 +235,134 @@ Electra::Electra(const std::vector<std::string>& args)
     m_components[U'┬'] = std::make_unique<Cable>( bin2dir(0b01010001) );
     m_components[U'┴'] = std::make_unique<Cable>( bin2dir(0b00010101) );
 
-    // I ran out of good ascii characters :(
+    // I ran out of visually descriptive ascii characters :(
     m_components[U'{'] = std::make_unique<Cable>( bin2dir(0b00000001), true );
     m_components[U'}'] = std::make_unique<Cable>( bin2dir(0b00010000), true );
     m_components[U'U'] = std::make_unique<Cable>( bin2dir(0b00000100), true );
     m_components[U'n'] = std::make_unique<Cable>( bin2dir(0b01000000), true );
-    
-    // Initializes Printers
+
+    // Sets up Printers
     m_components[U'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);
     m_components[U'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true);
-    
-    // Initializes Arithmatical Units
+
+    // Sets up Arithmetical Units
     m_components[U'A'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b10100100), [](var_t x, var_t y){return x + y;} );
     m_components[U'S'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b01100110), [](var_t x, var_t y){return x - y;} );
     m_components[U'M'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b11111011), [](var_t x, var_t y){return x * y;} );
     m_components[U'Q'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b11010101), [](var_t x, var_t y){return x / y;} );
     m_components[U'%'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b00100010), [](var_t x, var_t y){return std::fmod(x, y);} );
 
-    // Initializes constant adders
+    // Sets up constant adders
     m_components[U'I'] = std::make_unique<ConstantAdder>( bin2dir(0b01000100), 1);
     m_components[U'D'] = std::make_unique<ConstantAdder>( bin2dir(0b01111101), -1);
-    
-    // Initializes cloner
+
+    // Sets up cloner
     m_components[U'#'] = std::make_unique<Cloner>( bin2dir(0b01010101) );
 
-    // Initializes constant pusher
+    // Sets up constant pusher
     m_components[U'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), 0);
-    
-    // Initializes readers
+
+    // Sets up readers
     m_components[U'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false);
     m_components[U'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true);
 
-    // Initializes swapper
+    // Sets up swapper
     m_components[U'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );
 
-    // Initializes conditional units
+    // Sets up conditional units
     m_components[U'['] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true, true, false, false);
     m_components[U']'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, false, true, false, false);
     m_components[U'L'] = std::make_unique<ConditionalUnit>( bin2dir(0b11111000), 0, false, false, true, false);
     m_components[U'l'] = std::make_unique<ConditionalUnit>( bin2dir(0b01000100), 0, true, false, true, false);
     m_components[U'G'] = std::make_unique<ConditionalUnit>( bin2dir(0b11111101), 0, false, false, false, true);
     m_components[U'g'] = std::make_unique<ConditionalUnit>( bin2dir(0b11101110), 0, true, false, false, true);
-    
-    // Initializes stack checkers
+
+    // Sets up stack checkers
     m_components[U'('] = std::make_unique<StackChecker>( bin2dir(0b01000100), true);
     m_components[U')'] = std::make_unique<StackChecker>( bin2dir(0b01000100), false);
 
-    // Initializes stack switchers
+    // Sets up stack switchers
     m_components[U'F'] = std::make_unique<StackSwitcher>( bin2dir(0b00111111), true, &m_stacks, false);
     m_components[U'f'] = std::make_unique<StackSwitcher>( bin2dir(0b01010111), true, &m_stacks, true);
     m_components[U'B'] = std::make_unique<StackSwitcher>( bin2dir(0b11111110), false, &m_stacks, false);
     m_components[U'b'] = std::make_unique<StackSwitcher>( bin2dir(0b11111001), false, &m_stacks, true);
 
-    // Initializes keys
+    // Sets up keys
     m_components[U'~'] = std::make_unique<Key>( bin2dir(0b00010001), bin2dir(0b01000100), m_sourceCode, U'-');
     m_components[U'!'] = std::make_unique<Key>( bin2dir(0b01000100), bin2dir(0b00010001), m_sourceCode, U'|');
-    
-    // Initializes Reverser
+
+    // Sets up Reverser
     m_components[U'R'] = std::make_unique<Reverser>( bin2dir(0b10111111) );
-    
-    // Initializes Eraser
+
+    // Sets up Eraser
     m_components[U'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
-    // Initializes Bomb
+    // Sets up Bomb
     m_components[U'o'] = std::make_unique<Bomb>( bin2dir(0b11111111));
 
-    // Saves generator characters and their directions and toggler directions in a map
+    // Saves generator characters, their directions and toggler directions in a map
     m_generatorDataMap[U'>'] = bin2dir(0b00000001);
     m_generatorDataMap[U'→'] = bin2dir(0b00000001);
 
     m_generatorDataMap[U'^'] = bin2dir(0b00000100);
     m_generatorDataMap[U'↑'] = bin2dir(0b00000100);
-    
+
     m_generatorDataMap[U'<'] = bin2dir(0b00010000);
     m_generatorDataMap[U'←'] = bin2dir(0b00010000);
-    
+
     m_generatorDataMap[U'v'] = bin2dir(0b01000000);
     m_generatorDataMap[U'↓'] = bin2dir(0b01000000);
-    
+
     m_generatorDataMap[U'↔'] = bin2dir(0b00010001);
     m_generatorDataMap[U'↕'] = bin2dir(0b01000100);
     m_generatorDataMap[U'↗'] = bin2dir(0b00000010);
     m_generatorDataMap[U'↖'] = bin2dir(0b00001000);
     m_generatorDataMap[U'↙'] = bin2dir(0b00100000);
     m_generatorDataMap[U'↘'] = bin2dir(0b10000000);
-    
+
     // Saves generator chars separately
     for(auto &p : m_generatorDataMap)
     {
         m_generatorChars.push_back(p.first);
     }
-
-    #ifdef SIGTERM
-    signal(SIGTERM, &Electra::sigHandler);
-    #endif
-    #ifdef SIGINT
-    signal(SIGINT, &Electra::sigHandler);
-    #endif
-    #ifdef SIGQUIT
-    signal(SIGQUIT, &Electra::sigHandler);
-    #endif
-    #ifdef SIGKILL
-    signal(SIGKILL, &Electra::sigHandler);
-    #endif
-    #ifdef SIGHUP
-    signal(SIGHUP, &Electra::sigHandler);
-    #endif
-    #ifdef SIGABRT
-    signal(SIGABRT, &Electra::sigHandler);
-    #endif
 }
 
-void Electra::run()
+void Electra::setupSignalHandlers()
 {
-    std::vector<std::string> sourceCodeUtf8 = includeFile(m_currentPath, m_filename);
-    removeComments(sourceCodeUtf8);
-    std::reverse(sourceCodeUtf8.begin(), sourceCodeUtf8.end());
+#ifdef SIGTERM
+    signal(SIGTERM, &Electra::sigHandler);
+#endif
+#ifdef SIGINT
+    signal(SIGINT, &Electra::sigHandler);
+#endif
+#ifdef SIGQUIT
+    signal(SIGQUIT, &Electra::sigHandler);
+#endif
+#ifdef SIGKILL
+    signal(SIGKILL, &Electra::sigHandler);
+#endif
+#ifdef SIGHUP
+    signal(SIGHUP, &Electra::sigHandler);
+#endif
+#ifdef SIGABRT
+    signal(SIGABRT, &Electra::sigHandler);
+#endif
+}
 
-    m_sourceCode.reserve(sourceCodeUtf8.size());
-    for(const auto& line : sourceCodeUtf8)
-    {
-        std::u32string lineU32;
-        utf8::utf8to32(line.begin(), line.end(), std::back_inserter(lineU32));
+std::vector<std::string> Electra::loadFile(fs::path currentPath, const std::string& filename)
+{
+    std::vector<std::string> out = includeFile(std::move(currentPath), filename);
+    removeComments(out);
+    std::reverse(out.begin(), out.end());
 
-        m_sourceCode.emplace_back(std::move(lineU32));
-    }
-    createGenerators();
-    createPortals();
-    mainLoop();
+    return out;
 }
 
 void Electra::mainLoop()
 {
     defaultlogger.log(LogType::INFO, "Program started!");
     int tickCount = 0;
-    generateGenerators();
+    generateFromGenerators();
 
     do
     {
@@ -401,7 +441,7 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
     }
 
     // Split by the new line and slice file according to given parameters
-    content = Global::split(fileData, "\n");
+    content = sutil::split(fileData, "\n");
     if(lineRange.getEnd() > content.size() + 1)
     {
         lineRange.setEnd(content.size() + 1);
@@ -434,12 +474,12 @@ std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::s
             LineRange newRange;
 
             match_str = match_str.substr(filename_match.str().size());
-            match_str = Global::remove_spaces(match_str);
+            match_str = sutil::remove_spaces(match_str);
 
             if(match_str.find(':') != std::string::npos)
             {
                 // Determines new_start and new_end by parsing x:y
-                auto split_from_colon = Global::split(match_str, ":");
+                auto split_from_colon = sutil::split(match_str, ":");
 
                 try
                 {
@@ -566,7 +606,7 @@ void Electra::createPortals()
     defaultlogger.log(LogType::INFO, "Finished parsing portals from source code!");
 }
 
-void Electra::generateGenerators()
+void Electra::generateFromGenerators()
 {
     for(auto &gen : m_generators)
     {

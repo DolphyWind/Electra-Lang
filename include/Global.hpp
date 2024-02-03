@@ -27,7 +27,6 @@ SOFTWARE.
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <thirdparty/utfcpp/utf8.h>
 
 typedef double var_t;
 typedef std::vector<std::stack<var_t>>::iterator StackPtr;
@@ -38,17 +37,5 @@ namespace Global
     // Pops the top value from the given stack. Returns defaultValue if the stack is empty.
     var_t popStack(StackPtr stack, var_t defaultValue = 0);
 
-    // Removes unnecessary zeros in the mantissa
-    std::string format_variable(var_t variable);
-
-    // Removes spaces from a string
-    std::string remove_spaces(const std::string& str);
-
-    // Splits a string based on a given delimiter
-    std::vector<std::string> split(const std::string& str, const std::string& delim);
-
     void safe_exit(int exit_code);
-
-    // Empty struct
-    struct Empty{};
 }

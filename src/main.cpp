@@ -37,6 +37,6 @@ int main(int argc, char *argv[])
     }
 
 	Electra electraInterpreter(args);
-	electraInterpreter.run();
+	electraInterpreter.mainLoop();
 	return 0;
 }

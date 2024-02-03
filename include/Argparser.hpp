@@ -35,7 +35,7 @@ SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include <Logger.hpp>
-#include <string_conversions.hpp>
+#include <string_utilities.hpp>
 #include <thirdparty/utfcpp/utf8.h>
 
 // Simple argument parser

@@ -49,7 +49,7 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
     }
     else
     {
-        std::cout << Global::format_variable(top) << std::flush;
+        std::cout << sutil::format_variable(top) << std::flush;
         defaultlogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     

@@ -37,55 +37,6 @@ namespace Global
         return top;
     }
 
-    std::string format_variable(var_t variable)
-    {
-        std::string str = sconv::to_string(variable);
-        if(str.find('.') == std::string::npos)
-        {
-            return str;
-        }
-
-        while(str[str.length() - 1] == '0')
-        {
-            str.pop_back();
-            if(str[str.length() - 1] == '.')
-            {
-                str.pop_back();
-                break;
-            }
-        }
-        return str;
-    }
-
-    std::string remove_spaces(const std::string &str)
-    {
-        std::string result;
-        result.reserve(str.size());
-
-        for(auto& c : str)
-        {
-            if(c != ' ') result.push_back(c);
-        }
-
-        return result;
-    }
-
-    std::vector<std::string> split(const std::string& str, const std::string& delim)
-    {
-        std::size_t current_pos = 0;
-        std::size_t prev_pos = 0;
-        std::vector<std::string> result{};
-
-        while((current_pos = str.find(delim, prev_pos)) != std::string::npos)
-        {
-            result.push_back(str.substr(prev_pos, current_pos - prev_pos));
-            prev_pos = current_pos + delim.size();
-        }
-
-        result.push_back(str.substr(prev_pos));
-        return result;
-    }
-
     void safe_exit(int exit_code)
     {
         // There used to be some code here

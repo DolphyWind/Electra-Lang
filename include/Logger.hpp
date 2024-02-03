@@ -30,7 +30,7 @@ SOFTWARE.
 #include <Global.hpp>
 #include <ctime>
 #include <sstream>
-#include <string_conversions.hpp>
+#include <string_utilities.hpp>
 
 enum class LogType
 {
@@ -89,7 +89,7 @@ std::string Logger::format(std::string& message, T&& t, Args&&... args)
 {
     constexpr std::string_view curly_braces = "{}";
     std::size_t pos = message.find(curly_braces);
-    message.replace(pos, curly_braces.size(), sconv::to_string(t));
+    message.replace(pos, curly_braces.size(), sutil::to_string(t));
 
     return format(message, std::forward<Args>(args)...);
 }
@@ -99,7 +99,7 @@ std::string Logger::format(std::string& message, T&& t)
 {
     constexpr std::string_view curly_braces = "{}";
     std::size_t pos = message.find(curly_braces);
-    message.replace(pos, curly_braces.size(), sconv::to_string(t));
+    message.replace(pos, curly_braces.size(), sutil::to_string(t));
 
     return message;
 }
