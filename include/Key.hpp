@@ -24,6 +24,7 @@ SOFTWARE.
 
 #pragma once
 #include <Cable.hpp>
+#include <string>
 
 // Holds flown currents still until it is activated. To activate a key, a current has to touch it from its activator directions.
 class Key : public Cable

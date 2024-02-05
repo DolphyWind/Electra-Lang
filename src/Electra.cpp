@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "misc-no-recursion"
 #include <cmath>
+#include <sstream>
 
 #include <boost/regex.hpp>
 
