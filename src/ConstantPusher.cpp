@@ -23,17 +23,20 @@ SOFTWARE.
 */
 
 #include <ConstantPusher.hpp>
+#include <Logger.hpp>
 
 ConstantPusher::ConstantPusher(const std::vector<Direction>& directions, var_t constant):
     Cable(directions), m_constant(constant)
 {}
 
-bool ConstantPusher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool ConstantPusher::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     current->stackPtr->push(m_constant);
-    defaultlogger.log(LogType::INFO, "(ConstantPusher) Pushed {} to the stack.", m_constant);
+    defaultLogger.log(LogType::INFO, "(ConstantPusher) Pushed {} to the stack.", m_constant);
     return Cable::work(current, currentVector);
 }

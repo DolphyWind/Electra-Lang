@@ -24,14 +24,13 @@ SOFTWARE.
 
 #pragma once
 #include <Cable.hpp>
-#include <direction.hpp>
 
 // Ends the program.
 class Bomb : public Cable
 {
 public:
     explicit Bomb(const std::vector<Direction>& directions);
-    ~Bomb() = default;
+    ~Bomb() override = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 };

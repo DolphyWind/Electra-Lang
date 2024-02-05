@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include <Logger.hpp>
+#include <sstream>
 
 Logger::Logger()
 {
@@ -50,7 +51,10 @@ std::string_view Logger::logTypeToStr(LogType logType)
 
 void Logger::log(LogType logType, const std::string& message)
 {
-    if(!loggingEnabled) return;
+    if(!loggingEnabled)
+    {
+        return;
+    }
 
     if(!m_fileOpened)
     {
@@ -67,4 +71,4 @@ void Logger::log(LogType logType, const std::string& message)
     m_writer << '[' << logTypeToStr(logType) << "] " << message << '\n';
 }
 
-Logger defaultlogger = Logger();
+Logger defaultLogger = Logger();

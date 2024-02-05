@@ -22,13 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <iostream>
+#include <sstream>
+
 #include <Reader.hpp>
+#include <Logger.hpp>
 
 Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
     Cable(directions), m_getInputAsChar(getInputAsChar)
 {}
 
-bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
@@ -77,7 +81,7 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         utf8::utf8to32(readStr.begin(), readStr.end(), std::back_inserter(combinedStr));
 
         current->stackPtr->push(static_cast<var_t>(combinedStr[0]));
-        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", readSS.str());
+        defaultLogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", readSS.str());
     }
     else
     {
@@ -89,7 +93,7 @@ bool Reader::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         }
 
         current->stackPtr->push(v);
-        defaultlogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", v);
+        defaultLogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", v);
     }
     return Cable::work(current, currentVector);
 }

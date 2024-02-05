@@ -26,12 +26,12 @@ SOFTWARE.
 #include <Cable.hpp>
 
 // Swaps the top two values of the current's stackPtr of the current.
-// If there is less than two values in current's stackPtr it does nothing.
+// If there is less than two values on current's stackPtr it does nothing.
 class Swapper : public Cable
 {
 public:
     explicit Swapper(const std::vector<Direction>& directions);
     ~Swapper() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 };

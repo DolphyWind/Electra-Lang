@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <direction.hpp>
+#include <Direction.hpp>
 
 Position::Position():
     x(0), y(0)
@@ -55,32 +55,23 @@ Position directionToPosition(const Direction &direction)
     {
     case Direction::EAST:
         return {1, 0};
-        break;
     case Direction::NORTHEAST:
         return {1, -1};
-        break;
     case Direction::NORTH:
         return {0, -1};
-        break;
     case Direction::NORTHWEST:
         return {-1, -1};
-        break;
     case Direction::WEST:
         return {-1, 0};
-        break;
     case Direction::SOUTHWEST:
         return {-1, 1};
-        break;
     case Direction::SOUTH:
         return {0, 1};
-        break;
     case Direction::SOUTHEAST:
         return {1, 1};
-        break;
     case Direction::NONE:
     default:
         return {0, 0};
-        break;
     }
 }
 

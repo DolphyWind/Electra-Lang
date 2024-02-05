@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-#include <iostream>
 #include <vector>
 
 enum class Direction

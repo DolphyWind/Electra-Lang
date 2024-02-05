@@ -23,8 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Current.hpp>
-#include <direction.hpp>
 #include <Cable.hpp>
 
 // Checks if the current's stackPtr is empty or not.
@@ -34,7 +32,7 @@ public:
     StackChecker(const std::vector<Direction>& directions, bool passIfEmpty);
     ~StackChecker() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_passIfEmpty = false;
 };

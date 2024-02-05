@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <vector>
 #include <string>
-#include <direction.hpp>
+#include <Direction.hpp>
 #include <Global.hpp>
 #include <optional>
 #include <thirdparty/utfcpp/utf8.h>

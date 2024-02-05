@@ -23,22 +23,28 @@ SOFTWARE.
 */
 
 #include <ConstantAdder.hpp>
+#include <Logger.hpp>
 
 ConstantAdder::ConstantAdder(const std::vector<Direction>& directions, var_t constant):
     Cable(directions), m_constant(constant)
 {}
 
-bool ConstantAdder::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool ConstantAdder::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
-    if(current->stackPtr->empty()) return Cable::work(current, currentVector);
+    }
+
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
     
     var_t var = Global::popStack(current->stackPtr);
     var += m_constant;
     current->stackPtr->push(var);
 
-    defaultlogger.log(LogType::INFO, "(ConstantAdder) Added {} to the top value.", m_constant);
+    defaultLogger.log(LogType::INFO, "(ConstantAdder) Added {} to the top value.", m_constant);
     return Cable::work(current, currentVector);
 }

@@ -33,7 +33,7 @@ public:
     ConstantAdder(const std::vector<Direction>& directions, var_t constant);
     ~ConstantAdder() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     var_t m_constant;
 };

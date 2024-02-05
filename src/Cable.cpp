@@ -23,34 +23,38 @@ SOFTWARE.
 */
 
 #include <Cable.hpp>
+#include <Logger.hpp>
 
 Cable::Cable(const std::vector<Direction>& directions, bool is_one_directional):
     Component(directions), m_is_one_directional(is_one_directional)
-{};
+{}
 
-bool Cable::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Cable::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
-        defaultlogger.log(LogType::INFO,
-            "The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
-            current->getPosition().x, current->getPosition().y, current->getDirection(), this->m_directions
+        defaultLogger.log(LogType::INFO,
+                          "The current at ({}, {}) with direction {} is not in the supported list of directions. Supported directions are: {}.",
+                          current->getPosition().x, current->getPosition().y, current->getDirection(), m_directions
         );
         return false;
     }
 
     Direction currentDir = current->getDirection();
     Position currentPos = current->getPosition();
-    std::stack<Position>& portalStack = current->getPortalStack();
+    const std::stack<Position>& portalStack = current->getPortalStack();
 
     for(auto &dir : m_directions)
     {
-        if(dir == currentDir || dir == invertDirection(currentDir)) continue;
+        if(dir == currentDir || dir == invertDirection(currentDir))
+        {
+            continue;
+        }
         Position deltaPos = directionToPosition(dir);
-        CurrentPtr newCurrent = std::make_shared<Current>(dir, currentPos + deltaPos, current->stackPtr);
+        Current::Ptr newCurrent = std::make_shared<Current>(dir, currentPos + deltaPos, current->stackPtr);
         newCurrent->setPortalStack(portalStack);
-        currentVector->push_back(newCurrent);
+        currentVector.push_back(newCurrent);
     }
     
-    return m_is_one_directional || (std::find(m_directions.begin(), m_directions.end(), currentDir) != this->m_directions.end());
+    return m_is_one_directional || (std::find(m_directions.begin(), m_directions.end(), currentDir) != m_directions.end());
 }

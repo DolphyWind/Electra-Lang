@@ -23,25 +23,25 @@ SOFTWARE.
 */
 
 #include <Global.hpp>
-#include <Logger.hpp>
-#include <cstring>
+#include <algorithm>
 
 namespace Global
 {
-    var_t popStack(StackPtr stack, var_t defaultValue)
-    {
-        if(stack->empty()) return defaultValue;
 
-        var_t top = stack->top();
-        stack->pop();
-        return top;
-    }
+var_t popStack(StackPtr stack, var_t defaultValue)
+{
+    if(stack->empty()) return defaultValue;
 
-    void safe_exit(int exit_code)
-    {
-        // There used to be some code here
+    var_t top = stack->top();
+    stack->pop();
+    return top;
+}
 
-        std::exit(exit_code);
-    }
+void safe_exit(int exit_code)
+{
+    // There used to be some code here
+
+    std::exit(exit_code);
+}
 
 } // namespace Global

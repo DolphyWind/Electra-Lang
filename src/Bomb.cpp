@@ -28,11 +28,13 @@ Bomb::Bomb(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Bomb::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     Global::safe_exit(0);
     return Cable::work(current, currentVector);
 }

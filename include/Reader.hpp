@@ -23,8 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Current.hpp>
-#include <direction.hpp>
 #include <Cable.hpp>
 
 // Takes input from user and pushes it on top of the current's stackPtr.
@@ -34,7 +32,7 @@ public:
     Reader(const std::vector<Direction>& directions, bool getInputAsChar);
     ~Reader() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_getInputAsChar = false;
 };

@@ -23,14 +23,10 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Current.hpp>
-#include <direction.hpp>
 #include <Cable.hpp>
-#include <stack>
-#include <vector>
 
 // Moves current's stackPtr pointer forwards or backwards.
-// If moveValue is true, it pops the top value before moving the stackPtr and pushes that value after moving.
+// If moveValue is true, it pops the top value before moving the stackPtr and pushes that value to the new stack after moving.
 // It does not push anything if there is nothing to pop.
 class StackSwitcher : public Cable
 {
@@ -38,7 +34,7 @@ public:
     StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
     ~StackSwitcher() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     std::vector<std::stack<var_t>>* m_stacks;
     bool m_moveForward = true;

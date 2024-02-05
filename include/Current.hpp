@@ -23,17 +23,18 @@ SOFTWARE.
 */
 
 #pragma once
-#include <iostream>
-#include <direction.hpp>
-#include <Global.hpp>
 #include <memory>
-#include <stack>
 #include <optional>
 
-// Instruction pointers that act like the currents in electricity
+#include <Direction.hpp>
+#include <Global.hpp>
+
+// Instruction pointers of Electra
 class Current
 {
 public:
+    typedef std::shared_ptr<Current> Ptr;
+
     explicit Current(Direction direction);
     Current(Direction direction, Position position, StackPtr stackPtr);
     ~Current() = default;
@@ -58,5 +59,3 @@ private:
     Position m_position = {0, 0};
     std::stack<Position> m_visitedPortalStack{};
 };
-
-typedef std::shared_ptr<Current> CurrentPtr;

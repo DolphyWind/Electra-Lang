@@ -23,25 +23,30 @@ SOFTWARE.
 */
 
 #include <Swapper.hpp>
+#include <Logger.hpp>
 
 Swapper::Swapper(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Swapper::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Swapper::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     if(current->stackPtr->size() < 2)
+    {
         return Cable::work(current, currentVector);
+    }
 
     var_t first = Global::popStack(current->stackPtr);
     var_t second = Global::popStack(current->stackPtr);
     current->stackPtr->push(first);
     current->stackPtr->push(second);
 
-    defaultlogger.log(LogType::INFO, "Swapping {} and {} on the stack.", first, second);
+    defaultLogger.log(LogType::INFO, "Swapping {} and {} on the stack.", first, second);
 
     return Cable::work(current, currentVector);
 }

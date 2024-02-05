@@ -25,14 +25,14 @@ SOFTWARE.
 #pragma once
 #include <Component.hpp>
 
-// Teleports currents from a location to another location. Works like functions.
+// Teleports currents around.
 class Portal : public Component
 {
 public:
     explicit Portal(Position originalPosition);
     ~Portal() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     Position m_originalPosition;
 };

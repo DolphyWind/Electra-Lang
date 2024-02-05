@@ -23,21 +23,16 @@ SOFTWARE.
 */
 
 #pragma once
-#include <direction.hpp>
 #include <Component.hpp>
-#include <vector>
-#include <Current.hpp>
-#include <algorithm>
-#include <optional>
-#include <Logger.hpp>
 
 // Clones the currents if the cable is multi-directional.
 class Cable : public Component
 {
 public:
     explicit Cable(const std::vector<Direction>& directions, bool is_one_directional=false);
-    virtual ~Cable() = default;
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    ~Cable() override = default;
+
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_is_one_directional = false;
 };

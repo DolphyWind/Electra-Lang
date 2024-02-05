@@ -23,25 +23,21 @@ SOFTWARE.
 */
 
 #pragma once
-#include <direction.hpp>
-#include <iostream>
-#include <vector>
+#include <Direction.hpp>
 #include <Current.hpp>
-#include <memory>
-#include <Logger.hpp>
-#include <stack>
-#include <Global.hpp>
 
 // Generates currents at the start of the program.
 class Generator
 {
 public:
+    typedef std::shared_ptr<Generator> Ptr;
+
     Generator(const std::vector<Direction>& directions, Position position);
     ~Generator() = default;
 
     /// @brief Generates new current if it can
     /// @param currentVector Pushes the new current in this vector
-    void generate(std::vector<CurrentPtr> *currentVector, StackPtr stackPtr);
+    void generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr);
 
     [[nodiscard]] const std::vector<Direction>& getDirections() const;
     std::vector<Direction>& getDirections();
@@ -49,5 +45,3 @@ private:
     Position m_position;
     std::vector<Direction> m_directions;
 };
-
-typedef std::shared_ptr<Generator> GeneratorPtr;

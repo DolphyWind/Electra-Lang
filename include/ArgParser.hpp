@@ -28,39 +28,18 @@ SOFTWARE.
 #define ELECTRA_VERSION_MINOR 1
 #define ELECTRA_VERSION_PATCH 1
 
-#include <string>
 #include <vector>
 #include <unordered_map>
-#include <tuple>
-#include <algorithm>
-#include <iostream>
-#include <Logger.hpp>
-#include <string_utilities.hpp>
-#include <thirdparty/utfcpp/utf8.h>
 
 // Simple argument parser
 // Parses arguments into three categories:
-// Arguments that store bool: They store true if they are present
-// Arguments that store string: They store the next argument unless the next argument is not an argument
+// Bool arguments: Arguments that store true if they are present
+// String arguments: Arguments that store succeeding argument
 // Alone arguments: Arguments that are not specified to store anything
-class Argparser
+class ArgParser
 {
-private:
-
-    struct Argument
-    {
-        std::string shortName;
-        std::string name;
-        bool store_boolean;
-        std::string argumentDesc;
-    };
-    
-    std::vector<Argument> m_args;
-    std::vector<std::string> m_argsEntered;
-    std::vector<std::string> m_aloneArguments;
-
 public:
-    explicit Argparser(const std::vector<std::string>& args);
+    explicit ArgParser(const std::vector<std::string>& args);
     
     std::string_view binary_name;
     std::string_view program_name;
@@ -69,6 +48,19 @@ public:
     std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> parse();
     std::vector<std::string> getAloneArguments();
     
-    void printVersionMessage();
+    void printVersionMessage() const;
     void printHelpMessage();
+
+private:
+    struct Argument
+    {
+        std::string shortName;
+        std::string name;
+        bool store_boolean;
+        std::string argumentDesc;
+    };
+
+    std::vector<Argument> m_args;
+    std::vector<std::string> m_argsEntered;
+    std::vector<std::string> m_aloneArguments;
 };

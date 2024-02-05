@@ -23,27 +23,32 @@ SOFTWARE.
 */
 
 #include <ConditionalUnit.hpp>
+#include <Logger.hpp>
 
 ConditionalUnit::ConditionalUnit(const std::vector<Direction>& directions, var_t targetValue, bool isInverted,
                                  bool checkEqual, bool checkLess, bool checkGreater):
     Cable(directions), m_targetValue(targetValue), m_inverted(isInverted), m_checkEqual(checkEqual), m_checkLess(checkLess), m_checkGreater(checkGreater)
 {}
 
-bool ConditionalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool ConditionalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
+    }
     if(current->stackPtr->empty())
+    {
         return Cable::work(current, currentVector);
-    
+    }
+
     var_t top = Global::popStack(current->stackPtr);
 
     bool result = true;
-    result = result && (m_checkEqual ? (top == m_targetValue) : true);
-    result = result && (m_checkLess ? (top < m_targetValue) : true);
-    result = result && (m_checkGreater ? (top > m_targetValue) : true);
-    result = (m_inverted ? !result : result);
+    result = (!m_checkEqual || (top == m_targetValue));
+    result = result && (!m_checkLess || (top < m_targetValue));
+    result = result && (!m_checkGreater || (top > m_targetValue));
+    result = (m_inverted == !result);
 
-    defaultlogger.log(LogType::INFO, "(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_inverted, m_checkEqual, m_checkLess, m_checkGreater);
+    defaultLogger.log(LogType::INFO, "(ConditionalUnit) Comparing {} with {}. Result: {}. (invert: {}, checkequal: {}, checkless: {}, checkgreater: {})", top, m_targetValue, result, m_inverted, m_checkEqual, m_checkLess, m_checkGreater);
     return result && Cable::work(current, currentVector);
 }

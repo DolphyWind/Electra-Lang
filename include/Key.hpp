@@ -25,14 +25,14 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Stops the current if it is not ativated. To activate a key, a current has to touch it from its activator directions.
+// Holds flown currents still until it is activated. To activate a key, a current has to touch it from its activator directions.
 class Key : public Cable
 {
 public:
     Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo);
     ~Key() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     std::vector<Direction> m_activatorDirections;
     std::vector<std::u32string>& m_sourceCode;

@@ -23,24 +23,16 @@ SOFTWARE.
 */
 
 #pragma once
-#include <iostream>
-#include <vector>
-#include <memory>
 #include <Current.hpp>
-#include <stack>
-#include <Global.hpp>
-#include <Logger.hpp>
 
-// Base electrical component class. Checks if the current's direction is supported.
+// Base class for all Electra components. Kills the current if the current's direction is not supported.
 class Component
 {
 public:
     explicit Component(const std::vector<Direction>& directions);
     virtual ~Component() = default;
 
-    virtual bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector);
+    virtual bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector);
 protected:
     std::vector<Direction> m_directions;
 };
-
-typedef std::shared_ptr<Component> ComponentPtr;

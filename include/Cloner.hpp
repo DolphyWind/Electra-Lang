@@ -25,13 +25,13 @@ SOFTWARE.
 #pragma once
 #include <Cable.hpp>
 
-// Pops the top value of the current's stackPtr and pushes it back onto current's stackPtr.
-// If there is no top value it does nothing
+// Pops the top value of the current's stackPtr and pushes it back onto same stack twice.
+// If there are no values on the stack it does nothing.
 class Cloner : public Cable
 {
 public:
     explicit Cloner(const std::vector<Direction>& directions);
-    ~Cloner() = default;
+    ~Cloner() override = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 };

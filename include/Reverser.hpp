@@ -32,5 +32,5 @@ public:
     explicit Reverser(const std::vector<Direction>& directions);
     ~Reverser() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 };

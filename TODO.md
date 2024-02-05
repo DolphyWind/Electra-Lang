@@ -11,3 +11,5 @@
 + [] Electra standard library
 + [] Performance Improvements to brainfuck interpreter
 + [] Test gmpxx's floats. Do some benchmarking and if it is suitable, use them to be able to store big numbers.
++ [X] Code cleanup
++ [] Add unit tests

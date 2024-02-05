@@ -23,53 +23,23 @@ SOFTWARE.
 */
 
 #pragma once
-#include <iostream>
-#include <vector>
-#include <Current.hpp>
-#include <Component.hpp>
-#include <Generator.hpp>
-#include <Cable.hpp>
-#include <memory>
-#include <unordered_map>
-#include <stack>
-#include <cmath>
-#include <csignal>
-#include <regex>
-#include <stdexcept>
-#include <cstring>
-#include <set>
 #if __has_include(<filesystem>)
   #include <filesystem>
   namespace fs = std::filesystem;
 #elif __has_include(<experimental/filesystem>)
-  #include <experimental/filesystem> 
+  #include <experimental/filesystem>
   namespace fs = std::experimental::filesystem;
 #else
   #error "Missing the <filesystem> header."
 #endif
+#include <unordered_map>
+#include <set>
 
-#include <Logger.hpp>
-#include <Printer.hpp>
-#include <ArithmeticalUnit.hpp>
-#include <ConstantAdder.hpp>
-#include <Cloner.hpp>
-#include <ConstantPusher.hpp>
-#include <Swapper.hpp>
-#include <ConditionalUnit.hpp>
-#include <Key.hpp>
-#include <Portal.hpp>
-#include <Reverser.hpp>
-#include <Eraser.hpp>
-#include <Argparser.hpp>
-#include <Bomb.hpp>
-#include <Reader.hpp>
-#include <StackChecker.hpp>
-#include <StackSwitcher.hpp>
-#include <string_utilities.hpp>
+#include <Component.hpp>
+#include <Generator.hpp>
 #include <LineRange.hpp>
 
 typedef std::vector<Direction> GeneratorData;
-
 class Electra
 {
 public:
@@ -100,24 +70,25 @@ public:
     void mainLoop();
 
 private:
-
     void setupComponentsAndGenerators();
-    void setupSignalHandlers();
+    static void setupSignalHandlers();
 
     /// @brief Cleans up some containers
     void cleanup();
 
-//    /// @brief Loads a file
-//    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
-//    /// @param filename File to load
-//    std::vector<std::string> loadFile(fs::path currentPath, const std::string& filename);
-//
-//    /// @brief Recursively includes a file. Caution: Included file will have comments and will be reversed.
-//    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
-//    /// @param filename File to include
-//    /// @param lineRange Line range to include
-//    /// @return Contents of recursively inclusion
-//    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
+    /// @brief Recursively includes a file.
+    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
+    /// @param filename File to include
+    /// @param lineRange Line range to include
+    /// @return File content after including file
+    [[nodiscard]] std::vector<std::string> includeFile(const fs::path& currentPath, const std::string& filename, LineRange lineRange=LineRange{});
+
+    /// @brief Removes comments and includes files if there are any to include
+    /// @param currentPath
+    /// @param sourceCode
+    /// @param lineRange
+    /// @return
+    [[nodiscard]] std::vector<std::string> parseSourceCode(const fs::path& currentPath, const std::string& sourceCode, LineRange lineRange=LineRange{});
 
     /// @brief Creates generators from source code
     void createGenerators();
@@ -138,8 +109,8 @@ private:
     // Generators and currents
     std::unordered_map<char32_t, GeneratorData> m_generatorDataMap;
     std::vector<char32_t> m_generatorChars;
-    std::vector<GeneratorPtr> m_generators;
-    std::vector<CurrentPtr> m_currents;
+    std::vector<Generator::Ptr> m_generators;
+    std::vector<Current::Ptr> m_currents;
 
     // Related to files
     std::string m_filename;
@@ -151,7 +122,7 @@ private:
     std::vector<std::size_t> m_deadCurrentIndices;
 
     // Holds the list of Currents that are going to be created at the end of the loop. Components update this list.
-    std::vector<CurrentPtr> m_newCurrents;
+    std::vector<Current::Ptr> m_newCurrents;
 
     // Memory management
     std::vector<std::stack<var_t>> m_stacks;
@@ -161,5 +132,5 @@ private:
     std::unordered_map<char32_t, Position> m_portalMap;
 
     // Signal handling.
-    static void sigHandler(int signal);
+    static void sigHandler([[maybe_unused]] int signal);
 };

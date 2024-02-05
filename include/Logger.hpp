@@ -25,12 +25,8 @@ SOFTWARE.
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <sstream>
-#include <vector>
+#include <StringUtilities.hpp>
 #include <Global.hpp>
-#include <ctime>
-#include <sstream>
-#include <string_utilities.hpp>
 
 enum class LogType
 {
@@ -104,4 +100,4 @@ std::string Logger::format(std::string& message, T&& t)
     return message;
 }
 
-extern Logger defaultlogger;
+extern Logger defaultLogger;

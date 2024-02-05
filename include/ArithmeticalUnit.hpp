@@ -23,23 +23,22 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Cable.hpp>
-#include <iostream>
 #include <functional>
-#include <stack>
 
-typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
+#include <Cable.hpp>
 
-// Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to current's stackPtr.
+// Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to the same stack.
 // The first parameter that is popped is the first argument of m_func
 // If there is less than two values or no values on current's stackPtr, it does nothing.
 class ArithmeticalUnit : public Cable
 {
 public:
-    ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
-    ~ArithmeticalUnit() = default;
+    typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
+    ~ArithmeticalUnit() override = default;
+
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     ArithmeticalFunc m_func;
 };

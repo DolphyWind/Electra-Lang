@@ -22,13 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <sstream>
+
 #include <StackSwitcher.hpp>
+#include <Logger.hpp>
 
 StackSwitcher::StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue):
     Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
 {}
 
-bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool StackSwitcher::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
@@ -37,25 +40,37 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
 
     bool stack_empty = current->stackPtr->empty();
     var_t top = 0;
-    if(!stack_empty && m_moveValue) top = Global::popStack(current->stackPtr);
+    if(!stack_empty && m_moveValue)
+    {
+        top = Global::popStack(current->stackPtr);
+    }
     std::string message = "(StackSwitcher) Moving one stack {}.";
 
     if(m_moveForward)
     {
-        if((++current->stackPtr) == m_stacks->end()) current->stackPtr = m_stacks->begin();
+        if((++current->stackPtr) == m_stacks->end())
+        {
+            current->stackPtr = m_stacks->begin();
+        }
     }
     else
     {
-        if(current->stackPtr == m_stacks->begin()) current->stackPtr = std::prev(m_stacks->end());
-        else current->stackPtr--;
+        if(current->stackPtr == m_stacks->begin())
+        {
+            current->stackPtr = std::prev(m_stacks->end());
+        }
+        else
+        {
+            current->stackPtr--;
+        }
     }
     
     if(!stack_empty && m_moveValue) 
     {
         current->stackPtr->push(top);
-        std::stringstream msgss;
-        msgss << " With value " << top << '.';
-        message += msgss.str();
+        std::stringstream msg_ss;
+        msg_ss << " With value " << top << '.';
+        message += msg_ss.str();
     }
 
     std::string forwardBackwardMessage = "backward";
@@ -64,7 +79,7 @@ bool StackSwitcher::work(CurrentPtr current, std::vector<CurrentPtr> *currentVec
         forwardBackwardMessage = "forward";
     }
 
-    defaultlogger.log(LogType::INFO, message, forwardBackwardMessage);
+    defaultLogger.log(LogType::INFO, message, forwardBackwardMessage);
 
     return Cable::work(current, currentVector);
 }

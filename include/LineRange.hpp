@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 #pragma once
-#include <cstdint>
 #include <limits>
 #include <compare>
 

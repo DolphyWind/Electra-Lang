@@ -22,17 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Global.hpp"
-#include "Logger.hpp"
-#include <Electra.hpp>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "misc-no-recursion"
+#include <cmath>
+
 #include <boost/regex.hpp>
-#include <stdexcept>
-#include <utility>
-#define _VARIADIC_MAX INT_MAX
+
+#include <Electra.hpp>
+#include <ArgParser.hpp>
+#include <ArithmeticalUnit.hpp>
+#include <Bomb.hpp>
+#include <Cloner.hpp>
+#include <ConditionalUnit.hpp>
+#include <ConstantAdder.hpp>
+#include <ConstantPusher.hpp>
+#include <Eraser.hpp>
+#include <Key.hpp>
+#include <Logger.hpp>
+#include <Portal.hpp>
+#include <Printer.hpp>
+#include <Reader.hpp>
+#include <Reverser.hpp>
+#include <StackChecker.hpp>
+#include <StackSwitcher.hpp>
+#include <Swapper.hpp>
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -46,7 +59,7 @@ Electra::Electra(const std::vector<std::string>& args):
     Electra()
 {
     // Creates argument parser and parses command line arguments.
-    Argparser parser(args);
+    ArgParser parser(args);
     parser.program_name = "Electra";
     parser.binary_name = "electra";
     parser.program_description = "Electra is an esolang where you code like an electrician.\n" \
@@ -63,55 +76,60 @@ Electra::Electra(const std::vector<std::string>& args):
     auto bool_map = std::get<1>(parser_args);
     auto alone_args = parser.getAloneArguments();
 
-    defaultlogger.loggingEnabled = bool_map["log"];
+    defaultLogger.loggingEnabled = bool_map["log"];
     if(bool_map["help"])
     {
         parser.printHelpMessage();
-        defaultlogger.log(LogType::INFO, "Printed help message. Exiting with code 0.");
+        defaultLogger.log(LogType::INFO, "Printed help message. Exiting with code 0.");
         Global::safe_exit(0);
     }
 
     if(bool_map["version"])
     {
         parser.printVersionMessage();
-        defaultlogger.log(LogType::INFO, "Printed current version of electra. Exiting with code 0.");
+        defaultLogger.log(LogType::INFO, "Printed current version of electra. Exiting with code 0.");
         Global::safe_exit(0);
     }
     
     if(alone_args.empty())
     {
         parser.printHelpMessage();
-        defaultlogger.log(LogType::INFO, "No arguments specified. Printing help message. Exiting with code 1.");
+        defaultLogger.log(LogType::INFO, "No arguments specified. Printing help message. Exiting with code 1.");
         Global::safe_exit(1);
     }
 
     std::string stack_count_str = string_map["stack-count"];
-    long stack_count = 0;
-    
+
     // Parses --stack-count argument
     // Example: --stack-count 32
-    // Makes the size of m_stacks 
+    // Makes the size of m_stacks
     try
     {
-        if(stack_count_str.empty()) stack_count = Electra::default_stack_count;
-        else stack_count = std::stol(stack_count_str);
-        if(stack_count <= 0) throw std::invalid_argument("Stack count should be greater than zero!");
-        
-        m_stacks.reserve(stack_count);
-        for(std::size_t i = 0; i < stack_count; i++)
+        long stack_count;
+        if(stack_count_str.empty())
         {
-            m_stacks.emplace_back();
+            stack_count = Electra::default_stack_count;
         }
+        else
+        {
+            stack_count = std::stol(stack_count_str);
+        }
+        if(stack_count <= 0)
+        {
+            throw std::invalid_argument("Stack count should be greater than zero!");
+        }
+        
+        m_stacks.resize(stack_count);
     }
     catch (const std::invalid_argument &e)
     {
-        defaultlogger.log(LogType::ERROR, "\"{}\" is invalid for stack-count.\n");
+        defaultLogger.log(LogType::ERROR, "\"{}\" is invalid for stack-count.\n");
         std::cerr << '\"' << stack_count_str << "\" is invalid for stack-count.\n";
         Global::safe_exit(1);
     }
     catch (const std::out_of_range &e)
     {
-        defaultlogger.log(LogType::ERROR, "\"{}\" is out of range for stack-count.", stack_count_str);
+        defaultLogger.log(LogType::ERROR, "\"{}\" is out of range for stack-count.", stack_count_str);
         std::cerr << '\"' << stack_count_str << "\" is out of range for stack-count." << std::endl;
         Global::safe_exit(1);
     }
@@ -120,16 +138,16 @@ Electra::Electra(const std::vector<std::string>& args):
     // Example: --stack "1 2 3,4 5 6"
     // First stack contains 123 and second stack contains 456
     std::size_t index = 0;
-    auto splitted_by_comma = sutil::split(string_map["stack"], ",");
-    if(splitted_by_comma.size() > m_stacks.size())
+    auto split_by_comma = sutil::split(string_map["stack"], ",");
+    if(split_by_comma.size() > m_stacks.size())
     {
-        std::cerr << "You entered initial values for " << splitted_by_comma.size() << " stacks but stack count is " << m_stacks.size() << "!" << std::endl;
-        defaultlogger.log(LogType::ERROR, "You entered initial values for {} stacks but stack count is {}!", splitted_by_comma.size(), m_stacks.size());
+        std::cerr << "You entered initial values for " << split_by_comma.size() << " stacks but stack count is " << m_stacks.size() << "!" << std::endl;
+        defaultLogger.log(LogType::ERROR, "You entered initial values for {} stacks but stack count is {}!", split_by_comma.size(), m_stacks.size());
         Global::safe_exit(1);
     }
-    for(auto &splitted : splitted_by_comma)
+    for(auto &split : split_by_comma)
     {
-        for(auto &i : sutil::split(splitted, " "))
+        for(auto &i : sutil::split(split, " "))
         {
             if(i.empty()) continue;
 
@@ -139,13 +157,13 @@ Electra::Electra(const std::vector<std::string>& args):
             }
             catch(const std::out_of_range &e)
             {
-                defaultlogger.log(LogType::ERROR, "The value {} is too big or small for var_t.", i);
+                defaultLogger.log(LogType::ERROR, "The value {} is too big or small for var_t.", i);
                 std::cerr << "The value " << i << " is too big or small for var_t." << std::endl;
                 Global::safe_exit(1);
             }
             catch(const std::invalid_argument &e)
             {
-                defaultlogger.log(LogType::ERROR, "Can\'t convert {} to var_t.", i);
+                defaultLogger.log(LogType::ERROR, "Can\'t convert {} to var_t.", i);
                 std::cerr << "Can\'t convert " << i << " to var_t." << std::endl;
                 Global::safe_exit(1);
             }
@@ -159,136 +177,40 @@ Electra::Electra(const std::vector<std::string>& args):
 
 void Electra::setSourceCode(const std::string& sourceCode)
 {
-    // TODO: Call a private function that uses recursion. Right now, you can't include files in another folders
     cleanup();
 
-    auto content = sutil::split(sourceCode, "\n");
-    for(std::size_t i = 0; i < content.size();)
-    {
-        beginLoop:
-
-        auto& line = content[i];
-        if(line.find('\n') != std::string::npos)
-        {
-            defaultlogger.log(LogType::ERROR, "Source code contains tab character. Exiting with code 1.");
-            std::cerr << "Error while reading file: Source code contains tab!" << std::endl;
-            Global::safe_exit(1);
-        }
-
-        sutil::remove_comments(line);
-        std::optional<std::string> includePatternMatch = sutil::get_matched_string(line, boost::regex("\"([^\"]+)\"(?:\\s*([^:]+:[^\"]*))?"));
-        if(!includePatternMatch.has_value())
-        {
-            ++i;
-            continue;
-        }
-
-        content.erase(content.begin() + i);
-        std::string includePatternStr = includePatternMatch.value();
-
-        std::size_t first_quotation_mark_pos = includePatternStr.find('\"');
-        std::size_t second_quotation_mark_pos = includePatternStr.find('\"', first_quotation_mark_pos + 1);
-        std::string filename = includePatternStr.substr(first_quotation_mark_pos, second_quotation_mark_pos - first_quotation_mark_pos + 1);
-        std::string lineRangeStr = includePatternStr.substr(filename.size());
-
-        filename = std::string(std::next(filename.begin()), std::prev(filename.end()));
-
-        bool allowReinclusion = filename.starts_with('!');
-        if(allowReinclusion)
-        {
-            filename.erase(filename.begin());
-        }
-
-        lineRangeStr = sutil::remove_spaces(lineRangeStr);
-        LineRange newLineRange;
-        std::vector<std::string> split_from_colon = sutil::split(lineRangeStr, ":");
-        fs::path total_path = m_currentPath / filename;
-        std::string total_path_str = total_path.string();
-
-        if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
-        {
-            std::cerr << "Invalid file: " << total_path.string() << std::endl;
-            defaultlogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
-            Global::safe_exit(1);
-        }
-
-        try
-        {
-            if(!split_from_colon.at(0).empty())
-            {
-                newLineRange.setBegin(std::stoul(split_from_colon.at(0)));
-            }
-            if(split_from_colon.size() > 1 && !split_from_colon.at(1).empty())
-            {
-                newLineRange.setEnd(std::stoul(split_from_colon.at(1)));
-            }
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
-            defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(0));
-            Global::safe_exit(1);
-        }
-
-        if(!allowReinclusion && m_includedParts.contains(total_path_str))
-        {
-            for(auto& item : m_includedParts[total_path_str])
-            {
-                if(item.intersects(newLineRange))
-                {
-                    defaultlogger.log(LogType::WARNING, "Prevented re-including {}.", filename);
-                    goto beginLoop;
-                }
-            }
-        }
-
-        std::ifstream ifs(total_path.string());
-        if(!ifs.good())
-        {
-            std::cerr << "Cannot open \"" << filename << '\"' << std::endl;
-            defaultlogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", filename);
-            Global::safe_exit(1);
-        }
-        m_includedParts[total_path_str].insert(newLineRange);
-
-        std::stringstream ss;
-        ss << ifs.rdbuf();
-        std::string new_content_str = ss.str();
-        ifs.close();
-
-        std::vector<std::string> new_content = sutil::split(new_content_str, "\n");
-
-        if(newLineRange.getEnd() > new_content.size() + 1)
-        {
-            newLineRange.setEnd(new_content.size() + 1);
-        }
-        new_content = std::vector<std::string>(new_content.begin() + newLineRange.getBegin() - 1, new_content.begin() + newLineRange.getEnd() - 1);
-        content.insert(content.begin() + i, new_content.begin(), new_content.end());
-    }
-
+    auto content = parseSourceCode(m_currentPath, sourceCode);
     for(auto& line : content)
     {
         std::u32string line32;
         utf8::utf8to32(line.begin(), line.end(), std::back_inserter(line32));
         m_sourceCode.emplace_back(std::move(line32));
     }
-
     createGenerators();
     createPortals();
+    m_currentPath = fs::current_path();
 }
 
 void Electra::loadSourceFromFile(const std::string& filepath)
 {
     fs::path total_path = m_currentPath / filepath;
+    m_currentPath = total_path.parent_path();
 
     if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
     {
         std::cerr << "Invalid file: " << total_path.string() << std::endl;
-        defaultlogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
+        defaultLogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
         Global::safe_exit(1);
     }
 
-    std::ifstream ifs((m_currentPath / m_filename));
+    std::ifstream ifs(total_path.string());
+    if(!ifs.good())
+    {
+        std::cerr << "Cannot open \"" << filepath << '\"' << std::endl;
+        defaultLogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", filepath);
+        Global::safe_exit(1);
+    }
+
     std::stringstream ss;
     ss << ifs.rdbuf();
     ifs.close();
@@ -305,6 +227,140 @@ void Electra::cleanup()
     m_deadCurrentIndices.clear();
     m_newCurrents.clear();
     m_portalMap.clear();
+}
+
+std::vector<std::string> Electra::includeFile(const fs::path& currentPath, const std::string& filename, LineRange lineRange)
+{
+    if(lineRange.getBegin() == lineRange.getEnd())
+    {
+        return {};
+    }
+
+    fs::path total_path = currentPath / filename;
+    fs::path parent_path = total_path.parent_path();
+    std::string total_path_str = total_path.string();
+
+    if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
+    {
+        std::cerr << "Invalid file: " << total_path.string() << std::endl;
+        defaultLogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
+        Global::safe_exit(1);
+    }
+
+    std::ifstream ifs(total_path_str);
+    if(!ifs.good())
+    {
+        std::cerr << "Cannot open \"" << filename << '\"' << std::endl;
+        defaultLogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", filename);
+        Global::safe_exit(1);
+    }
+
+    std::stringstream ss;
+    ss << ifs.rdbuf();
+    std::string content_str = ss.str();
+    ifs.close();
+
+    auto content = parseSourceCode(currentPath, content_str, lineRange);
+    m_includedParts[total_path].insert(lineRange);
+    return content;
+}
+
+std::vector<std::string> Electra::parseSourceCode(const fs::path& currentPath, const std::string& sourceCode, LineRange lineRange)
+{
+    std::vector<std::string> content = sutil::split(sourceCode, "\n");
+    if(lineRange.getEnd() > content.size() + 1)
+    {
+        lineRange.setEnd(content.size() + 1);
+    }
+
+    typedef std::vector<std::string>::difference_type diff_type;
+    content = std::vector<std::string>(content.begin() + static_cast<diff_type>(lineRange.getBegin() - 1), content.begin() + static_cast<diff_type>(lineRange.getEnd() - 1));
+    for(std::size_t i = 0; i < content.size();)
+    {
+        beginLoop:
+
+        auto& line = content[i];
+        if(line.find('\t') != std::string::npos)
+        {
+            defaultLogger.log(LogType::ERROR, "Source code contains tab character. Exiting with code 1.");
+            std::cerr << "Error while reading file: Source code contains tab!" << std::endl;
+            Global::safe_exit(1);
+        }
+
+        sutil::remove_comments(line);
+        std::optional<std::string> includePatternMatch = sutil::get_matched_string(line, boost::regex("\"([^\"]+)\"(?:\\s*([^:]+:[^\"]*))?"));
+        if(!includePatternMatch.has_value())
+        {
+            ++i;
+            continue;
+        }
+        content.erase(content.begin() + static_cast<diff_type>(i));
+        std::string includePatternStr = includePatternMatch.value();
+
+        std::size_t first_quotation_mark_pos = includePatternStr.find('\"');
+        std::size_t second_quotation_mark_pos = includePatternStr.find('\"', first_quotation_mark_pos + 1);
+        std::string new_filename = includePatternStr.substr(first_quotation_mark_pos, second_quotation_mark_pos - first_quotation_mark_pos + 1);
+        std::string line_range_str = includePatternStr.substr(new_filename.size());
+
+        new_filename = std::string(std::next(new_filename.begin()), std::prev(new_filename.end()));
+        fs::path new_file_path = currentPath / new_filename;
+        fs::path parent_path = new_file_path.parent_path();
+        std::string raw_filename = fs::path(new_filename).filename().string();
+        std::string new_file_path_str = new_file_path.string();
+
+        bool allow_reinclusion = new_filename.starts_with('!');
+        if(allow_reinclusion)
+        {
+            new_filename.erase(new_filename.begin());
+        }
+
+        line_range_str = sutil::remove_spaces(line_range_str);
+        LineRange new_line_range;
+        std::vector<std::string> split_from_colon = sutil::split(line_range_str, ":");
+
+        if(!fs::exists(new_file_path) || !fs::is_regular_file(new_file_path))
+        {
+            std::cerr << "Invalid file: " << new_file_path.string() << std::endl;
+            defaultLogger.log(LogType::ERROR, "Invalid file: {}", new_file_path.string());
+            Global::safe_exit(1);
+        }
+
+        try
+        {
+            if(!split_from_colon.at(0).empty())
+            {
+                new_line_range.setBegin(std::stoul(split_from_colon.at(0)));
+            }
+            if(split_from_colon.size() > 1 && !split_from_colon.at(1).empty())
+            {
+                new_line_range.setEnd(std::stoul(split_from_colon.at(1)));
+            }
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
+            defaultLogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(0));
+            Global::safe_exit(1);
+        }
+
+        if(!allow_reinclusion && m_includedParts.contains(new_file_path_str))
+        {
+            for(auto& item : m_includedParts[new_file_path_str])
+            {
+                if(item.intersects(new_line_range))
+                {
+                    defaultLogger.log(LogType::WARNING, "Prevented re-including {}.", new_filename);
+                    goto beginLoop;
+                }
+            }
+        }
+
+        std::vector<std::string> new_content = includeFile(parent_path, raw_filename, new_line_range);
+        m_includedParts[new_file_path_str].insert(new_line_range);
+        content.insert(content.begin() + static_cast<diff_type>(i), new_content.begin(), new_content.end());
+    }
+
+    return content;
 }
 
 void Electra::setupComponentsAndGenerators()
@@ -463,13 +519,13 @@ void Electra::setupSignalHandlers()
 
 void Electra::mainLoop()
 {
-    defaultlogger.log(LogType::INFO, "Program started!");
+    defaultLogger.log(LogType::INFO, "Program started!");
     int tickCount = 0;
     generateFromGenerators();
 
     do
     {
-        defaultlogger.log(LogType::INFO, "Tick: {}", tickCount);
+        defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
 
         interpretCurrents();
         moveCurrents();
@@ -479,161 +535,12 @@ void Electra::mainLoop()
         tickCount ++;
     }while (!m_currents.empty());
 
-    defaultlogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
+    defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
-
-//std::vector<std::string> Electra::includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange, bool allow_reinclusion)
-//{
-//    fs::path total_path = currentPath / filename;
-//    std::string total_path_str = total_path.string();
-//
-//    if(!fs::exists(total_path) || !fs::is_regular_file(total_path))
-//    {
-//        std::cerr << "Invalid file: " << total_path.string() << std::endl;
-//        defaultlogger.log(LogType::ERROR, "Invalid file: {}", total_path.string());
-//        Global::safe_exit(1);
-//    }
-//
-//    if(!allow_reinclusion)
-//    {
-//        if(m_includedParts.contains(total_path_str))
-//        {
-//            // Check if a re-inclusion has happened
-//            auto &range_set = m_includedParts[total_path_str];
-//
-//            for(auto& range : range_set)
-//            {
-//                if(range.intersects(lineRange))
-//                {
-//                    defaultlogger.log(LogType::WARNING, "Prevented re-including {}.", total_path_str);
-//                    return {};
-//                }
-//            }
-//        }
-//    }
-//    m_includedParts[total_path_str].insert(lineRange);
-//
-//    // Start reading source code
-//    std::vector<std::string> content;
-//    defaultlogger.log(LogType::INFO, "Reading \"{}\".", filename);
-//    currentPath /= filename;
-//
-//    std::ifstream file(currentPath);
-//    currentPath = currentPath.parent_path();
-//
-//    if(!file.good())
-//    {
-//        std::cerr << "Cannot open \"" << filename << '\"' << std::endl;
-//        defaultlogger.log(LogType::ERROR, "Cannot open \"{}\". Exiting with code 1.", filename);
-//        Global::safe_exit(1);
-//    }
-//
-//    // Read file content into wss
-//    std::string fileData;
-//    std::stringstream ss;
-//    ss << file.rdbuf();
-//    fileData = ss.str();
-//    file.close();
-//
-//    // If there is tab character exit immediately since tabsize may vary editor to editor
-//    if(fileData.find('\t') != std::string::npos)
-//    {
-//        defaultlogger.log(LogType::ERROR, "Cannot parse \"{}\". Source code contains tab character. Exiting with code 1.", filename);
-//        std::cerr << "Error while reading file: Source code contains tab!" << std::endl;
-//        Global::safe_exit(1);
-//    }
-//
-//    // Split by the new line and slice file according to given parameters
-//    content = sutil::split(fileData, "\n");
-//    if(lineRange.getEnd() > content.size() + 1)
-//    {
-//        lineRange.setEnd(content.size() + 1);
-//    }
-//
-//    if(lineRange.getEnd() == lineRange.getBegin())
-//    {
-//        return {};
-//    }
-//
-//    content = std::vector<std::string>(content.begin() + lineRange.getBegin() - 1, content.begin() + lineRange.getEnd() - 1);
-//    removeComments(content);
-//    std::reverse(content.begin(), content.end());
-//
-//    // Include other files if there are any
-//    boost::regex include_pattern("\"([^\"]+)\"(?:\\s*([^:]+:[^\"]*))?"); // The regex pattern to match text within double quotation marks
-//    boost::smatch match;
-//    for(std::size_t i = content.size() - 1; true; i--)
-//    {
-//        if(boost::regex_search(content[i], match, include_pattern))
-//        {
-//            std::string match_str = match.str();
-//
-//            boost::regex filename_pattern("^\"([^\"]*)\"");
-//            boost::smatch filename_match;
-//            boost::regex_search(match_str, filename_match, filename_pattern);
-//
-//            std::string new_filename = filename_match.str();
-//            new_filename = std::string(new_filename.begin() + 1, new_filename.end() - 1);
-//            LineRange newRange;
-//
-//            match_str = match_str.substr(filename_match.str().size());
-//            match_str = sutil::remove_spaces(match_str);
-//
-//            if(match_str.find(':') != std::string::npos)
-//            {
-//                // Determines new_start and new_end by parsing x:y
-//                auto split_from_colon = sutil::split(match_str, ":");
-//
-//                try
-//                {
-//                    if(!split_from_colon.at(0).empty())
-//                    {
-//                        newRange.setBegin(std::stoul(split_from_colon.at(0)));
-//                    }
-//                }
-//                catch (const std::exception &e)
-//                {
-//                    std::cerr << "Cannot convert \"" << split_from_colon.at(0) << "\" to a number." << std::endl;
-//                    defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(0));
-//                    Global::safe_exit(1);
-//                }
-//
-//                try
-//                {
-//                    if(split_from_colon.size() > 1 && !split_from_colon.at(1).empty())
-//                    {
-//                        newRange.setEnd(std::stoul(split_from_colon.at(1)));
-//                    }
-//                }
-//                catch (const std::exception &e)
-//                {
-//                    std::cerr << "Cannot convert \"" << split_from_colon.at(1) << "\" to a number." << std::endl;
-//                    defaultlogger.log(LogType::ERROR, "Cannot convert \"{}\" to a number.", split_from_colon.at(1));
-//                    Global::safe_exit(1);
-//                }
-//
-//            }
-//
-//            bool allow_reinclusion_of_new = (new_filename[0] == '!');
-//            if(allow_reinclusion_of_new)
-//            {
-//                new_filename.erase(new_filename.begin());
-//            }
-//
-//            content.erase(content.begin() + i);
-//            auto new_content = includeFile(currentPath, new_filename, newRange, allow_reinclusion_of_new);
-//            content.insert(content.begin() + i, new_content.begin(), new_content.end());
-//        }
-//
-//        if(i == 0) break;
-//    }
-//
-//    return content;
-//}
 
 void Electra::createGenerators()
 {
-    defaultlogger.log(LogType::INFO, "Started parsing generators from source code!");
+    defaultLogger.log(LogType::INFO, "Started parsing generators from source code!");
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
         for(std::size_t x = 0; x < m_sourceCode[y].size(); x++)
@@ -645,7 +552,7 @@ void Electra::createGenerators()
                 if(c == currentChar)
                 {
                     GeneratorData& genData = m_generatorDataMap[c];
-                    defaultlogger.log(LogType::INFO, "Found a generator at ({}, {}).", x, y);
+                    defaultLogger.log(LogType::INFO, "Found a generator at ({}, {}).", x, y);
 
                     m_generators.push_back( std::make_shared<Generator>(
                         genData,
@@ -655,12 +562,12 @@ void Electra::createGenerators()
             }
         }
     }
-    defaultlogger.log(LogType::INFO, "Finished parsing generators from source code!");
+    defaultLogger.log(LogType::INFO, "Finished parsing generators from source code!");
 }
 
 void Electra::createPortals()
 {
-    defaultlogger.log(LogType::INFO, "Started parsing portals from source code!");
+    defaultLogger.log(LogType::INFO, "Started parsing portals from source code!");
 
     for(std::size_t y = 0; y < m_sourceCode.size(); y++)
     {
@@ -675,7 +582,7 @@ void Electra::createPortals()
             if(!m_components.contains(currentChar) && m_portalMap.find(currentChar) == m_portalMap.end())
             {
                 m_portalMap[currentChar] = {static_cast<int>(x), static_cast<int>(y)};
-                defaultlogger.log(LogType::INFO, "Found a portal at ({}, {}).", x, y);
+                defaultLogger.log(LogType::INFO, "Found a portal at ({}, {}).", x, y);
             }
         }
     }
@@ -685,14 +592,14 @@ void Electra::createPortals()
     {
         m_components[p.first] = std::make_unique<Portal>(p.second);
     }
-    defaultlogger.log(LogType::INFO, "Finished parsing portals from source code!");
+    defaultLogger.log(LogType::INFO, "Finished parsing portals from source code!");
 }
 
 void Electra::generateFromGenerators()
 {
     for(auto &gen : m_generators)
     {
-        gen->generate(&m_currents, m_stacks.begin());
+        gen->generate(m_currents, m_stacks.begin());
     }
 }
 
@@ -715,13 +622,13 @@ void Electra::interpretCurrents()
         if(curPos.y < 0 || curPos.y >= m_sourceCode.size())
         {
             m_deadCurrentIndices.push_back(i);
-            defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Y coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
         if(curPos.x < 0 || curPos.x >= m_sourceCode[curPos.y].size())
         {
             m_deadCurrentIndices.push_back(i);
-            defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (X coordinate out of bounds)", curPos.x, curPos.y, cur->getDirection());
             continue;
         }
 
@@ -730,10 +637,10 @@ void Electra::interpretCurrents()
         if(m_components.contains(currentChar)) // It is a component
         {
             auto& comp = m_components[currentChar];
-            if(!comp->work(cur, &m_newCurrents))
+            if(!comp->work(cur, m_newCurrents))
             {
                 m_deadCurrentIndices.push_back(i);
-                defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Component refused to work.)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         else if(std::find(m_generatorChars.begin(), m_generatorChars.end(), currentChar) != m_generatorChars.end()) // It is a generator
@@ -752,13 +659,13 @@ void Electra::interpretCurrents()
             if(!isAlignedWithGenerator)
             {
                 m_deadCurrentIndices.push_back(i);
-                defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Current isn\'t aligned with generator)", curPos.x, curPos.y, cur->getDirection());
+                defaultLogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Current isn\'t aligned with generator)", curPos.x, curPos.y, cur->getDirection());
             }
         }
         else
         {
             m_deadCurrentIndices.push_back(i);
-            defaultlogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
+            defaultLogger.log(LogType::INFO, "Removing current at ({}, {}) with direction {} (Not a component nor generator.)", curPos.x, curPos.y, cur->getDirection());
         }
     }
 }
@@ -768,27 +675,28 @@ void Electra::removeCurrents()
     std::sort(m_deadCurrentIndices.begin(), m_deadCurrentIndices.end(), std::greater<>());
     for(auto &i : m_deadCurrentIndices)
     {
-        m_currents.erase(m_currents.begin() + i);
+        m_currents.erase(m_currents.begin() + static_cast<std::vector<Current::Ptr>::difference_type>(i));
     }
     m_deadCurrentIndices.clear();
 }
 
 void Electra::createCurrents()
 {
-    defaultlogger.log(LogType::INFO, "Started creating currents!");
+    defaultLogger.log(LogType::INFO, "Started creating currents!");
     for(auto &cur : m_newCurrents)
     {
-        Position curPos = cur->getPosition();
         m_currents.push_back(cur);
     }
     
     m_newCurrents.clear();
 
-    defaultlogger.log(LogType::INFO, "Total current count: {}.", m_currents.size());
-    defaultlogger.log(LogType::INFO, "Finished creating currents!");
+    defaultLogger.log(LogType::INFO, "Total current count: {}.", m_currents.size());
+    defaultLogger.log(LogType::INFO, "Finished creating currents!");
 }
 
-void Electra::sigHandler(int signal)
+void Electra::sigHandler([[maybe_unused]] int signal)
 {
     Global::safe_exit(1);
 }
+
+#pragma clang diagnostic pop

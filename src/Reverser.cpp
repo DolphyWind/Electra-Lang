@@ -23,24 +23,27 @@ SOFTWARE.
 */
 
 #include <Reverser.hpp>
+#include <Logger.hpp>
 
 Reverser::Reverser(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Reverser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Reverser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
+    }
+
     std::stack<var_t> newStack;
     while(!current->stackPtr->empty())
     {
         newStack.push(current->stackPtr->top());
         current->stackPtr->pop();
     }
-    *(current->stackPtr) = newStack;
-    defaultlogger.log(LogType::INFO, "Reversed the entire stack.");
+    *(current->stackPtr) = std::move(newStack);
+    defaultLogger.log(LogType::INFO, "Reversed the entire stack.");
 
     return Cable::work(current, currentVector);
 }

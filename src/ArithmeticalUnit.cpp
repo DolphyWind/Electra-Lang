@@ -23,16 +23,22 @@ SOFTWARE.
 */
 
 #include <ArithmeticalUnit.hpp>
+#include <Logger.hpp>
 
 ArithmeticalUnit::ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func):
     Cable(directions), m_func(std::move(func))
 {}
 
-bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool ArithmeticalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    if(current->stackPtr->size() < 2) return Cable::work(current, currentVector);
+    }
+    if(current->stackPtr->size() < 2)
+    {
+        return Cable::work(current, currentVector);
+    }
     
     var_t first, second;
     first = Global::popStack(current->stackPtr);
@@ -40,6 +46,6 @@ bool ArithmeticalUnit::work(CurrentPtr current, std::vector<CurrentPtr> *current
     var_t result = m_func(first, second);
     current->stackPtr->push(result);
     
-    defaultlogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
+    defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
     return Cable::work(current, currentVector);
 }

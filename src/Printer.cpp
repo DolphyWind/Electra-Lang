@@ -22,13 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <iostream>
+
 #include <Printer.hpp>
+#include <Logger.hpp>
 
 Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
     Cable(directions), m_printAsChar(printAsChar)
 {}
 
-bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
@@ -45,12 +48,12 @@ bool Printer::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
         utf8::utf32to8(u32str.begin(), u32str.end(), std::back_inserter(str_to_print));
 
         std::cout << str_to_print << std::flush;
-        defaultlogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
+        defaultLogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
         std::cout << sutil::format_variable(top) << std::flush;
-        defaultlogger.log(LogType::INFO, "Printed {} to screen.", top);
+        defaultLogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     
     return Cable::work(current, currentVector);

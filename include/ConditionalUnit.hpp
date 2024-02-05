@@ -26,14 +26,14 @@ SOFTWARE.
 #include <Cable.hpp>
 
 // Pops the value on top of the current's stackPtr, and compares it with m_targetValue. If the result is true, lets current pass.
-// Otherwise kills the current. Inverted Conditional units does the opposite.
+// Otherwise, kills the current. Inverted Conditional units does the opposite.
 class ConditionalUnit : public Cable
 {
 public:
     ConditionalUnit(const std::vector<Direction>& directions, var_t targetValue, bool isInverted, bool checkEqual, bool checkLess, bool checkGreater);
-    ~ConditionalUnit() = default;
+    ~ConditionalUnit() override = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     var_t m_targetValue;
     bool m_inverted;

@@ -22,20 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Argparser.hpp>
+#include <iostream>
 
-Argparser::Argparser(const std::vector<std::string>& args):
+#include <ArgParser.hpp>
+
+
+ArgParser::ArgParser(const std::vector<std::string>& args):
     m_argsEntered(args)
 {
     m_argsEntered.erase(m_argsEntered.begin());
 }
 
-void Argparser::addArgument(const std::string &name, const std::string &shortName, bool store_boolean, const std::string &argumentDesc)
+void ArgParser::addArgument(const std::string &name, const std::string &shortName, bool store_boolean, const std::string &argumentDesc)
 {
     m_args.push_back({shortName, name, store_boolean, argumentDesc});
 }
 
-std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> Argparser::parse()
+std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std::string, bool>> ArgParser::parse()
 {
     std::unordered_map<std::string, std::string> string_map;
     std::unordered_map<std::string, bool> bool_map;
@@ -43,10 +46,19 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
     for(auto &arg : m_args)
     {
         std::string arg_name = arg.name;
-        while(arg_name[0] == '-') arg_name.erase(0, 1);
+        while(arg_name[0] == '-')
+        {
+            arg_name.erase(0, 1);
+        }
 
-        if(arg.store_boolean) bool_map[arg_name] = false;
-        else string_map[arg_name] = std::string();
+        if(arg.store_boolean)
+        {
+            bool_map[arg_name] = false;
+        }
+        else
+        {
+            string_map[arg_name] = std::string();
+        }
     }
 
     for(std::size_t i = 0; i < m_argsEntered.size(); ++i)
@@ -62,7 +74,10 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
             if(a.name == m_argsEntered[i] || a.shortName == m_argsEntered[i])
             {
                 std::string a_name = a.name;
-                while(a_name[0] == '-') a_name.erase(0, 1);
+                while(a_name[0] == '-')
+                {
+                    a_name.erase(0, 1);
+                }
 
                 if(a.store_boolean)
                 {
@@ -70,12 +85,18 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
                 }
                 else
                 {
-                    if(i == m_argsEntered.size() - 1) break;
+                    if(i == m_argsEntered.size() - 1)
+                    {
+                        break;
+                    }
                     
                     std::string candidate = m_argsEntered[i + 1];
                     for(auto &arg : m_args)
                     {
-                        if(arg.name == candidate || arg.shortName == candidate) break;
+                        if(arg.name == candidate || arg.shortName == candidate)
+                        {
+                            break;
+                        }
                     }
                     string_map[a_name] = candidate;
                     ++i;
@@ -84,28 +105,35 @@ std::tuple<std::unordered_map<std::string, std::string>, std::unordered_map<std:
             }
         }
     }
+
     return {string_map, bool_map};
 }
 
-std::vector<std::string> Argparser::getAloneArguments()
+std::vector<std::string> ArgParser::getAloneArguments()
 {
     return m_aloneArguments;
 }
 
-void Argparser::printVersionMessage()
+void ArgParser::printVersionMessage() const
 {
     std::cout << program_name << " v" << ELECTRA_VERSION_MAJOR << '.' << ELECTRA_VERSION_MINOR << '.' << ELECTRA_VERSION_PATCH << std::endl;
 }
 
-void Argparser::printHelpMessage()
+void ArgParser::printHelpMessage()
 {
     printVersionMessage();
     std::size_t longest_argument_name_length = 0;
     for(auto &i : m_args)
     {
         std::size_t current_argument_message_length = i.shortName.length() + i.name.length();
-        if(!i.store_boolean) current_argument_message_length += 6; // The length of " <arg>"
-        if(current_argument_message_length > longest_argument_name_length) longest_argument_name_length = current_argument_message_length;
+        if(!i.store_boolean)
+        {
+            current_argument_message_length += 6; // The length of " <arg>"
+        }
+        if(current_argument_message_length > longest_argument_name_length)
+        {
+            longest_argument_name_length = current_argument_message_length;
+        }
     }
 
     std::cout << '\n' << program_description << "\n\n";
@@ -116,7 +144,10 @@ void Argparser::printHelpMessage()
     {
         std::size_t argument_message_length = i.shortName.length() + i.name.length();
         std::cout << '\t' << i.shortName << ", " << i.name;
-        if(!i.store_boolean) std::cout << " <arg>";
+        if(!i.store_boolean)
+        {
+            std::cout << " <arg>";
+        }
         std::cout << std::string(longest_argument_name_length - argument_message_length, ' ') << '\t' << i.argumentDesc << '\n';
     }
     std::cout << std::endl;

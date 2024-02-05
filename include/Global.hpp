@@ -23,15 +23,12 @@ SOFTWARE.
 */
 
 #pragma once
-#include <stack>
-#include <algorithm>
-#include <string>
 #include <vector>
+#include <stack>
 
 typedef double var_t;
 typedef std::vector<std::stack<var_t>>::iterator StackPtr;
 
-class Electra;
 namespace Global
 {
     // Pops the top value from the given stack. Returns defaultValue if the stack is empty.

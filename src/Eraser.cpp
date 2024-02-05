@@ -23,19 +23,25 @@ SOFTWARE.
 */
 
 #include <Eraser.hpp>
+#include <Logger.hpp>
 
 Eraser::Eraser(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Eraser::work(CurrentPtr current, std::vector<CurrentPtr> *currentVector)
+bool Eraser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
+    {
         return false;
-    
-    if(current->stackPtr->empty()) return Cable::work(current, currentVector);
+    }
+
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
 
     var_t popped_value = Global::popStack(current->stackPtr);
-    defaultlogger.log(LogType::INFO, "Removed {} from stack.", popped_value);
+    defaultLogger.log(LogType::INFO, "Removed {} from stack.", popped_value);
     return Cable::work(current, currentVector);
 }

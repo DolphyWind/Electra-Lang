@@ -24,9 +24,6 @@ SOFTWARE.
 
 #pragma once
 #include <Cable.hpp>
-#include <iostream>
-#include <stack>
-#include <direction.hpp>
 
 // Pops the value on top of the current's stackPtr and prints it on screen as number. If m_printAsUchar is true it prints it as a char_t.
 // If there is no top value, it does nothing.
@@ -36,7 +33,7 @@ public:
     Printer(const std::vector<Direction>& directions, bool printAsChar);
     ~Printer() = default;
 
-    bool work(CurrentPtr current, std::vector<CurrentPtr> *currentVector) override;
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_printAsChar = false;
 };
