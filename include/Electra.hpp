@@ -82,8 +82,13 @@ public:
 
     ~Electra() = default;
 
-    void setSourceCode(const std::vector<std::string>& sourceCode);
-    void setSourceCode(const std::vector<std::u32string>& sourceCode);
+    /// @brief Set the source code of the electra interpreter
+    /// @param sourceCode New source code
+    void setSourceCode(const std::string& sourceCode);
+
+    /// @brief Load the source code of the electra interpreter from a file
+    /// @param filepath Path of the file to load from
+    void loadSourceFromFile(const std::string& filepath);
 
     /// @brief Main loop of electra
     /// Generates first set of currents before loop.
@@ -102,20 +107,17 @@ private:
     /// @brief Cleans up some containers
     void cleanup();
 
-    /// @brief Loads a file
-    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
-    /// @param filename File to load
-    std::vector<std::string> loadFile(fs::path currentPath, const std::string& filename);
-
-    /// @brief Recursively includes a file. Caution: Included file will have comments and will be reversed.
-    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
-    /// @param filename File to include
-    /// @param lineRange Line range to include
-    /// @return Contents of recursively inclusion
-    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
-
-    /// @brief Removes comments from given block of code.
-    void removeComments(std::vector<std::string>& block);
+//    /// @brief Loads a file
+//    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
+//    /// @param filename File to load
+//    std::vector<std::string> loadFile(fs::path currentPath, const std::string& filename);
+//
+//    /// @brief Recursively includes a file. Caution: Included file will have comments and will be reversed.
+//    /// @param currentPath Location that the file belongs to. Helps when including files from some other direction.
+//    /// @param filename File to include
+//    /// @param lineRange Line range to include
+//    /// @return Contents of recursively inclusion
+//    std::vector<std::string> includeFile(fs::path currentPath, const std::string& filename, LineRange lineRange=LineRange{}, bool allow_reinclusion=false);
 
     /// @brief Creates generators from source code
     void createGenerators();

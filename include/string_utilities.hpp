@@ -28,7 +28,9 @@ SOFTWARE.
 #include <string>
 #include <direction.hpp>
 #include <Global.hpp>
+#include <optional>
 #include <thirdparty/utfcpp/utf8.h>
+#include <boost/regex.hpp>
 
 namespace sutil
 {
@@ -49,4 +51,10 @@ namespace sutil
 
     // Splits a string based on a given delimiter
     std::vector<std::string> split(const std::string& str, const std::string& delim);
+
+    // Removes electra comments from given line
+    void remove_comments(std::string& line);
+
+    // Performs a regex search on given text with given regex pattern and returns the matching string if a match occurs
+    std::optional<std::string> get_matched_string(const std::string& text, const boost::regex& pattern);
 }

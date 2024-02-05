@@ -145,4 +145,33 @@ namespace sutil
         result.push_back(str.substr(prev_pos));
         return result;
     }
+
+    void remove_comments(std::string& line)
+    {
+        bool is_comment = false;
+        for(auto& c : line)
+        {
+            if(c == '?')
+            {
+                c = ' ';
+                is_comment = !is_comment;
+            }
+
+            if(is_comment)
+            {
+                c = ' ';
+            }
+        }
+    }
+
+    std::optional<std::string> get_matched_string(const std::string& text, const boost::regex& pattern)
+    {
+        boost::smatch match;
+
+        if(!boost::regex_search(text, match, pattern))
+        {
+            return std::nullopt;
+        }
+        return match.str();
+    }
 }
