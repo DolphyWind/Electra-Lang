@@ -32,12 +32,12 @@ Position::Position(int _x, int _y):
     x(_x), y(_y)
 {}
 
-bool Position::operator==(Position& right) const
+bool Position::operator==(const Position& right) const
 {
     return this->x == right.x && this->y == right.y;
 }
 
-bool Position::operator!=(Position& right) const
+bool Position::operator!=(const Position& right) const
 {
     return !operator==(right);
 }
@@ -47,7 +47,7 @@ Position Position::operator+(const Position& right) const
     return {this->x + right.x, this->y + right.y};
 }
 
-Position directionToPosition(const Direction &direction)
+Position directionToPosition(const Direction& direction)
 {
     // negative y value means up
 
@@ -75,9 +75,10 @@ Position directionToPosition(const Direction &direction)
     }
 }
 
-Direction invertDirection(const Direction &direction)
+Direction invertDirection(const Direction& direction)
 {
-    if(direction == Direction::NONE) {
+    if(direction == Direction::NONE)
+    {
         return Direction::NONE;
     }
     int dirAsInt = static_cast<int>(direction);

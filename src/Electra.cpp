@@ -22,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 #include <cmath>
 #include <sstream>
 
@@ -262,7 +260,7 @@ std::vector<std::string> Electra::includeFile(const fs::path& currentPath, const
     ifs.close();
 
     auto content = parseSourceCode(currentPath, content_str, lineRange);
-    m_includedParts[total_path].insert(lineRange);
+    m_includedParts[total_path.string()].insert(lineRange);
     return content;
 }
 
@@ -699,5 +697,3 @@ void Electra::sigHandler([[maybe_unused]] int signal)
 {
     Global::safe_exit(1);
 }
-
-#pragma clang diagnostic pop
