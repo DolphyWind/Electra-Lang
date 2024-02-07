@@ -23,16 +23,13 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Component.hpp>
+#include <Cable.hpp>
 
-// Teleports currents around.
-class Portal : public Component
+class FileReader : public Cable
 {
 public:
-    explicit Portal(Position originalPosition);
-    ~Portal() override = default;
+    explicit FileReader(const std::vector<Direction>& directions);
+    ~FileReader() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
-private:
-    Position m_originalPosition;
 };

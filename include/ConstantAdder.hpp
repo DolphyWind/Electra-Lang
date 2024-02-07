@@ -31,7 +31,7 @@ class ConstantAdder : public Cable
 {
 public:
     ConstantAdder(const std::vector<Direction>& directions, var_t constant);
-    ~ConstantAdder() = default;
+    ~ConstantAdder() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

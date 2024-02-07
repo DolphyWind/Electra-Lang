@@ -45,6 +45,7 @@ SOFTWARE.
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
 #include <Swapper.hpp>
+#include <FileReader.hpp>
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -465,7 +466,10 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Sets up Bomb
-    m_components[U'o'] = std::make_unique<Bomb>( bin2dir(0b11111111));
+    m_components[U'o'] = std::make_unique<Bomb>( bin2dir(0b11111111) );
+
+    // Sets up File Reader
+    m_components[U'r'] = std::make_unique<FileReader>( bin2dir(0b00111110) );
 
     // Saves generator characters, their directions and toggler directions in a map
     m_generatorDataMap[U'>'] = bin2dir(0b00000001);

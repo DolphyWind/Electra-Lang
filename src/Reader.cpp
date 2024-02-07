@@ -48,7 +48,8 @@ bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector
         std::cin >> firstChar;
         if (std::cin.eof())
         {
-            return 0;
+            current->stackPtr->push(0);
+            return Cable::work(current, currentVector);
         }
 
         readSS << firstChar;

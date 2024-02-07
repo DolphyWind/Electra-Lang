@@ -30,7 +30,7 @@ class Reader : public Cable
 {
 public:
     Reader(const std::vector<Direction>& directions, bool getInputAsChar);
-    ~Reader() = default;
+    ~Reader() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

@@ -30,7 +30,7 @@ class Reverser : public Cable
 {
 public:
     explicit Reverser(const std::vector<Direction>& directions);
-    ~Reverser() = default;
+    ~Reverser() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 };
