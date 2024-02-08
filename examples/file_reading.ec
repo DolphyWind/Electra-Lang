@@ -1,14 +1,13 @@
-? Enter the file name that you want to read from ?
-? 
+"sad_face.ec"
+? Enter the filename that you want to read from ?
 
 +->--+
-|    &             ##MM##-DM-------+
-|    #             I               I 
-|    #             I      +---P    I
-|  +-+-+           ]      |  *     P 
-|  [   ]     +----##      |  )    *
-+--+   +--R  |     [      |  |    |
-           *-r     |      +-}+    ##-DDD-M-P-+
-                   |         n               I
-                   +---------+               I
-                                             +-P
+|    &
+|    #             +☹
+|    #             |      +---P
+|  +-+-+           ]      |  *
+|  [   ]     +----##      |  )
++--+   +--R  |     [      |  |
+           *-r     |      +-}+
+                   |         n
+                   +---------+
