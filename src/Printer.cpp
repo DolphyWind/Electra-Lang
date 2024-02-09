@@ -46,8 +46,8 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
 
     if(m_printAsChar)
     {
-        auto top_asc32 = static_cast<char32_t>(top);
-        std::u32string u32str(1, top_asc32);
+        auto top_character32 = static_cast<char32_t>(top);
+        std::u32string u32str(1, top_character32);
         std::string str_to_print;
         try
         {
@@ -55,7 +55,7 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
         }
         catch(const utf8::invalid_code_point& invalidCodePoint)
         {
-            // Some characters throw invalid code point exception, Idk why
+            defaultLogger.log(LogType::WARNING, "{}. {}", invalidCodePoint.what(), static_cast<long>(top_character32));
         }
 
         std::cout << str_to_print << std::flush;

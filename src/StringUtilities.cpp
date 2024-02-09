@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include <StringUtilities.hpp>
+#include <string>
 
 namespace sutil
 {
@@ -93,6 +94,11 @@ std::string to_string(std::size_t s)
 std::string to_string(int i)
 {
     return std::to_string(i);
+}
+
+std::string to_string(long l)
+{
+    return std::to_string(l);
 }
 
 std::string to_string(bool b)

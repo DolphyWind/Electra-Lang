@@ -41,6 +41,7 @@ namespace sutil
     std::string to_string(double d);
     std::string to_string(std::size_t s);
     std::string to_string(int i);
+    std::string to_string(long l);
     std::string to_string(bool b);
 
     // Removes unnecessary zeros in the fractional part
