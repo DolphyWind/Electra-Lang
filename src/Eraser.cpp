@@ -42,6 +42,6 @@ bool Eraser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector
     }
 
     var_t popped_value = Global::popStack(current->stackPtr);
-    defaultLogger.log(LogType::INFO, "Removed {} from stack.", popped_value);
+    defaultLogger.log(LogType::INFO, "(Eraser) Removed {} from stack.", popped_value);
     return Cable::work(current, currentVector);
 }

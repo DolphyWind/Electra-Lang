@@ -26,7 +26,7 @@ bool FileOpener::work(Current::Ptr current, std::vector<Current::Ptr>& currentVe
         filename.push_back(static_cast<char>(current_char));
     }
 
-    defaultLogger.log(LogType::INFO, "Attempting to open \"{}\". appendMode: {}.", filename, m_appendMode);
+    defaultLogger.log(LogType::INFO, "(FileOpener) Attempting to open \"{}\". appendMode: {}.", filename, m_appendMode);
     std::optional<std::size_t> fileId;
     if(m_appendMode)
     {
@@ -39,11 +39,11 @@ bool FileOpener::work(Current::Ptr current, std::vector<Current::Ptr>& currentVe
 
     if(!fileId.has_value())
     {
-        defaultLogger.log(LogType::WARNING, "Unable to open \"{}\". Pushing zero to stack.", filename);
+        defaultLogger.log(LogType::WARNING, "(FileOpener) Unable to open \"{}\". Pushing zero to stack.", filename);
     }
     else
     {
-        defaultLogger.log(LogType::INFO, "Opened \"{}\". fileID: {}, appendMode: {}.", filename, fileId.value(), m_appendMode);
+        defaultLogger.log(LogType::INFO, "(FileOpener) Opened \"{}\". fileID: {}, appendMode: {}.", filename, fileId.value(), m_appendMode);
     }
     current->stackPtr->push( static_cast<var_t>(fileId.value_or(0)) );
 

@@ -38,7 +38,10 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
         return false;
     }
 
-    if(current->stackPtr->empty()) return true;
+    if(current->stackPtr->empty())
+    {
+        return true;
+    }
     var_t top = Global::popStack(current->stackPtr);
 
     if(m_printAsChar)

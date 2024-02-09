@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include <Bomb.hpp>
+#include <Logger.hpp>
 
 Bomb::Bomb(const std::vector<Direction>& directions):
     Cable(directions)
@@ -35,6 +36,7 @@ bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
         return false;
     }
 
+    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
     Global::safe_exit(0);
     return Cable::work(current, currentVector);
 }

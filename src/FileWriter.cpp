@@ -15,7 +15,7 @@ bool FileWriter::work(Current::Ptr current, std::vector<Current::Ptr>& currentVe
 
     if(current->stackPtr->empty())
     {
-        defaultLogger.log(LogType::WARNING, "Stack is empty. Cannot find a file id to write to.");
+        defaultLogger.log(LogType::WARNING, "(FileWriter) Stack is empty. Cannot find a file id to write to.");
         return Cable::work(current, currentVector);
     }
     std::size_t fileId = Global::popStack(current->stackPtr, 0);
@@ -32,11 +32,11 @@ bool FileWriter::work(Current::Ptr current, std::vector<Current::Ptr>& currentVe
         }
         content.push_back(static_cast<char>(current_char));
     }
-    defaultLogger.log(LogType::INFO, "\"{}\" will be written to file with id {}.", content, fileId);
+    defaultLogger.log(LogType::INFO, "(FileWriter) \"{}\" will be written to file with id {}.", content, fileId);
 
     if(!FileDescriptorManager::write(fileId, content))
     {
-        defaultLogger.log(LogType::WARNING, "Unable to write to file with id {}.", fileId);
+        defaultLogger.log(LogType::WARNING, "(FileWriter) Unable to write to file with id {}.", fileId);
         current->stackPtr->push(0);
     }
 
