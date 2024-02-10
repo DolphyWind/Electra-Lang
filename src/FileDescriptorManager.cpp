@@ -21,22 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <FileDescriptorManager.hpp>
 
-#include <Bomb.hpp>
-#include <Logger.hpp>
+std::unordered_map<std::size_t, std::fstream> FileDescriptorManager::fstreamMap{};
 
-Bomb::Bomb(const std::vector<Direction>& directions):
-    Cable(directions)
-{}
-
-bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+std::optional<std::size_t> FileDescriptorManager::openFile(const std::string& name, std::ios_base::openmode openmode)
 {
-    if(!Component::work(current, currentVector))
+    static std::size_t id = 1;
+    fstreamMap[id].open(name, openmode);
+
+    if(fstreamMap[id].fail())
+    {
+        return std::nullopt;
+    }
+
+    return id++;
+}
+
+bool FileDescriptorManager::write(std::size_t id, const std::string& msg)
+{
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
     {
         return false;
     }
 
-    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
-    Global::safe_exit(0);
-    return Cable::work(current, currentVector);
+    fstreamMap[id] << msg;
+    return true;
+}
+
+bool FileDescriptorManager::close(std::size_t id)
+{
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
+    {
+        return false;
+    }
+
+    fstreamMap[id].close();
+    return true;
 }

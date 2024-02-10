@@ -43,7 +43,7 @@ bool Reverser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVect
         current->stackPtr->pop();
     }
     *(current->stackPtr) = std::move(newStack);
-    defaultLogger.log(LogType::INFO, "Reversed the entire stack.");
+    defaultLogger.log(LogType::INFO, "(Reverser) Reversed the entire stack.");
 
     return Cable::work(current, currentVector);
 }

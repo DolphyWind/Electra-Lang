@@ -31,7 +31,7 @@ class Key : public Cable
 {
 public:
     Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo);
-    ~Key() = default;
+    ~Key() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

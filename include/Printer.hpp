@@ -31,7 +31,7 @@ class Printer : public Cable
 {
 public:
     Printer(const std::vector<Direction>& directions, bool printAsChar);
-    ~Printer() = default;
+    ~Printer() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

@@ -22,21 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Bomb.hpp>
-#include <Logger.hpp>
+#pragma once
+#include <Cable.hpp>
 
-Bomb::Bomb(const std::vector<Direction>& directions):
-    Cable(directions)
-{}
-
-bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+class FileReader : public Cable
 {
-    if(!Component::work(current, currentVector))
-    {
-        return false;
-    }
+public:
+    explicit FileReader(const std::vector<Direction>& directions);
+    ~FileReader() override = default;
 
-    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
-    Global::safe_exit(0);
-    return Cable::work(current, currentVector);
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+};

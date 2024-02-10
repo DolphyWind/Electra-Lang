@@ -45,6 +45,10 @@ SOFTWARE.
 #include <StackChecker.hpp>
 #include <StackSwitcher.hpp>
 #include <Swapper.hpp>
+#include <FileReader.hpp>
+#include <FileOpener.hpp>
+#include <FileWriter.hpp>
+#include <FileCloser.hpp>
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -465,7 +469,20 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'E'] = std::make_unique<Eraser>( bin2dir(0b11111111) );
 
     // Sets up Bomb
-    m_components[U'o'] = std::make_unique<Bomb>( bin2dir(0b11111111));
+    m_components[U'o'] = std::make_unique<Bomb>( bin2dir(0b11111111) );
+
+    // Sets up File Reader
+    m_components[U'r'] = std::make_unique<FileReader>( bin2dir(0b00111110) );
+
+    // Sets up File Opener
+    m_components[U'w'] = std::make_unique<FileOpener>( bin2dir(0b10110001), false );
+    m_components[U'a'] = std::make_unique<FileOpener>( bin2dir(0b11101111), true );
+
+    // Sets up File Writer
+    m_components[U'W'] = std::make_unique<FileWriter>( bin2dir(0b10101110) );
+
+    // Sets up File Closer
+    m_components[U'C'] = std::make_unique<FileCloser>( bin2dir(0b11111110) );
 
     // Saves generator characters, their directions and toggler directions in a map
     m_generatorDataMap[U'>'] = bin2dir(0b00000001);

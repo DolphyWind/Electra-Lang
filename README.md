@@ -13,7 +13,7 @@ If you are on Arch Linux or a Linux distribution that is based on Arch Linux, yo
 ```bash
 yay -S electra-git
 ```  
-If you are on a Linux distribution that is not Arch Linux based, or using completely different operating system. Currently the only option to get Electra running on your system is building Electra from source. To build Electra from source, open up a terminal and follow the steps below.
+If you are on a Linux distribution that is not Arch Linux based, or using completely different operating system. Currently, the only option to get Electra running on your system is building Electra from source. To build Electra from source, open up a terminal and follow the steps below.
 
 ## Building on Unix-Like Operating Systems
 
@@ -122,7 +122,7 @@ They support the direction in which they generate current and its opposite. (e.g
 
 ## **Components**
 Components are the elements that give Electra its functionality.
-Each component has its own job and can clone or kill existing currents.  
+Each component has its own job and can clone or kill existing currents (Except for Portals, they teleport currents).  
 If a current flows into a component from an unsupported direction, that current gets killed.
 But components can also kill a current after they've done their work.
 If a current lives and the component supports directions that are different from the current's direction or its opposite, it gets cloned.
@@ -236,6 +236,7 @@ Stack checkers, check whether the current stack is empty or not.
 
 ### **Stack Switchers**
 Stack switchers move the current's stack pointer forwards or backwards. Some of them pops the top value and moves it to the next stack.
+They stack pointer wraps around if you try to move it out of bounds.
 
 >**Forward Stack Switcher (F):** Supports east, northeast, north, northwest, west and southwest directions. Moves current's stack pointer forward. Does not move top value to the next stack.
 
@@ -261,6 +262,24 @@ Supports all eight directions. Eraser, pops off the top value from the stack.
 
 ### **Bomb (o)**
 Supports all eight directions. Finishes the program execution.
+
+### **File Reader (r)**
+Supports northeast, north, northwest, west and southwest directions. Continuously pops the value on top of the stack and constructs a filename from those values until either it hits a zero or the stack becomes empty. (If it hits a zero, it also pops that)  
+Then reads the file with that filename in binary mode with utf8 encoding and pushes its content on top of the stack in reverse order, meaning the first character of the file will be the value on top of the stack. If it fails, it pushes zero to the stack.
+
+### **File Openers**
+Similar to File Reader, File Openers read a filename from the stack in the same way. After opening the file, they push a positive integer as unique identifier that can be used to communicate with file.
+They push zero on failure.
+
+>**File Write Opener(w):** Supports east, west, southwest and southeast directions. Opens the file in write and binary modes and pushes its id to the stack.
+>**File Append Opener(a):** Supports east, northeast, north, northwest, west, southwest, south and southeast directions. Opens the file in append and binary modes and pushes its id to the stack.
+
+### **File Writer (W)**
+File writer first pops the value on top of the stack and uses it as a file id. Then, constructs a string just like how the File Reader constructs a filename.
+Then writes that string to the file. It pushes zero on failure.
+
+### **File Closer (C)**
+File closer pops the value on top of the stack and closes that file handler. It pushes zero on failure.
 
 ### **Portals**
 Every other character in Electra is considered a portal. Portals support all eight directions.

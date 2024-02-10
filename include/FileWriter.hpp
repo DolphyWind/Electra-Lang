@@ -21,22 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#pragma once
+#include <Cable.hpp>
 
-#include <Bomb.hpp>
-#include <Logger.hpp>
-
-Bomb::Bomb(const std::vector<Direction>& directions):
-    Cable(directions)
-{}
-
-bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+class FileWriter : public Cable
 {
-    if(!Component::work(current, currentVector))
-    {
-        return false;
-    }
+public:
+    explicit FileWriter(const std::vector<Direction>& directions);
+    ~FileWriter() override = default;
 
-    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
-    Global::safe_exit(0);
-    return Cable::work(current, currentVector);
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+};

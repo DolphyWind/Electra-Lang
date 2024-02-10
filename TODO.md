@@ -3,7 +3,7 @@
 + [X] Update README.md separate implementation details from language spec
 
 # Electra 2.2
-+ [] File I/O
++ [X] File I/O
 + [] Loading components from shared libraries. Like how lua does it
 + [] Visual Mode: See your code in action!
 

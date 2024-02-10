@@ -47,7 +47,7 @@ bool Key::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
     if(inActivatorDirections)
     {
         m_sourceCode[curPos.y][curPos.x] = m_transformTo;
-        defaultLogger.log(LogType::INFO, "Key at ({}, {}) is now activated.", curPos.x, curPos.y);
+        defaultLogger.log(LogType::INFO, "(Key) Key at ({}, {}) is now activated.", curPos.x, curPos.y);
         return true;
     }
 

@@ -21,22 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#pragma once
+#include <fstream>
+#include <unordered_map>
+#include <optional>
 
-#include <Bomb.hpp>
-#include <Logger.hpp>
-
-Bomb::Bomb(const std::vector<Direction>& directions):
-    Cable(directions)
-{}
-
-bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+class FileDescriptorManager
 {
-    if(!Component::work(current, currentVector))
-    {
-        return false;
-    }
+public:
+    static std::optional<std::size_t> openFile(const std::string& name, std::ios_base::openmode openmode);
+    static bool write(std::size_t id, const std::string& msg);
+    static bool close(std::size_t id);
 
-    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
-    Global::safe_exit(0);
-    return Cable::work(current, currentVector);
-}
+private:
+    static std::unordered_map<std::size_t, std::fstream> fstreamMap;
+};

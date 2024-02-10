@@ -38,6 +38,7 @@ bool Swapper::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
 
     if(current->stackPtr->size() < 2)
     {
+        defaultLogger.log(LogType::WARNING, "(Swapper) There are less than 2 values on the stack.");
         return Cable::work(current, currentVector);
     }
 
@@ -46,7 +47,7 @@ bool Swapper::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
     current->stackPtr->push(first);
     current->stackPtr->push(second);
 
-    defaultLogger.log(LogType::INFO, "Swapping {} and {} on the stack.", first, second);
+    defaultLogger.log(LogType::INFO, "(Swapper) Swapping {} and {} on the stack.", first, second);
 
     return Cable::work(current, currentVector);
 }

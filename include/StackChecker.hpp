@@ -30,7 +30,7 @@ class StackChecker : public Cable
 {
 public:
     StackChecker(const std::vector<Direction>& directions, bool passIfEmpty);
-    ~StackChecker() = default;
+    ~StackChecker() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

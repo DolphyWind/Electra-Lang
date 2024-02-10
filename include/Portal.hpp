@@ -30,7 +30,7 @@ class Portal : public Component
 {
 public:
     explicit Portal(Position originalPosition);
-    ~Portal() = default;
+    ~Portal() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:

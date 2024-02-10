@@ -32,7 +32,7 @@ class StackSwitcher : public Cable
 {
 public:
     StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
-    ~StackSwitcher() = default;
+    ~StackSwitcher() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
