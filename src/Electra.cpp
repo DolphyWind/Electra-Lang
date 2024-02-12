@@ -26,18 +26,21 @@ SOFTWARE.
 #include <sstream>
 
 #include <boost/regex.hpp>
+#include <thirdparty/dylib/dylib.hpp>
 
 #include <Electra.hpp>
 #include <ArgParser.hpp>
 #include <ArithmeticalUnit.hpp>
 #include <Bomb.hpp>
 #include <Cloner.hpp>
+#include <CloningDynamicComponent.hpp>
 #include <ConditionalUnit.hpp>
 #include <ConstantAdder.hpp>
 #include <ConstantPusher.hpp>
 #include <Eraser.hpp>
 #include <Key.hpp>
 #include <Logger.hpp>
+#include <NonCloningDynamicComponent.hpp>
 #include <Portal.hpp>
 #include <Printer.hpp>
 #include <Reader.hpp>
@@ -552,6 +555,53 @@ void Electra::mainLoop()
     }while (!m_currents.empty());
 
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
+}
+
+std::pair<ComponentInformation, std::unique_ptr<Component>> Electra::loadDynamicComponent(const fs::path& path, const std::string& libraryFile)
+{
+    auto load_from_global = loadDynamicComponent(libraryFile);
+    if(load_from_global.second)
+    {
+        return load_from_global;
+    }
+
+    try
+    {
+        dylib lib(path.string(), libraryFile, dylib::no_filename_decorations);
+        ComponentInformation componentInformation = lib.get_function<ComponentInformation()>("load")();
+        auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+
+        if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
+        {
+            return {componentInformation, std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc)};
+        }
+        return {componentInformation, std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc)};
+    }
+    catch(const std::exception& exception)
+    {
+        defaultLogger.log(LogType::ERROR, "Unable to load \"{}\". Error message: {}.", libraryFile, exception.what());
+        return {ComponentInformation(), nullptr};
+    }
+}
+
+std::pair<ComponentInformation, std::unique_ptr<Component>> Electra::loadDynamicComponent(const std::string& libraryFile)
+{
+    try
+    {
+        dylib lib(libraryFile, dylib::no_filename_decorations);
+        ComponentInformation componentInformation = lib.get_function<ComponentInformation()>("load")();
+        auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+
+        if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
+        {
+            return {componentInformation, std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc)};
+        }
+        return {componentInformation, std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc)};
+    }
+    catch(const std::exception& exception)
+    {
+        return {ComponentInformation(), nullptr};
+    }
 }
 
 void Electra::createGenerators()

@@ -38,6 +38,7 @@ SOFTWARE.
 #include <Component.hpp>
 #include <Generator.hpp>
 #include <LineRange.hpp>
+#include <ComponentInformation.hpp>
 
 typedef std::vector<Direction> GeneratorData;
 class Electra
@@ -68,6 +69,17 @@ public:
     /// - Remove marked currents
     /// - Create new currents
     void mainLoop();
+
+    ///
+    /// @param path
+    /// @param libraryFile
+    /// @return
+    std::pair<ComponentInformation, std::unique_ptr<Component>> loadDynamicComponent(const fs::path& path, const std::string& libraryFile);
+
+    ///
+    /// @param libraryFile
+    /// @return
+    std::pair<ComponentInformation, std::unique_ptr<Component>> loadDynamicComponent(const std::string& libraryFile);
 
 private:
     void setupComponentsAndGenerators();
