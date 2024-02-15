@@ -29,6 +29,17 @@ SOFTWARE.
 typedef double var_t;
 typedef std::vector<std::stack<var_t>>::iterator StackPtr;
 
+#if (defined(_WIN32) || defined(_WIN64))
+#define WIN_MAC_OTHER(win_def, mac_def, other_def) win_def
+#define WIN_OTHER(win_def, other_def) win_def
+#elif defined(__APPLE__)
+#define WIN_MAC_OTHER(win_def, mac_def, other_def) mac_def
+#define WIN_OTHER(win_def, other_def) other_def
+#else
+#define WIN_MAC_OTHER(win_def, mac_def, other_def) other_def
+#define WIN_OTHER(win_def, other_def) other_def
+#endif
+
 namespace Global
 {
     // Pops the top value from the given stack. Returns defaultValue if the stack is empty.

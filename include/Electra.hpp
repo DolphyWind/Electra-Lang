@@ -39,6 +39,7 @@ SOFTWARE.
 #include <Generator.hpp>
 #include <LineRange.hpp>
 #include <ComponentInformation.hpp>
+#include <thirdparty/dylib/dylib.hpp>
 
 typedef std::vector<Direction> GeneratorData;
 class Electra
@@ -70,17 +71,6 @@ public:
     /// - Create new currents
     void mainLoop();
 
-    ///
-    /// @param path
-    /// @param libraryFile
-    /// @return
-    std::pair<ComponentInformation, std::unique_ptr<Component>> loadDynamicComponent(const fs::path& path, const std::string& libraryFile);
-
-    ///
-    /// @param libraryFile
-    /// @return
-    std::pair<ComponentInformation, std::unique_ptr<Component>> loadDynamicComponent(const std::string& libraryFile);
-
 private:
     void setupComponentsAndGenerators();
     static void setupSignalHandlers();
@@ -96,11 +86,21 @@ private:
     [[nodiscard]] std::vector<std::string> includeFile(const fs::path& currentPath, const std::string& filename, LineRange lineRange=LineRange{});
 
     /// @brief Removes comments and includes files if there are any to include
-    /// @param currentPath
-    /// @param sourceCode
-    /// @param lineRange
-    /// @return
+    /// @param currentPath Current file path
+    /// @param sourceCode Source code to parse
+    /// @param lineRange Line range to parse
+    /// @return Parsed source code
     [[nodiscard]] std::vector<std::string> parseSourceCode(const fs::path& currentPath, const std::string& sourceCode, LineRange lineRange=LineRange{});
+
+    /// @brief Loads a dynamic component
+    /// @param path Path to search in
+    /// @param filename Name of the file
+    void loadDynamicComponent(const fs::path& path, const std::string& filename);
+
+    /// @brief Loads a dynamic component
+    /// @param filename Name of the so, dylib or dll file
+    /// @return true if loading was successful
+    bool loadDynamicComponent(const std::string& filename);
 
     /// @brief Creates generators from source code
     void createGenerators();
@@ -129,6 +129,9 @@ private:
     fs::path m_currentPath;
     std::vector<std::u32string> m_sourceCode;
     std::unordered_map<std::string, std::set<LineRange>> m_includedParts;
+
+    // Dynamic libraries
+    std::vector<dylib> m_dynamicLibraries;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
     std::vector<std::size_t> m_deadCurrentIndices;

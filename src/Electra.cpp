@@ -184,6 +184,7 @@ Electra::Electra(const std::vector<std::string>& args):
 void Electra::setSourceCode(const std::string& sourceCode)
 {
     cleanup();
+    setupComponentsAndGenerators();
 
     auto content = parseSourceCode(m_currentPath, sourceCode);
     for(auto& line : content)
@@ -225,6 +226,9 @@ void Electra::loadSourceFromFile(const std::string& filepath)
 
 void Electra::cleanup()
 {
+    m_components.clear();
+    m_generatorDataMap.clear();
+    m_generatorChars.clear();
     m_generators.clear();
     m_currents.clear();
     m_filename.clear();
@@ -233,6 +237,7 @@ void Electra::cleanup()
     m_deadCurrentIndices.clear();
     m_newCurrents.clear();
     m_portalMap.clear();
+    m_dynamicLibraries.clear();
 }
 
 std::vector<std::string> Electra::includeFile(const fs::path& currentPath, const std::string& filename, LineRange lineRange)
@@ -306,9 +311,16 @@ std::vector<std::string> Electra::parseSourceCode(const fs::path& currentPath, c
         std::size_t first_quotation_mark_pos = includePatternStr.find('\"');
         std::size_t second_quotation_mark_pos = includePatternStr.find('\"', first_quotation_mark_pos + 1);
         std::string new_filename = includePatternStr.substr(first_quotation_mark_pos, second_quotation_mark_pos - first_quotation_mark_pos + 1);
-        std::string line_range_str = includePatternStr.substr(new_filename.size());
-
         new_filename = std::string(std::next(new_filename.begin()), std::prev(new_filename.end()));
+
+        if(new_filename.ends_with(WIN_MAC_OTHER(".dll", ".dylib", ".so")))
+        {
+            // It is a dynamic component
+            loadDynamicComponent(m_currentPath, new_filename);
+            continue;
+        }
+        std::string line_range_str = includePatternStr.substr(new_filename.size() + 2);
+
         fs::path new_file_path = currentPath / new_filename;
         fs::path parent_path = new_file_path.parent_path();
         std::string raw_filename = fs::path(new_filename).filename().string();
@@ -557,50 +569,57 @@ void Electra::mainLoop()
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
 
-std::pair<ComponentInformation, std::unique_ptr<Component>> Electra::loadDynamicComponent(const fs::path& path, const std::string& libraryFile)
+void Electra::loadDynamicComponent(const fs::path& path, const std::string& filename)
 {
-    auto load_from_global = loadDynamicComponent(libraryFile);
-    if(load_from_global.second)
+    if(loadDynamicComponent(filename))
     {
-        return load_from_global;
+        return;
     }
 
     try
     {
-        dylib lib(path.string(), libraryFile, dylib::no_filename_decorations);
-        ComponentInformation componentInformation = lib.get_function<ComponentInformation()>("load")();
+        dylib lib(path.string(), filename, dylib::no_filename_decorations);
+        ComponentInformation componentInformation;
+        lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
         auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        m_dynamicLibraries.push_back(std::move(lib));
 
         if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
         {
-            return {componentInformation, std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc)};
+            m_components[componentInformation.symbol] = std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc);
+            return;
         }
-        return {componentInformation, std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc)};
+        m_components[componentInformation.symbol] = std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc);
     }
     catch(const std::exception& exception)
     {
-        defaultLogger.log(LogType::ERROR, "Unable to load \"{}\". Error message: {}.", libraryFile, exception.what());
-        return {ComponentInformation(), nullptr};
+        defaultLogger.log(LogType::ERROR, "Unable to load \"{}\". Error message: {}", filename, exception.what());
+        std::cerr << "Unable to load \"" << filename << "\" Error message: " << exception.what() << std::endl;
+        Global::safe_exit(1);
     }
 }
 
-std::pair<ComponentInformation, std::unique_ptr<Component>> Electra::loadDynamicComponent(const std::string& libraryFile)
+bool Electra::loadDynamicComponent(const std::string& filename)
 {
     try
     {
-        dylib lib(libraryFile, dylib::no_filename_decorations);
-        ComponentInformation componentInformation = lib.get_function<ComponentInformation()>("load")();
+        dylib lib(filename, dylib::no_filename_decorations);
+        ComponentInformation componentInformation;
+        lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
         auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        m_dynamicLibraries.push_back(std::move(lib));
 
         if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
         {
-            return {componentInformation, std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc)};
+            m_components[componentInformation.symbol] = std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc);
+            return true;
         }
-        return {componentInformation, std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc)};
+        m_components[componentInformation.symbol] = std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc);
+        return true;
     }
     catch(const std::exception& exception)
     {
-        return {ComponentInformation(), nullptr};
+        return false;
     }
 }
 

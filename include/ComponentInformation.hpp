@@ -23,7 +23,7 @@ SOFTWARE.
 */
 #include <vector>
 
-#include <Direction.hpp>
+#include "Direction.hpp"
 
 struct ComponentInformation
 {
