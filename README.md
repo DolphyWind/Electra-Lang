@@ -55,7 +55,7 @@ cmake --build . --config="Release"
 Electra has three main components: Currents, Generators and Components. Electra uses a list of 64 stacks of doubles for its memory management.
 (This implementation has a command line argument that lets you change the stack count)
 
-## **Comments and Including Other Files**
+## **Comments, Including Other Files and Extending Electra With C++**
 In Electra, you can comment out your code using question marks. 
 ```
 ? This is a comment ? >-+ 
@@ -85,6 +85,10 @@ To include other files in your code, use quotation marks.
 "foo.ec" 5:12 ? This will do nothing ?
 "!foo.ec" 5:12 ? You can always do a force include ?
 ```
+
+But be careful, files ending with `.dll`, `.so` or `.dylib` will be treated as dynamic components
+(depends on your platform, on windows only the `.dll` files will be treated as dynamic components).
+Dynamic components allow you to extend electra using C++. For more info, click [here](ExtendingElectra.md).
 
 ## **Currents**
 Currents are instruction pointers in Electra. They all have a direction, a position, a stack that holds visited portals and a stack pointer.

@@ -2,7 +2,7 @@
 "libhelloworld.so"
 
 ? Uses 4 stacks ?
-? First three are for source code, the last one is for the accumulator ?
+? First three are for the source code, the last one is for the accumulator ?
 
 +-->---+      +------+
 |      &      |      |

@@ -14,7 +14,7 @@ void load(ComponentInformation& c)
     c.componentType = ComponentInformation::ComponentType::CLONING;
 }
 
-bool work(Current::Ptr currentPtr, std::vector<Current::Ptr>& currentVector)
+bool work(std::vector<std::stack<var_t>>& stacks, Current::Ptr currentPtr, std::vector<Current::Ptr>& currentVector)
 {
 
     for(int i = 99; i > 1; --i)

@@ -581,7 +581,8 @@ void Electra::loadDynamicComponent(const fs::path& path, const std::string& file
         dylib lib(path.string(), filename, dylib::no_filename_decorations);
         ComponentInformation componentInformation;
         lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
-        auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        auto workFuncWithStacksParam = lib.get_function<bool(std::vector<std::stack<var_t>>&, Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        auto workFunc = std::bind(workFuncWithStacksParam, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
         m_dynamicLibraries.push_back(std::move(lib));
 
         if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
@@ -606,7 +607,8 @@ bool Electra::loadDynamicComponent(const std::string& filename)
         dylib lib(filename, dylib::no_filename_decorations);
         ComponentInformation componentInformation;
         lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
-        auto workFunc = lib.get_function<bool(Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        auto workFuncWithStacksParam = lib.get_function<bool(std::vector<std::stack<var_t>>&, Current::Ptr, std::vector<Current::Ptr>&)>("work");
+        auto workFunc = std::bind(workFuncWithStacksParam, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
         m_dynamicLibraries.push_back(std::move(lib));
 
         if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
