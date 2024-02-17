@@ -276,6 +276,7 @@ Similar to File Reader, File Openers read a filename from the stack in the same 
 They push zero on failure.
 
 >**File Write Opener(w):** Supports east, west, southwest and southeast directions. Opens the file in write and binary modes and pushes its id to the stack.
+
 >**File Append Opener(a):** Supports east, northeast, north, northwest, west, southwest, south and southeast directions. Opens the file in append and binary modes and pushes its id to the stack.
 
 ### **File Writer (W)**
