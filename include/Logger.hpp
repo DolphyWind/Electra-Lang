@@ -28,6 +28,10 @@ SOFTWARE.
 #include <StringUtilities.hpp>
 #include <Global.hpp>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 enum class LogType
 {
     WARNING, 
