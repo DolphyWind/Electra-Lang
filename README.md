@@ -269,7 +269,7 @@ Supports all eight directions. Finishes the program execution.
 
 ### **File Reader (r)**
 Supports northeast, north, northwest, west and southwest directions. Continuously pops the value on top of the stack and constructs a filename from those values until either it hits a zero or the stack becomes empty. (If it hits a zero, it also pops that)  
-Then reads the file with that filename in binary mode with utf8 encoding and pushes its content on top of the stack in reverse order, meaning the first character of the file will be the value on top of the stack. If it fails, it pushes zero to the stack.
+Then reads the file with that filename in binary mode and pushes its content on top of the stack in reverse order, meaning the first character of the file will be the value on top of the stack. If it fails, it pushes zero to the stack.
 
 ### **File Openers**
 Similar to File Reader, File Openers read a filename from the stack in the same way. After opening the file, they push a positive integer as unique identifier that can be used to communicate with file.

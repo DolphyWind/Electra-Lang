@@ -55,7 +55,7 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
         }
         catch(const utf8::invalid_code_point& invalidCodePoint)
         {
-            defaultLogger.log(LogType::WARNING, "{}. {}", invalidCodePoint.what(), static_cast<long>(top_character32));
+            std::cout << static_cast<char>(top_character32);
         }
 
         std::cout << str_to_print << std::flush;

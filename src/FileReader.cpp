@@ -62,10 +62,7 @@ bool FileReader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVe
     std::stringstream ss;
     ss << ifs.rdbuf();
     ifs.close();
-    std::string fileContent_utf8 = ss.str();
-    std::u32string fileContent;
-    fileContent.reserve(fileContent_utf8.size());
-    utf8::utf8to32(fileContent_utf8.begin(), fileContent_utf8.end(), std::back_inserter(fileContent));
+    std::string fileContent = ss.str();
 
     while(!fileContent.empty())
     {
