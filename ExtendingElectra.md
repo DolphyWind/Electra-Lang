@@ -21,7 +21,7 @@ any component with the same symbol.
 - The `directions` field is a list of supported directions.
 - The `componentType` field specifies the component's type. The `componentType` can take
 two values: `ComponentInformation::ComponentType::CLONING` or `ComponentInformation::ComponentType::NON_CLONING`.
-`NON_CLONING` components do not clone the current after they've done their job like portals.
+`NON_CLONING` components do not clone the current after they've done their job, like portals.
 And as you may guess, `CLONING` components do clone the current after they've done their job like any other component in electra.
 
 #### Work Function

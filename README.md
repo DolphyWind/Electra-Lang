@@ -6,9 +6,9 @@
 
 Electra is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language) where you code like an electrician. Electra is inspired by [AsciiDots](https://esolangs.org/wiki/AsciiDots). It uses instruction pointers that act like currents in electricity. [Here's](https://esolangs.org/wiki/Electra) the esolang wiki page if you are interested.  
 
-# How to get electra?
+# How to get Electra?
 
-If you are on Arch Linux or a Linux distribution that is based on Arch Linux, you can download Electra using the [AUR](https://aur.archlinux.org). To download electra from AUR, install an AUR helper like `yay`. Then type the command below into the terminal to install Electra.
+If you are on Arch Linux or a Linux distribution that is based on Arch Linux, you can download Electra using the [AUR](https://aur.archlinux.org). To download Electra from AUR, install an AUR helper like `yay`. Then type the command below into the terminal to install Electra.
 
 ```bash
 yay -S electra-git
@@ -17,7 +17,7 @@ If you are on a Linux distribution that is not Arch Linux based, or using comple
 
 ## Building on Unix-Like Operating Systems
 
-If you are on a Unix-Like operating system such as Linux, MacOS, BSD etc. To build electra from source, first, install git, cmake and make using your package manager. Then type these commands in a terminal
+If you are on a Unix-Like operating system such as Linux, MacOS, BSD etc. To build Electra from source, first, install git, CMake and make tools using your package manager. Then type these commands in a terminal
 
 ```bash
 # Clone the repository and cd into it
@@ -36,7 +36,7 @@ sudo make install
 
 ## Building on Windows
 
-If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), and [CMake](https://cmake.org/download/) alongside a C++ compiler and add them to your PATH. MSVC is now supported. To build electra on Windows, follow the steps below.
+If you are on Windows, please install [Git for Windows](https://gitforwindows.org/), and [CMake](https://cmake.org/download/) alongside a C++ compiler and add them to your PATH. MSVC is now supported. To build Electra on Windows, follow the steps below.
 
 ```bash
 # Clone the repository and cd into it
@@ -65,30 +65,31 @@ In Electra, you can comment out your code using question marks.
 
 To include other files in your code, use quotation marks.
 ```
-? Copies the contents of file.ec and pastes it all into current file ?
+? Copies the contents of file.ec and pastes it all into the current file ?
 "file.ec"
 
 ? Electra will prevent you from reincluding a file. This will do nothing ?
 "file.ec"
 
-? Putting '!' before filename forces Electra to reinclude a file ?
+? Putting '!' before filename forces Electra to reinclude given file ?
 "!file.ec" 
 
 ? You can also specify a range when including a file ?
 ? (x < y) ?
-"mylib.ec" x:y ? Includes the lines between line x and line y (x-inclusive, y-exclusive) ?
-"otherlib.ec" x: ? Includes the lines after line x (x-inclusive) ?
-"anotherlib.ec" :y ? Includes the lines befor line y (y-inclusive) ?
+"mylib.ec" x:y ? Includes the lines between the line x and the line y (x-inclusive, y-exclusive) ?
+"otherlib.ec" x: ? Includes the lines after the line x (x-inclusive) ?
+"anotherlib.ec" :y ? Includes the lines before the line y (y-exclusive) ?
 
-? Electra prevents you to reincluding a line that has already been included ?
+? Electra prevents you to reincluding a portion that has already been included before ?
 "foo.ec" 10:15
 "foo.ec" 5:12 ? This will do nothing ?
 "!foo.ec" 5:12 ? You can always do a force include ?
 ```
 
 But be careful, files ending with `.dll`, `.so` or `.dylib` will be treated as dynamic components
-(depends on your platform, on windows only the `.dll` files will be treated as dynamic components).
-Dynamic components allow you to extend electra using C++. For more info, click [here](ExtendingElectra.md).
+This behavior depends on your platform, for example, on Windows only the `.dll` files will be treated as dynamic components, on Linux, it is `.so` files
+and on Mac it is the `.dylib` files.
+Dynamic components allow you to extend Electra using C++. For more info, click [here](ExtendingElectra.md).
 
 ## **Currents**
 Currents are instruction pointers in Electra. They all have a direction, a position, a stack that holds visited portals and a stack pointer.
