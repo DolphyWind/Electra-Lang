@@ -13,3 +13,4 @@
 + [X] Code cleanup
 + [] Add unit tests
 + [] Visual Mode: See your code in action!
++ [] Electra on the web
