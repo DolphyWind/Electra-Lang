@@ -59,6 +59,8 @@ Electra::Electra():
 {
     setupComponentsAndGenerators();
     setupSignalHandlers();
+    m_starterStacks.resize(Electra::default_stack_count);
+    m_stacks = m_starterStacks;
 }
 
 Electra::Electra(const std::vector<std::string>& args):
@@ -108,24 +110,19 @@ Electra::Electra(const std::vector<std::string>& args):
 
     // Parses --stack-count argument
     // Example: --stack-count 32
-    // Makes the size of m_stacks
+    // Sets the size of m_starterStacks
     try
     {
-        long stack_count;
-        if(stack_count_str.empty())
+        if(!stack_count_str.empty())
         {
-            stack_count = Electra::default_stack_count;
+            m_stackCount = std::stoull(stack_count_str);
         }
-        else
-        {
-            stack_count = std::stol(stack_count_str);
-        }
-        if(stack_count <= 0)
+        if(m_stackCount == 0)
         {
             throw std::invalid_argument("Stack count should be greater than zero!");
         }
         
-        m_stacks.resize(stack_count);
+        m_starterStacks.resize(m_stackCount);
     }
     catch (const std::invalid_argument &e)
     {
@@ -145,10 +142,10 @@ Electra::Electra(const std::vector<std::string>& args):
     // First stack contains 123 and second stack contains 456
     std::size_t index = 0;
     auto split_by_comma = sutil::split(string_map["stack"], ",");
-    if(split_by_comma.size() > m_stacks.size())
+    if(split_by_comma.size() > m_starterStacks.size())
     {
-        std::cerr << "You entered initial values for " << split_by_comma.size() << " stacks but stack count is " << m_stacks.size() << "!" << std::endl;
-        defaultLogger.log(LogType::ERROR, "You entered initial values for {} stacks but stack count is {}!", split_by_comma.size(), m_stacks.size());
+        std::cerr << "You entered initial values for " << split_by_comma.size() << " stacks but stack count is " << m_starterStacks.size() << "!" << std::endl;
+        defaultLogger.log(LogType::ERROR, "You entered initial values for {} stacks but stack count is {}!", split_by_comma.size(), m_starterStacks.size());
         Global::safe_exit(1);
     }
     for(auto &split : split_by_comma)
@@ -159,7 +156,7 @@ Electra::Electra(const std::vector<std::string>& args):
 
             try
             {
-                m_stacks[index].push(std::stod(i));
+                m_starterStacks[index].push(std::stod(i));
             }
             catch(const std::out_of_range &e)
             {
@@ -238,6 +235,7 @@ void Electra::cleanup()
     m_newCurrents.clear();
     m_portalMap.clear();
     m_dynamicLibraries.clear();
+    m_stacks = m_starterStacks;
 }
 
 std::vector<std::string> Electra::includeFile(const fs::path& currentPath, const std::string& filename, LineRange lineRange)
@@ -524,6 +522,8 @@ void Electra::setupComponentsAndGenerators()
     {
         m_generatorChars.push_back(p.first);
     }
+
+    
 }
 
 void Electra::setupSignalHandlers()

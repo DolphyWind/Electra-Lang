@@ -141,7 +141,9 @@ private:
 
     // Memory management
     std::vector<std::stack<var_t>> m_stacks;
+    std::vector<std::stack<var_t>> m_starterStacks;
     static constexpr std::size_t default_stack_count = 64;
+    std::size_t m_stackCount = Electra::default_stack_count;
 
     // A map object that holds positions of original portals as its values
     std::unordered_map<char32_t, Position> m_portalMap;

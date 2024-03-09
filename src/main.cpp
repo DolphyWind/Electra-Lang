@@ -36,7 +36,23 @@ int main(int argc, char *argv[])
         args.emplace_back(argv[i]);
     }
 
-	Electra electraInterpreter(args);
+	//Electra electraInterpreter(args);
+	
+    Electra electraInterpreter;
+    electraInterpreter.setSourceCode(R"(
+
+    >O    +-+     +-+     +-+                                     Q-PO
+     I    I I   #P+ I     I I                                     $  I
+     I +MPO I   I   I     O I                                     I  I +P
+     I I    I #M+   I     | $                                     I  I I
+     I I    I I     I   #P# QDDDDD#P+DDDO                         I  #M+
+     I O    I I     I   I               I    #PDDDDDD#PDDDDDDDD#PDO    
+     I |    I I     I   I               I    I
+     #M+    +-+     I   I               I    I
+                    ##PP+               $    I
+                                        +MP#P+
+    )");
+
 	electraInterpreter.mainLoop();
 	return 0;
 }
