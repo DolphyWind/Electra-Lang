@@ -22,32 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
+#include <components/Bomb.hpp>
 #include <utility/Logger.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+Bomb::Bomb(const std::vector<Direction>& directions):
+    Cable(directions)
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+bool Bomb::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-    for(auto& dir : m_directions)
+    if(!Component::work(current, currentVector))
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return false;
     }
-}
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
+    defaultLogger.log(LogType::INFO, "(Bomb) Ending the program.");
+    Global::safe_exit(0);
+    return Cable::work(current, currentVector);
 }

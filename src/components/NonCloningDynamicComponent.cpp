@@ -21,33 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <components/NonCloningDynamicComponent.hpp>
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
-
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Direction>& directions, const NonCloningDynamicComponent::WorkFunctionType& workFunction):
+    Component(directions), m_workFunc(workFunction)
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+bool NonCloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-    for(auto& dir : m_directions)
+    if(!Component::work(current, currentVector))
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return false;
     }
-}
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
+    std::vector<Current::Ptr> newCurrents;
+    bool result = m_workFunc(current, newCurrents);
+    currentVector.insert(currentVector.end(), std::make_move_iterator(newCurrents.begin()), std::make_move_iterator(newCurrents.end()));
 
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
+    return result;
 }

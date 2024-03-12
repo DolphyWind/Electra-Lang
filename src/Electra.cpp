@@ -29,29 +29,31 @@ SOFTWARE.
 #include <thirdparty/dylib/dylib.hpp>
 
 #include <Electra.hpp>
-#include <ArgParser.hpp>
-#include <ArithmeticalUnit.hpp>
-#include <Bomb.hpp>
-#include <Cloner.hpp>
-#include <CloningDynamicComponent.hpp>
-#include <ConditionalUnit.hpp>
-#include <ConstantAdder.hpp>
-#include <ConstantPusher.hpp>
-#include <Eraser.hpp>
-#include <Key.hpp>
-#include <Logger.hpp>
-#include <NonCloningDynamicComponent.hpp>
-#include <Portal.hpp>
-#include <Printer.hpp>
-#include <Reader.hpp>
-#include <Reverser.hpp>
-#include <StackChecker.hpp>
-#include <StackSwitcher.hpp>
-#include <Swapper.hpp>
-#include <FileReader.hpp>
-#include <FileOpener.hpp>
-#include <FileWriter.hpp>
-#include <FileCloser.hpp>
+#include <components/ArithmeticalUnit.hpp>
+#include <components/Bomb.hpp>
+#include <components/Cloner.hpp>
+#include <components/CloningDynamicComponent.hpp>
+#include <components/ConditionalUnit.hpp>
+#include <components/ConstantAdder.hpp>
+#include <components/ConstantPusher.hpp>
+#include <components/Eraser.hpp>
+#include <components/Key.hpp>
+#include <components/NonCloningDynamicComponent.hpp>
+#include <components/Portal.hpp>
+#include <components/Printer.hpp>
+#include <components/Reader.hpp>
+#include <components/Reverser.hpp>
+#include <components/StackChecker.hpp>
+#include <components/StackSwitcher.hpp>
+#include <components/Swapper.hpp>
+#include <components/FileReader.hpp>
+#include <components/FileOpener.hpp>
+#include <components/FileWriter.hpp>
+#include <components/FileCloser.hpp>
+
+#include <utility/ArgParser.hpp>
+#include <utility/Logger.hpp>
+
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -76,6 +78,7 @@ Electra::Electra(const std::vector<std::string>& args):
     parser.addArgument("--log", "-l", true, "Enables logging. Electra logs each step of the program and saves it into a file.");
     parser.addArgument("--stack", "-s", false, "Specify the initial values of stack.");
     parser.addArgument("--stack-count", "-sc", false, "Specify the total stack count that electra uses. Must be greater than or equal to one.");
+    parser.addArgument("--visual-mode", "-vm", true, "Enable visual mode.");
 
     auto parser_args = parser.parse();
     auto string_map = std::get<0>(parser_args);
@@ -163,18 +166,30 @@ Electra::Electra(const std::vector<std::string>& args):
             }
             catch(const std::out_of_range &e)
             {
-                defaultLogger.log(LogType::ERROR, "The value {} is too big or small for var_t.", i);
-                std::cerr << "The value " << i << " is too big or small for var_t." << std::endl;
+                defaultLogger.log(LogType::ERROR, "The value {} is too big or small for double.", i);
+                std::cerr << "The value " << i << " is too big or small for double." << std::endl;
                 Global::safe_exit(1);
             }
             catch(const std::invalid_argument &e)
             {
-                defaultLogger.log(LogType::ERROR, "Can\'t convert {} to var_t.", i);
-                std::cerr << "Can\'t convert " << i << " to var_t." << std::endl;
+                defaultLogger.log(LogType::ERROR, "Can\'t convert {} to double.", i);
+                std::cerr << "Can\'t convert " << i << " to double." << std::endl;
                 Global::safe_exit(1);
             }
         }
         index ++;
+    }
+
+    // Parses --visual-mode argument
+    if(bool_map["visual-mode"])
+    {
+#ifdef HAS_VISUAL_MODE
+        
+#else
+        defaultLogger.log(LogType::ERROR, "Sorry, visual mode is disabled on this binary!");
+        std::cerr << "Sorry, visual mode is disabled on this binary!" << std::endl;
+        Global::safe_exit(1);
+#endif
     }
 
     m_filename = alone_args[0];

@@ -35,10 +35,10 @@ SOFTWARE.
 #include <unordered_map>
 #include <set>
 
-#include <Component.hpp>
+#include <components/Component.hpp>
 #include <Generator.hpp>
-#include <LineRange.hpp>
-#include <ComponentInformation.hpp>
+#include <utility/LineRange.hpp>
+#include <components/ComponentInformation.hpp>
 #include <thirdparty/dylib/dylib.hpp>
 
 typedef std::vector<Direction> GeneratorData;

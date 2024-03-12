@@ -8,92 +8,107 @@ endif()
 project(ElectraLang VERSION 1.0.0)
 option(ENABLE_VISUAL_MODE "Enables the visual mode" ON)
 
-#file(GLOB SOURCE_FILES "./src/*.cpp")
+if(ENABLE_VISUAL_MODE)
+    if(MSVC OR WIN32)
+        add_subdirectory(include/thirdparty/pdcurses)
+        set(HAS_PDCURSES TRUE)
+        message("Found PDCurses")
+    else()
+        find_package(Curses)
+        if(CURSES_FOUND)
+            set(HAS_NCURSES TRUE)
+            message("Found NCurses")
+        else()
+            message("NCurses library is not found, disabling visual Mode")
+            set(ENABLE_VISUAL_MODE OFF)
+        endif()
+    endif()
+endif()
+
 set(SOURCE_FILES
-    src/Argparser.cpp
-    src/ArithmeticalUnit.cpp
-    src/Bomb.cpp
-    src/Cable.cpp
-    src/Cloner.cpp
-    src/CloningDynamicComponent.cpp
-    src/Component.cpp
-    src/ConditionalUnit.cpp
-    src/ConstantAdder.cpp
-    src/ConstantPusher.cpp
+    src/components/ArithmeticalUnit.cpp
+    src/components/Bomb.cpp
+    src/components/Cable.cpp
+    src/components/Cloner.cpp
+    src/components/CloningDynamicComponent.cpp
+    src/components/Component.cpp
+    src/components/ConditionalUnit.cpp
+    src/components/ConstantAdder.cpp
+    src/components/ConstantPusher.cpp
+    src/components/Eraser.cpp
+    src/components/FileCloser.cpp
+    src/components/FileOpener.cpp
+    src/components/FileReader.cpp
+    src/components/FileWriter.cpp
+    src/components/Key.cpp
+    src/components/NonCloningDynamicComponent.cpp
+    src/components/Portal.cpp
+    src/components/Printer.cpp
+    src/components/Reader.cpp
+    src/components/Reverser.cpp
+    src/components/StackChecker.cpp
+    src/components/StackSwitcher.cpp
+    src/components/Swapper.cpp
+
+    src/utility/Argparser.cpp
+    src/utility/FileDescriptorManager.cpp
+    src/utility/Global.cpp
+    src/utility/LineRange.cpp
+    src/utility/Logger.cpp
+    src/utility/StringUtilities.cpp
+
     src/Current.cpp
     src/Direction.cpp
     src/Electra.cpp
-    src/Eraser.cpp
-    src/FileCloser.cpp
-    src/FileDescriptorManager.cpp
-    src/FileOpener.cpp
-    src/FileReader.cpp
-    src/FileWriter.cpp
     src/Generator.cpp
-    src/Global.cpp
-    src/Key.cpp
-    src/LineRange.cpp
-    src/Logger.cpp
     src/main.cpp
-    src/NonCloningDynamicComponent.cpp
-    src/Portal.cpp
-    src/Printer.cpp
-    src/Reader.cpp
-    src/Reverser.cpp
-    src/StackChecker.cpp
-    src/StackSwitcher.cpp
-    src/StringUtilities.cpp
-    src/Swapper.cpp
 )
 
+# Define Target
 add_executable(${TARGET_BINARY_NAME} ${SOURCE_FILES})
-
 target_include_directories(${TARGET_BINARY_NAME} PUBLIC include)
 
+# Boost::Regex
 set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(include/thirdparty/regex)
 target_link_libraries(${TARGET_BINARY_NAME} PRIVATE Boost::regex)
 
+# Set utf-8 flag if the compiler toolchain is MSVC
 if(MSVC)
     target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
 endif()
 
+# Visual Mode Definitions and Linkings
+if(HAS_PDCURSES)
+    target_link_libraries(${TARGET_BINARY_NAME}
+        PRIVATE
+        PDCurses
+    )
+    target_compile_definitions(${TARGET_BINARY_NAME}
+        PRIVATE
+        HAS_PDCURSES
+    )
+endif()
+if(HAS_NCURSES)
+    target_include_directories(${TARGET_BINARY_NAME}
+        PRIVATE
+        ${CURSES_INCLUDE_DIRS}
+    )
+    target_link_libraries(${TARGET_BINARY_NAME}
+        PRIVATE
+        ${CURSES_LIBRARIES}
+    )
+    target_compile_definitions(${TARGET_BINARY_NAME}
+        PRIVATE
+        HAS_NCURSES
+    )
+endif()
 if(ENABLE_VISUAL_MODE)
-    if(MSVC OR WIN32)
-        add_subdirectory(include/thirdparty/pdcurses)
-        target_link_libraries(${TARGET_BINARY_NAME}
-            PRIVATE
-            PDCurses
-        )
-        target_compile_definitions(${TARGET_BINARY_NAME}
-            PRIVATE
-            HAS_PDCURSES
-        )
-        message("Found PDCurses")
-    else()
-        find_package(Curses REQUIRED)
-        if(CURSES_FOUND)
-            target_include_directories(${TARGET_BINARY_NAME}
-                PRIVATE
-                ${CURSES_INCLUDE_DIRS}
-            )
-            target_link_libraries(${TARGET_BINARY_NAME}
-                PRIVATE
-                ${CURSES_LIBRARIES}
-            )
-            target_compile_definitions(${TARGET_BINARY_NAME}
-                PRIVATE
-                HAS_NCURSES
-            )
-            message("Found NCurses")
-        else()
-            message(FATAL_ERROR "NCurses library is not found")
-        endif()
-    endif()
     target_compile_definitions(${TARGET_BINARY_NAME}
         PRIVATE
         HAS_VISUAL_MODE
     )
 endif()
 
+# For Installation
 install(TARGETS ${TARGET_BINARY_NAME} DESTINATION bin)

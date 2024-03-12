@@ -22,32 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#pragma once
+#include <components/Cable.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
-
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+// Moves current's stackPtr pointer forwards or backwards.
+// If moveValue is true, it pops the top value before moving the stackPtr and pushes that value to the new stack after moving.
+// It does not push anything if there is nothing to pop.
+class StackSwitcher : public Cable
 {
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+public:
+    StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
+    ~StackSwitcher() override = default;
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
-    }
-}
-
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+private:
+    std::vector<std::stack<var_t>>* m_stacks;
+    bool m_moveForward = true;
+    bool m_moveValue = false;
+};

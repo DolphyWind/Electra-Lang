@@ -22,32 +22,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#include <utility/LineRange.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+LineRange::LineRange():
+    m_begin(1), m_end(std::numeric_limits<std::size_t>::max())
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
-{
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+LineRange::LineRange(std::size_t begin, std::size_t end):
+    m_begin(begin), m_end(end)
+{}
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+bool LineRange::intersects(const LineRange& other) const
+{
+    if(other.getBegin() < m_begin) return other.intersects(*this);
+
+    return (m_begin <= other.getBegin() && other.getBegin() < m_end);
+}
+
+std::size_t LineRange::getBegin() const
+{
+    return m_begin;
+}
+
+std::size_t LineRange::getEnd() const
+{
+    return m_end;
+}
+
+void LineRange::setBegin(std::size_t begin)
+{
+    m_begin = begin;
+    m_begin = (m_begin == 0 ? 1 : m_begin);
+    if(m_begin > m_end)
+    {
+        m_end = m_begin;
     }
 }
 
-const std::vector<Direction>& Generator::getDirections() const
+void LineRange::setEnd(std::size_t end)
 {
-    return m_directions;
+    m_end = end;
+    if(m_end < m_begin)
+    {
+        m_begin = m_end;
+    }
 }
 
-std::vector<Direction>& Generator::getDirections()
+std::strong_ordering LineRange::operator<=>(const LineRange& other) const
 {
-    return m_directions;
+    return m_begin <=> other.m_begin;
 }

@@ -22,32 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#pragma once
+#include <components/Cable.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
-
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+// Pops the value on top of the current's stackPtr, and compares it with m_targetValue. If the result is true, lets current pass.
+// Otherwise, kills the current. Inverted Conditional units does the opposite.
+class ConditionalUnit : public Cable
 {
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+public:
+    ConditionalUnit(const std::vector<Direction>& directions, var_t targetValue, bool isInverted, bool checkEqual, bool checkLess, bool checkGreater);
+    ~ConditionalUnit() override = default;
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
-    }
-}
-
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+private:
+    var_t m_targetValue;
+    bool m_inverted;
+    bool m_checkEqual;
+    bool m_checkLess;
+    bool m_checkGreater;
+};

@@ -22,32 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
+#include <components/Swapper.hpp>
 #include <utility/Logger.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+Swapper::Swapper(const std::vector<Direction>& directions):
+    Cable(directions)
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+bool Swapper::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-    for(auto& dir : m_directions)
+    if(!Component::work(current, currentVector))
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return false;
     }
-}
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
+    if(current->stackPtr->size() < 2)
+    {
+        defaultLogger.log(LogType::WARNING, "(Swapper) There are less than 2 values on the stack.");
+        return Cable::work(current, currentVector);
+    }
 
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
+    var_t first = Global::popStack(current->stackPtr);
+    var_t second = Global::popStack(current->stackPtr);
+    current->stackPtr->push(first);
+    current->stackPtr->push(second);
+
+    defaultLogger.log(LogType::INFO, "(Swapper) Swapping {} and {} on the stack.", first, second);
+
+    return Cable::work(current, currentVector);
 }

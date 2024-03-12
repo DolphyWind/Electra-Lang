@@ -22,32 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#pragma once
+#include <functional>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
+#include <components/Cable.hpp>
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+// Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to the same stack.
+// The first parameter that is popped is the first argument of m_func
+// If there is less than two values or no values on current's stackPtr, it does nothing.
+class ArithmeticalUnit : public Cable
 {
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+public:
+    typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
-    }
-}
+    ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
+    ~ArithmeticalUnit() override = default;
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+private:
+    ArithmeticalFunc m_func;
+};

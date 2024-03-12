@@ -22,32 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#pragma once
+#include <functional>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
+#include <components/Component.hpp>
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+class NonCloningDynamicComponent : public Component
 {
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+public:
+    typedef std::function<bool(Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionType;
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
-    }
-}
+    NonCloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction);
+    ~NonCloningDynamicComponent() override = default;
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+private:
+    WorkFunctionType m_workFunc;
+};

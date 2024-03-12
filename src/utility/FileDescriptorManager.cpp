@@ -21,33 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <utility/FileDescriptorManager.hpp>
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+std::unordered_map<std::size_t, std::fstream> FileDescriptorManager::fstreamMap{};
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
-
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+std::optional<std::size_t> FileDescriptorManager::openFile(const std::string& name, std::ios_base::openmode openmode)
 {
-    for(auto& dir : m_directions)
+    static std::size_t id = 1;
+    fstreamMap[id].open(name, openmode);
+
+    if(fstreamMap[id].fail())
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return std::nullopt;
     }
+
+    return id++;
 }
 
-const std::vector<Direction>& Generator::getDirections() const
+bool FileDescriptorManager::write(std::size_t id, const std::string& msg)
 {
-    return m_directions;
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
+    {
+        return false;
+    }
+
+    fstreamMap[id] << msg;
+    return true;
 }
 
-std::vector<Direction>& Generator::getDirections()
+bool FileDescriptorManager::close(std::size_t id)
 {
-    return m_directions;
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
+    {
+        return false;
+    }
+
+    fstreamMap[id].close();
+    return true;
 }

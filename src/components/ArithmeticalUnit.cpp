@@ -22,32 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
+#include <components/ArithmeticalUnit.hpp>
 #include <utility/Logger.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+ArithmeticalUnit::ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func):
+    Cable(directions), m_func(std::move(func))
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+bool ArithmeticalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-    for(auto& dir : m_directions)
+    if(!Component::work(current, currentVector))
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return false;
     }
-}
-
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
+    if(current->stackPtr->size() < 2)
+    {
+        return Cable::work(current, currentVector);
+    }
+    
+    var_t first, second;
+    first = Global::popStack(current->stackPtr);
+    second = Global::popStack(current->stackPtr);
+    var_t result = m_func(first, second);
+    current->stackPtr->push(result);
+    
+    defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
+    return Cable::work(current, currentVector);
 }

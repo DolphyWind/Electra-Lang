@@ -21,33 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-#include <Generator.hpp>
+#include <components/FileCloser.hpp>
+#include <utility/FileDescriptorManager.hpp>
 #include <utility/Logger.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
+FileCloser::FileCloser(const std::vector<Direction>& directions):
+    Cable(directions)
 {}
 
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+bool FileCloser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-    for(auto& dir : m_directions)
+    if(!Component::work(current, currentVector))
     {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
-
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
+        return false;
     }
-}
 
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
+    if(current->stackPtr->empty())
+    {
+        defaultLogger.log(LogType::WARNING, "(FileCloser) Stack is empty! There are no file id to close.");
+        return Cable::work(current, currentVector);
+    }
 
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
+    std::size_t id = Global::popStack(current->stackPtr, 0);
+    if(!FileDescriptorManager::close(id))
+    {
+        defaultLogger.log(LogType::WARNING, "(FileCloser) Unable to close file with id {}. Pushing 0 to stack.", id);
+        current->stackPtr->push(0);
+    }
+    else
+    {
+        defaultLogger.log(LogType::INFO, "(FileCloser) Closed file with id {}.", id);
+    }
+
+    return Cable::work(current, currentVector);
 }

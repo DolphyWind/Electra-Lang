@@ -22,32 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Generator.hpp>
-#include <utility/Logger.hpp>
+#pragma once
+#include <components/Cable.hpp>
 
-Generator::Generator(const std::vector<Direction>& directions, Position position):
-    m_directions(directions), m_position(position)
-{}
-
-void Generator::generate(std::vector<Current::Ptr>& currentVector, StackPtr stackPtr)
+// Takes input from user and pushes it on top of the current's stackPtr.
+class Reader : public Cable
 {
-    for(auto& dir : m_directions)
-    {
-        // Direction and position of the new current
-        Position deltaPos = directionToPosition(dir);
-        Position resultPos = m_position + deltaPos;
+public:
+    Reader(const std::vector<Direction>& directions, bool getInputAsChar);
+    ~Reader() override = default;
 
-        currentVector.emplace_back(std::make_shared<Current>(dir, resultPos, stackPtr));
-        defaultLogger.log(LogType::INFO, "Creating new current from a generator at ({},{}) with direction {}.", m_position.x, m_position.y, dir);
-    }
-}
-
-const std::vector<Direction>& Generator::getDirections() const
-{
-    return m_directions;
-}
-
-std::vector<Direction>& Generator::getDirections()
-{
-    return m_directions;
-}
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+private:
+    bool m_getInputAsChar = false;
+};
