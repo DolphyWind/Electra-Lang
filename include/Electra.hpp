@@ -41,6 +41,11 @@ SOFTWARE.
 #include <components/ComponentInformation.hpp>
 #include <thirdparty/dylib/dylib.hpp>
 
+#ifdef HAS_VISUAL_MODE
+#include <visualmode/Camera.hpp>
+#endif
+
+
 typedef std::vector<Direction> GeneratorData;
 class Electra
 {
@@ -52,7 +57,7 @@ public:
     /// @brief Parses command line arguments, and sets up components and generators.
     explicit Electra(const std::vector<std::string>& args);
 
-    ~Electra() = default;
+    ~Electra();
 
     /// @brief Set the source code of the electra interpreter
     /// @param sourceCode New source code
@@ -148,4 +153,10 @@ private:
 
     // Signal handling.
     static void sigHandler([[maybe_unused]] int signal);
+
+    // Visual mode
+#ifdef HAS_VISUAL_MODE
+    Camera m_defaultCamera;
+    int m_visualModeSpeed = 3;
+#endif
 };

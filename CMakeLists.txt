@@ -64,6 +64,13 @@ set(SOURCE_FILES
     src/main.cpp
 )
 
+# Add more source files if ENABLE_VISUAL_MODE is on
+if(ENABLE_VISUAL_MODE)
+    list(APPEND SOURCE_FILES
+        src/visualmode/Camera.cpp
+    )
+endif()
+
 # Define Target
 add_executable(${TARGET_BINARY_NAME} ${SOURCE_FILES})
 target_include_directories(${TARGET_BINARY_NAME} PUBLIC include)

@@ -54,6 +54,10 @@ SOFTWARE.
 #include <utility/ArgParser.hpp>
 #include <utility/Logger.hpp>
 
+#ifdef HAS_VISUAL_MODE
+#include <visualmode/curses.hpp>
+#endif
+
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -180,20 +184,46 @@ Electra::Electra(const std::vector<std::string>& args):
         index ++;
     }
 
+    m_filename = alone_args[0];
+    loadSourceFromFile(m_filename);
+
     // Parses --visual-mode argument
     if(bool_map["visual-mode"])
     {
 #ifdef HAS_VISUAL_MODE
-        
+        initscr();
+        raw();
+        curs_set(0);
+        keypad(stdscr, true);
+        noecho();
+        if (has_colors()) {
+            start_color();
+            init_pair(1, COLOR_RED, COLOR_BLACK);
+        }
+        timeout(30 * m_visualModeSpeed - 1);
+
+        int longestLine = 0;
+        for(auto& line : m_sourceCode)
+        {
+            if(line.length() > longestLine)
+            {
+                longestLine = static_cast<int>(line.length());
+            }
+        }
+        m_defaultCamera.setBounds(0, 0, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
 #else
         defaultLogger.log(LogType::ERROR, "Sorry, visual mode is disabled on this binary!");
         std::cerr << "Sorry, visual mode is disabled on this binary!" << std::endl;
         Global::safe_exit(1);
 #endif
     }
+}
 
-    m_filename = alone_args[0];
-    loadSourceFromFile(m_filename);
+Electra::~Electra()
+{
+#ifdef HAS_VISUAL_MODE
+    endwin();
+#endif
 }
 
 void Electra::setSourceCode(const std::string& sourceCode)
@@ -569,8 +599,66 @@ void Electra::mainLoop()
     int tickCount = 0;
     generateFromGenerators();
 
+    static constexpr int camSpeedX = 1;
+    static constexpr int camSpeedY = 1;
+    char ch = 0;
     do
     {
+#ifdef HAS_VISUAL_MODE
+        m_defaultCamera.update();
+        clear();
+        for(int y = 0; auto& line : m_sourceCode)
+        {
+            std::string utf8str;
+            utf8::utf32to8(line.begin(), line.end(), std::back_inserter(utf8str));
+            m_defaultCamera.printString(utf8str, 0, y);
+            ++y;
+        }
+        attron(COLOR_PAIR(1));
+        attron(A_BOLD);
+        for(auto& current : m_currents)
+        {
+            int x = current->getPosition().x;
+            int y = current->getPosition().y;
+            m_defaultCamera.printChar(m_defaultCamera.getCharAt(x, y), x, y);
+        }
+        attroff(A_BOLD);
+        attroff(COLOR_PAIR(1));
+
+        refresh();
+        ch = getch();
+        switch(ch)
+        {
+            case 'd':
+            case 'D':
+                m_defaultCamera.move(camSpeedX, 0);
+                break;
+            case 'a':
+            case 'A':
+                m_defaultCamera.move(-camSpeedX, 0);
+                break;
+            case 'w':
+            case 'W':
+                m_defaultCamera.move(0, -camSpeedY);
+                break;
+            case 's':
+            case 'S':
+                m_defaultCamera.move(0, camSpeedY);
+                break;
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            {
+                m_visualModeSpeed = ch - '0';
+                timeout(m_visualModeSpeed * 30 - 10);
+                break;
+            }
+            default:
+                break;
+        }
+#endif
         defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
 
         interpretCurrents();
@@ -579,7 +667,7 @@ void Electra::mainLoop()
         createCurrents();
 
         tickCount ++;
-    }while (!m_currents.empty());
+    }while (!m_currents.empty() && ch != 'q');
 
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
