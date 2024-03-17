@@ -251,7 +251,7 @@ void Electra::setSourceCode(const std::string& sourceCode)
                 longestLine = static_cast<int>(line.length());
             }
         }
-        m_defaultCamera.setBounds(0, 0, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
+        m_defaultCamera.setBounds(-50, -30, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
         m_vioh.setCursorPosition({0, static_cast<int>(content.size())});
         m_vioh.print("OUTPUT\n", A_BOLD);
     }
