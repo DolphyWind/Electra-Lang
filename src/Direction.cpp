@@ -47,6 +47,12 @@ Position Position::operator+(const Position& right) const
     return {this->x + right.x, this->y + right.y};
 }
 
+std::size_t PositionHash::operator()(const Position& pos) const
+{
+    std::hash<int> hasher;
+    return hasher(pos.x) ^ (hasher(pos.y) << 1);
+}
+
 Position directionToPosition(const Direction& direction)
 {
     // negative y value means up

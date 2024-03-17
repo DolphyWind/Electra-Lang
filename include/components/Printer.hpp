@@ -24,16 +24,22 @@ SOFTWARE.
 
 #pragma once
 #include <components/Cable.hpp>
+#include <Electra.hpp>
+
+#ifdef HAS_VISUAL_MODE
+#include <visualmode/VisualInputOutputHandler.hpp>
+#endif
 
 // Pops the value on top of the current's stackPtr and prints it on screen as number. If m_printAsUchar is true it prints it as a char_t.
 // If there is no top value, it does nothing.
 class Printer : public Cable
 {
 public:
-    Printer(const std::vector<Direction>& directions, bool printAsChar);
+    Printer(const std::vector<Direction>& directions, bool printAsChar, Electra& electra);
     ~Printer() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_printAsChar = false;
+    Electra& m_interpreter;
 };

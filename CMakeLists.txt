@@ -68,6 +68,7 @@ set(SOURCE_FILES
 if(ENABLE_VISUAL_MODE)
     list(APPEND SOURCE_FILES
         src/visualmode/Camera.cpp
+        src/visualmode/VisualInputOutputHandler.cpp
     )
 endif()
 

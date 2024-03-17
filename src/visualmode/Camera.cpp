@@ -126,7 +126,6 @@ void Camera::printChar(char32_t c32, int x, int y)
     cchar_t out;
     auto wch = static_cast<wchar_t>(c32);
     setcchar(&out, &wch, A_NORMAL, 0, nullptr);
-
     mvadd_wch(y_on_camera, x_on_camera, &out);
 }
 

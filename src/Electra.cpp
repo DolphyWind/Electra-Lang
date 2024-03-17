@@ -62,6 +62,9 @@ using namespace std::string_literals;
 
 Electra::Electra():
     m_currentPath(fs::current_path())
+#ifdef HAS_VISUAL_MODE
+    ,m_vioh(m_defaultCamera, {0, 0})
+#endif
 {
     setupComponentsAndGenerators();
     setupSignalHandlers();
@@ -184,13 +187,11 @@ Electra::Electra(const std::vector<std::string>& args):
         index ++;
     }
 
-    m_filename = alone_args[0];
-    loadSourceFromFile(m_filename);
-
     // Parses --visual-mode argument
     if(bool_map["visual-mode"])
     {
 #ifdef HAS_VISUAL_MODE
+        m_visualModeActive = true;
         initscr();
         raw();
         curs_set(0);
@@ -200,23 +201,20 @@ Electra::Electra(const std::vector<std::string>& args):
             start_color();
             init_pair(1, COLOR_RED, COLOR_BLACK);
         }
-        timeout(30 * m_visualModeSpeed - 1);
-
-        int longestLine = 0;
-        for(auto& line : m_sourceCode)
+        else
         {
-            if(line.length() > longestLine)
-            {
-                longestLine = static_cast<int>(line.length());
-            }
+            // error here
         }
-        m_defaultCamera.setBounds(0, 0, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
+        timeout(30 * m_visualModeSpeed - 1);
 #else
         defaultLogger.log(LogType::ERROR, "Sorry, visual mode is disabled on this binary!");
         std::cerr << "Sorry, visual mode is disabled on this binary!" << std::endl;
         Global::safe_exit(1);
 #endif
     }
+
+    m_filename = alone_args[0];
+    loadSourceFromFile(m_filename);
 }
 
 Electra::~Electra()
@@ -241,6 +239,24 @@ void Electra::setSourceCode(const std::string& sourceCode)
     createGenerators();
     createPortals();
     m_currentPath = fs::current_path();
+
+#ifdef HAS_VISUAL_MODE
+    if(hasVisualModeActive())
+    {
+        int longestLine = 0;
+        for(auto& line : m_sourceCode)
+        {
+            if(line.length() > longestLine)
+            {
+                longestLine = static_cast<int>(line.length());
+            }
+        }
+        m_defaultCamera.setBounds(0, 0, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
+        m_vioh.setCursorPosition({0, static_cast<int>(content.size())});
+        m_vioh.print("OUTPUT\n", A_BOLD);
+    }
+#endif
+
 }
 
 void Electra::loadSourceFromFile(const std::string& filepath)
@@ -473,8 +489,8 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'n'] = std::make_unique<Cable>( bin2dir(0b01000000), true );
 
     // Sets up Printers
-    m_components[U'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);
-    m_components[U'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true);
+    m_components[U'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false, *this);
+    m_components[U'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true, *this);
 
     // Sets up Arithmetical Units
     m_components[U'A'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b10100100), [](var_t x, var_t y){return x + y;} );
@@ -609,91 +625,118 @@ void Electra::mainLoop()
     do
     {
 #ifdef HAS_VISUAL_MODE
-        m_step = false;
-        m_defaultCamera.update();
-        clear();
-        for(int y = 0; auto& line : m_sourceCode)
+        if(hasVisualModeActive())
         {
-            m_defaultCamera.printString(line, 0, y);
-            ++y;
-        }
-        attron(COLOR_PAIR(1));
-        attron(A_BOLD);
-        for(auto& current : m_currents)
-        {
-            int x = current->getPosition().x;
-            int y = current->getPosition().y;
-            m_defaultCamera.printChar(m_defaultCamera.getCharAt(x, y), x, y);
-        }
-        attroff(A_BOLD);
-        attroff(COLOR_PAIR(1));
-
-        refresh();
-        previousChar = currentChar;
-        currentChar = getch();
-
-        switch(currentChar)
-        {
-            case 5:
-                m_defaultCamera.move(camSpeedX, 0);
-                break;
-            case 4:
-                m_defaultCamera.move(-camSpeedX, 0);
-                break;
-            case 3:
-                m_defaultCamera.move(0, -camSpeedY);
-                break;
-            case 2:
-                m_defaultCamera.move(0, camSpeedY);
-                break;
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
+            m_step = false;
+            m_defaultCamera.update();
+            clear();
+            for(int y = 0; auto& line : m_sourceCode)
             {
-                m_visualModeSpeed = currentChar - '0';
-                timeout(m_visualModeSpeed * 30 - 10);
-                break;
+                m_defaultCamera.printString(line, 0, y);
+                ++y;
             }
-            case 's':
-            case 'S':
-                m_step = true;
-                break;
-            default:
-                break;
-        }
+            attron(COLOR_PAIR(1));
+            attron(A_BOLD);
+            for(auto& current : m_currents)
+            {
+                int x = current->getPosition().x;
+                int y = current->getPosition().y;
+                m_defaultCamera.printChar(m_defaultCamera.getCharAt(x, y), x, y);
+            }
+            attroff(A_BOLD);
+            attroff(COLOR_PAIR(1));
 
-        if(previousChar != currentChar)
-        {
+            m_vioh.update();
+
+            refresh();
+            previousChar = currentChar;
+            currentChar = getch();
+
             switch(currentChar)
             {
-                case 'p':
-                case 'P':
-                    m_paused = !m_paused;
+                case 5:
+                    m_defaultCamera.move(camSpeedX, 0);
+                    break;
+                case 4:
+                    m_defaultCamera.move(-camSpeedX, 0);
+                    break;
+                case 3:
+                    m_defaultCamera.move(0, -camSpeedY);
+                    break;
+                case 2:
+                    m_defaultCamera.move(0, camSpeedY);
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                {
+                    m_visualModeSpeed = currentChar - '0';
+                    timeout(m_visualModeSpeed * 30 - 10);
+                    break;
+                }
+                case 's':
+                case 'S':
+                    m_step = true;
                     break;
                 default:
                     break;
             }
-        }
 
-        if(m_paused && !m_step)
-        {
-            continue;
+            if(previousChar != currentChar)
+            {
+                switch(currentChar)
+                {
+                    case 'p':
+                    case 'P':
+                        m_paused = !m_paused;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if(m_paused && !m_step)
+            {
+                continue;
+            }
         }
+        if(!m_currents.empty())
+        {
 #endif
         defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
 
         interpretCurrents();
         moveCurrents();
-        removeCurrents();    
+        removeCurrents();
         createCurrents();
 
-        tickCount ++;
-    }while (!m_currents.empty() && currentChar != 'q');
-
+        tickCount++;
+#ifdef HAS_VISUAL_MODE
+        }
+        else if(!hasVisualModeActive())
+        {
+            break;
+        }
+    }while(currentChar != 'q' && currentChar != 'Q');
+#else
+    }while (!m_currents.empty());
+#endif
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
+
+bool Electra::hasVisualModeActive() const
+{
+    return m_visualModeActive;
+}
+
+#ifdef HAS_VISUAL_MODE
+VisualInputOutputHandler& Electra::getVIOH()
+{
+    return m_vioh;
+}
+#endif
 
 void Electra::loadDynamicComponent(const fs::path& path, const std::string& filename)
 {

@@ -43,6 +43,7 @@ SOFTWARE.
 
 #ifdef HAS_VISUAL_MODE
 #include <visualmode/Camera.hpp>
+#include <visualmode/VisualInputOutputHandler.hpp>
 #endif
 
 
@@ -75,6 +76,17 @@ public:
     /// - Remove marked currents
     /// - Create new currents
     void mainLoop();
+
+    /// Returns true if visual mode is active
+    /// @return True if visual mode is active
+    bool hasVisualModeActive() const;
+
+#ifdef HAS_VISUAL_MODE
+
+    /// Returns the visual input output handler
+    /// @return Visual input output handler
+    VisualInputOutputHandler& getVIOH();
+#endif
 
 private:
     void setupComponentsAndGenerators();
@@ -155,8 +167,10 @@ private:
     static void sigHandler([[maybe_unused]] int signal);
 
     // Visual mode
+    bool m_visualModeActive = false;
 #ifdef HAS_VISUAL_MODE
     Camera m_defaultCamera;
+    VisualInputOutputHandler m_vioh;
     int m_visualModeSpeed = 3;
     bool m_paused = false;
 #endif

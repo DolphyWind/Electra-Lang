@@ -23,44 +23,35 @@ SOFTWARE.
 */
 
 #pragma once
-#include <vector>
+#include <string>
+#include <unordered_map>
 
-enum class Direction
+#include <Direction.hpp>
+#include <visualmode/Camera.hpp>
+#include <visualmode/curses.hpp>
+
+class VisualInputOutputHandler
 {
-    EAST = 0,
-    NORTHEAST = 1,
-    NORTH = 2,
-    NORTHWEST = 3,
-    WEST = 4,
-    SOUTHWEST = 5,
-    SOUTH = 6,
-    SOUTHEAST = 7,
-    NONE = 8,
+public:
+    VisualInputOutputHandler(Camera& cam, const Position& cursorPos);
+
+    void print(char c, attr_t attrs=A_NORMAL);
+    void print(char32_t c32, attr_t attrs=A_NORMAL);
+    void print(const std::string& str, attr_t attrs=A_NORMAL);
+    void print(const std::u32string& str, attr_t attrs=A_NORMAL);
+
+    void update();
+    void setCursorPosition(const Position& newCursorPos);
+private:
+    Camera& m_camera;
+    Position m_cursorPosition;
+
+    struct Character
+    {
+        char32_t chr;
+        attr_t attr;
+    };
+
+    std::unordered_map<Position, Character, PositionHash> m_printedChars;
+    void updatePos(char c);
 };
-
-struct Position
-{
-    int x = 0;
-    int y = 0;
-
-    Position();
-    Position(int _x, int _y);
-
-    bool operator==(const Position& right) const;
-    bool operator!=(const Position& right) const;
-    Position operator+(const Position& right) const;
-};
-
-struct PositionHash
-{
-    std::size_t operator()(const Position& pos) const;
-};
-
-// Converts a direction to a position
-Position directionToPosition(const Direction& direction);
-
-// Inverts the given direction
-Direction invertDirection(const Direction& direction);
-
-// Converts any number to a vector of directions
-std::vector<Direction> bin2dir(std::size_t num);

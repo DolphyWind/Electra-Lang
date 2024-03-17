@@ -27,8 +27,8 @@ SOFTWARE.
 #include <components/Printer.hpp>
 #include <utility/Logger.hpp>
 
-Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
-    Cable(directions), m_printAsChar(printAsChar)
+Printer::Printer(const std::vector<Direction>& directions, bool printAsChar, Electra& electra):
+    Cable(directions), m_printAsChar(printAsChar), m_interpreter(electra)
 {}
 
 bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
@@ -55,15 +55,45 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
         }
         catch(const utf8::invalid_code_point& invalidCodePoint)
         {
-            std::cout << static_cast<char>(top_character32);
+            char charToPrint = static_cast<char>(top_character32);
+
+            if(!m_interpreter.hasVisualModeActive())
+            {
+                std::cout << charToPrint << std::flush;
+            }
+            else
+            {
+#ifdef HAS_VISUAL_MODE
+                m_interpreter.getVIOH().print(charToPrint);
+#endif
+            }
         }
 
-        std::cout << str_to_print << std::flush;
+        if(!m_interpreter.hasVisualModeActive())
+        {
+            std::cout << str_to_print << std::flush;
+        }
+        else
+        {
+#ifdef HAS_VISUAL_MODE
+            m_interpreter.getVIOH().print(str_to_print);
+#endif
+        }
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
-        std::cout << sutil::format_variable(top) << std::flush;
+        std::string str_to_print = sutil::format_variable(top);
+        if(!m_interpreter.hasVisualModeActive())
+        {
+            std::cout << str_to_print << std::flush;
+        }
+        else
+        {
+#ifdef HAS_VISUAL_MODE
+            m_interpreter.getVIOH().print(str_to_print);
+#endif
+        }
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     
