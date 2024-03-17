@@ -113,6 +113,23 @@ void Camera::printChar(char c, int x, int y)
     mvaddch(y_on_camera, x_on_camera, c);
 }
 
+void Camera::printChar(char32_t c32, int x, int y)
+{
+    int x_on_camera = x - getX();
+    int y_on_camera = y - getY();
+
+    if(x_on_camera < 0 || y_on_camera < 0 || x_on_camera >= m_termWidth || y_on_camera >= m_termHeight)
+    {
+        return;
+    }
+
+    cchar_t out;
+    auto wch = static_cast<wchar_t>(c32);
+    setcchar(&out, &wch, A_NORMAL, 0, nullptr);
+
+    mvadd_wch(y_on_camera, x_on_camera, &out);
+}
+
 void Camera::printString(const std::string& str, int x, int y)
 {
     for(int i = 0; const auto& c : str)
@@ -121,6 +138,16 @@ void Camera::printString(const std::string& str, int x, int y)
         ++i;
     }
 }
+
+void Camera::printString(const std::u32string& str, int x, int y)
+{
+    for(int i = 0; const auto& c : str)
+    {
+        printChar(c, x+i, y);
+        ++i;
+    }
+}
+
 
 char Camera::getCharAt(int x, int y)
 {

@@ -599,19 +599,22 @@ void Electra::mainLoop()
     int tickCount = 0;
     generateFromGenerators();
 
+#ifdef HAS_VISUAL_MODE
     static constexpr int camSpeedX = 1;
     static constexpr int camSpeedY = 1;
-    char ch = 0;
+    char currentChar = 0;
+    char previousChar = 0;
+    bool m_step = false;
+#endif
     do
     {
 #ifdef HAS_VISUAL_MODE
+        m_step = false;
         m_defaultCamera.update();
         clear();
         for(int y = 0; auto& line : m_sourceCode)
         {
-            std::string utf8str;
-            utf8::utf32to8(line.begin(), line.end(), std::back_inserter(utf8str));
-            m_defaultCamera.printString(utf8str, 0, y);
+            m_defaultCamera.printString(line, 0, y);
             ++y;
         }
         attron(COLOR_PAIR(1));
@@ -626,23 +629,21 @@ void Electra::mainLoop()
         attroff(COLOR_PAIR(1));
 
         refresh();
-        ch = getch();
-        switch(ch)
+        previousChar = currentChar;
+        currentChar = getch();
+
+        switch(currentChar)
         {
-            case 'd':
-            case 'D':
+            case 5:
                 m_defaultCamera.move(camSpeedX, 0);
                 break;
-            case 'a':
-            case 'A':
+            case 4:
                 m_defaultCamera.move(-camSpeedX, 0);
                 break;
-            case 'w':
-            case 'W':
+            case 3:
                 m_defaultCamera.move(0, -camSpeedY);
                 break;
-            case 's':
-            case 'S':
+            case 2:
                 m_defaultCamera.move(0, camSpeedY);
                 break;
             case '1':
@@ -651,12 +652,34 @@ void Electra::mainLoop()
             case '4':
             case '5':
             {
-                m_visualModeSpeed = ch - '0';
+                m_visualModeSpeed = currentChar - '0';
                 timeout(m_visualModeSpeed * 30 - 10);
                 break;
             }
+            case 's':
+            case 'S':
+                m_step = true;
+                break;
             default:
                 break;
+        }
+
+        if(previousChar != currentChar)
+        {
+            switch(currentChar)
+            {
+                case 'p':
+                case 'P':
+                    m_paused = !m_paused;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if(m_paused && !m_step)
+        {
+            continue;
         }
 #endif
         defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
@@ -667,7 +690,7 @@ void Electra::mainLoop()
         createCurrents();
 
         tickCount ++;
-    }while (!m_currents.empty() && ch != 'q');
+    }while (!m_currents.empty() && currentChar != 'q');
 
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }

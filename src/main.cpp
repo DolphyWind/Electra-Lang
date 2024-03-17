@@ -28,6 +28,9 @@ SOFTWARE.
 
 int main(int argc, char *argv[])
 {
+#ifdef HAS_VISUAL_MODE
+    setlocale(LC_ALL, "");
+#endif
 	std::cout << std::setprecision(15);
     std::vector<std::string> args;
     args.reserve(argc);

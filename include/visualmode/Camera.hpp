@@ -42,7 +42,9 @@ public:
     void setBounds(int minX, int minY, int maxX, int maxY);
     void update();
     void printChar(char c, int x, int y);
+    void printChar(char32_t cc, int x, int y);
     void printString(const std::string& str, int x, int y);
+    void printString(const std::u32string& str, int x, int y);
 
     char getCharAt(int x, int y);
 

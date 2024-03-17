@@ -158,5 +158,6 @@ private:
 #ifdef HAS_VISUAL_MODE
     Camera m_defaultCamera;
     int m_visualModeSpeed = 3;
+    bool m_paused = false;
 #endif
 };
