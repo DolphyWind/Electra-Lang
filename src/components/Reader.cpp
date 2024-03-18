@@ -28,8 +28,8 @@ SOFTWARE.
 #include <components/Reader.hpp>
 #include <utility/Logger.hpp>
 
-Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
-    Cable(directions), m_getInputAsChar(getInputAsChar)
+Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar, Electra& electra):
+    Cable(directions), m_getInputAsChar(getInputAsChar), m_interpreter(electra)
 {}
 
 bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
@@ -87,12 +87,23 @@ bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector
     else
     {
         var_t v;
+#ifdef HAS_VISUAL_MODE
+        if(m_interpreter.hasVisualModeActive())
+        {
+            std::string input = m_interpreter.getVIOH().take_input();
+            v = std::stod(input);
+        }
+        else
+        {
+#endif
         std::cin >> v;
         if(std::cin.eof())
         {
             v = 0;
         }
-
+#ifdef HAS_VISUAL_MODE
+        }
+#endif
         current->stackPtr->push(v);
         defaultLogger.log(LogType::INFO, "(Reader) Read {} from user and pushed onto stack.", v);
     }

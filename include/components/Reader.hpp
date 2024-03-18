@@ -23,16 +23,18 @@ SOFTWARE.
 */
 
 #pragma once
+#include <Electra.hpp>
 #include <components/Cable.hpp>
 
 // Takes input from user and pushes it on top of the current's stackPtr.
 class Reader : public Cable
 {
 public:
-    Reader(const std::vector<Direction>& directions, bool getInputAsChar);
+    Reader(const std::vector<Direction>& directions, bool getInputAsChar, Electra& electra);
     ~Reader() override = default;
 
     bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_getInputAsChar = false;
+    Electra& m_interpreter;
 };

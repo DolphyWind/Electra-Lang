@@ -220,7 +220,10 @@ Electra::Electra(const std::vector<std::string>& args):
 Electra::~Electra()
 {
 #ifdef HAS_VISUAL_MODE
-    endwin();
+    if(hasVisualModeActive())
+    {
+        endwin();
+    }
 #endif
 }
 
@@ -510,8 +513,8 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), 0);
 
     // Sets up readers
-    m_components[U'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false);
-    m_components[U'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true);
+    m_components[U'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false, *this);
+    m_components[U'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true, *this);
 
     // Sets up swapper
     m_components[U'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );
@@ -618,8 +621,8 @@ void Electra::mainLoop()
 #ifdef HAS_VISUAL_MODE
     static constexpr int camSpeedX = 1;
     static constexpr int camSpeedY = 1;
-    char currentChar = 0;
-    char previousChar = 0;
+    int currentChar = 0;
+    int previousChar = 0;
     bool m_step = false;
 #endif
     do
@@ -654,16 +657,16 @@ void Electra::mainLoop()
 
             switch(currentChar)
             {
-                case 5:
+                case 261:
                     m_defaultCamera.move(camSpeedX, 0);
                     break;
-                case 4:
+                case 260:
                     m_defaultCamera.move(-camSpeedX, 0);
                     break;
-                case 3:
+                case 259:
                     m_defaultCamera.move(0, -camSpeedY);
                     break;
-                case 2:
+                case 258:
                     m_defaultCamera.move(0, camSpeedY);
                     break;
                 case '1':
@@ -681,7 +684,10 @@ void Electra::mainLoop()
                     m_step = true;
                     break;
                 default:
+                {
+                    std::cerr << (int)currentChar << '\n';
                     break;
+                }
             }
 
             if(previousChar != currentChar)

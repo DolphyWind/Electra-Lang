@@ -73,6 +73,26 @@ void VisualInputOutputHandler::print(const std::u32string& str, attr_t attrs)
     }
 }
 
+std::string VisualInputOutputHandler::take_input()
+{
+    echo();
+    static constexpr std::size_t buff_size = 4096;
+    char buff[buff_size];
+    getstr(buff);
+    std::string input(buff);
+    std::size_t eof_pos = input.find(4);
+
+    if(eof_pos != std::string::npos)
+    {
+        input = input.substr(0, eof_pos);
+    }
+    print(input);
+    print('\n');
+
+    noecho();
+    return input;
+}
+
 void VisualInputOutputHandler::update()
 {
     for(auto&[pos, c] : m_printedChars)

@@ -40,6 +40,8 @@ public:
     void print(const std::string& str, attr_t attrs=A_NORMAL);
     void print(const std::u32string& str, attr_t attrs=A_NORMAL);
 
+    std::string take_input();
+
     void update();
     void setCursorPosition(const Position& newCursorPos);
 private:
