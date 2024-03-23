@@ -7,14 +7,15 @@
 + [X] Loading components from shared libraries. Like how lua does it
 
 # Electra 2.3
-+ [] Visual Mode: See your code in action!
-+ [] Issue #3
-+ [] Random number generator component
++ [ ] Visual Mode: See your code in action!
++ [ ] Issue #3
++ [ ] Random number generator component
 
 # Future Plans
-+ [] Electra standard library
-+ [] Performance Improvements to brainfuck interpreter
-+ [] Test gmpxx's floats. Do some benchmarking and if it is suitable, use them to be able to store big numbers.
++ [ ] Add Dockerfile
++ [ ] Electra standard library
++ [ ] Performance Improvements to brainfuck interpreter
++ [ ] Test gmpxx's floats. Do some benchmarking and if it is suitable, use them to be able to store big numbers.
 + [X] Code cleanup
-+ [] Add unit tests
-+ [] Electra on the web
++ [ ] Add unit tests
++ [ ] Electra on the web
