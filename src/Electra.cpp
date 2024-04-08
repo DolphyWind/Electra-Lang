@@ -63,7 +63,7 @@ using namespace std::string_literals;
 Electra::Electra():
     m_currentPath(fs::current_path())
 #ifdef HAS_VISUAL_MODE
-    ,m_vioh(m_defaultCamera, {0, 0})
+    , m_visualModeManager(*this)
 #endif
 {
     setupComponentsAndGenerators();
@@ -191,21 +191,7 @@ Electra::Electra(const std::vector<std::string>& args):
     if(bool_map["visual-mode"])
     {
 #ifdef HAS_VISUAL_MODE
-        m_visualModeActive = true;
-        initscr();
-        raw();
-        curs_set(0);
-        keypad(stdscr, true);
-        noecho();
-        if (has_colors()) {
-            start_color();
-            init_pair(1, COLOR_RED, COLOR_BLACK);
-        }
-        else
-        {
-            // error here
-        }
-        timeout(30 * m_visualModeSpeed - 1);
+        m_visualModeManager.setup();
 #else
         defaultLogger.log(LogType::ERROR, "Sorry, visual mode is disabled on this binary!");
         std::cerr << "Sorry, visual mode is disabled on this binary!" << std::endl;
@@ -218,14 +204,7 @@ Electra::Electra(const std::vector<std::string>& args):
 }
 
 Electra::~Electra()
-{
-#ifdef HAS_VISUAL_MODE
-    if(hasVisualModeActive())
-    {
-        endwin();
-    }
-#endif
-}
+{}
 
 void Electra::setSourceCode(const std::string& sourceCode)
 {
@@ -244,19 +223,9 @@ void Electra::setSourceCode(const std::string& sourceCode)
     m_currentPath = fs::current_path();
 
 #ifdef HAS_VISUAL_MODE
-    if(hasVisualModeActive())
+    if(m_visualModeManager.isSetup())
     {
-        int longestLine = 0;
-        for(auto& line : m_sourceCode)
-        {
-            if(line.length() > longestLine)
-            {
-                longestLine = static_cast<int>(line.length());
-            }
-        }
-        m_defaultCamera.setBounds(-50, -30, longestLine - m_defaultCamera.getTerminalWidth(), static_cast<int>(m_sourceCode.size()) - m_defaultCamera.getTerminalHeight());
-        m_vioh.setCursorPosition({0, static_cast<int>(content.size())});
-        m_vioh.print("OUTPUT\n", A_BOLD);
+        m_visualModeManager.deduceScreenParameters();
     }
 #endif
 
@@ -619,94 +588,15 @@ void Electra::mainLoop()
     generateFromGenerators();
 
 #ifdef HAS_VISUAL_MODE
-    static constexpr int camSpeedX = 1;
-    static constexpr int camSpeedY = 1;
-    int currentChar = 0;
-    int previousChar = 0;
-    bool m_step = false;
+    VisualModeState state = VisualModeState::NORMAL;
 #endif
     do
     {
 #ifdef HAS_VISUAL_MODE
-        if(hasVisualModeActive())
+        state = m_visualModeManager.update();
+        if(state == VisualModeState::PAUSED)
         {
-            m_step = false;
-            m_defaultCamera.update();
-            clear();
-            for(int y = 0; auto& line : m_sourceCode)
-            {
-                m_defaultCamera.printString(line, 0, y);
-                ++y;
-            }
-            attron(COLOR_PAIR(1));
-            attron(A_BOLD);
-            for(auto& current : m_currents)
-            {
-                int x = current->getPosition().x;
-                int y = current->getPosition().y;
-                m_defaultCamera.printChar(m_defaultCamera.getCharAt(x, y), x, y);
-            }
-            attroff(A_BOLD);
-            attroff(COLOR_PAIR(1));
-
-            m_vioh.update();
-
-            refresh();
-            previousChar = currentChar;
-            currentChar = getch();
-
-            switch(currentChar)
-            {
-                case 261:
-                    m_defaultCamera.move(camSpeedX, 0);
-                    break;
-                case 260:
-                    m_defaultCamera.move(-camSpeedX, 0);
-                    break;
-                case 259:
-                    m_defaultCamera.move(0, -camSpeedY);
-                    break;
-                case 258:
-                    m_defaultCamera.move(0, camSpeedY);
-                    break;
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                {
-                    m_visualModeSpeed = currentChar - '0';
-                    timeout(m_visualModeSpeed * 30 - 10);
-                    break;
-                }
-                case 's':
-                case 'S':
-                    m_step = true;
-                    break;
-                default:
-                {
-                    std::cerr << (int)currentChar << '\n';
-                    break;
-                }
-            }
-
-            if(previousChar != currentChar)
-            {
-                switch(currentChar)
-                {
-                    case 'p':
-                    case 'P':
-                        m_paused = !m_paused;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            if(m_paused && !m_step)
-            {
-                continue;
-            }
+            continue;
         }
         if(!m_currents.empty())
         {
@@ -721,26 +611,31 @@ void Electra::mainLoop()
         tickCount++;
 #ifdef HAS_VISUAL_MODE
         }
-        else if(!hasVisualModeActive())
+        else if(!m_visualModeManager.isSetup())
         {
             break;
         }
-    }while(currentChar != 'q' && currentChar != 'Q');
+    }while(state != VisualModeState::EXIT);
 #else
     }while (!m_currents.empty());
 #endif
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
 
-bool Electra::hasVisualModeActive() const
+const std::vector<std::u32string>& Electra::getSourceCode() const
 {
-    return m_visualModeActive;
+    return m_sourceCode;
+}
+
+const std::vector<Current::Ptr>& Electra::getCurrents() const
+{
+    return m_currents;
 }
 
 #ifdef HAS_VISUAL_MODE
-VisualInputOutputHandler& Electra::getVIOH()
+VisualModeManager& Electra::getVisualModeManager()
 {
-    return m_vioh;
+    return m_visualModeManager;
 }
 #endif
 

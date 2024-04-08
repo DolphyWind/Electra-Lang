@@ -88,9 +88,9 @@ bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector
     {
         var_t v;
 #ifdef HAS_VISUAL_MODE
-        if(m_interpreter.hasVisualModeActive())
+        if(m_interpreter.getVisualModeManager().isSetup())
         {
-            std::string input = m_interpreter.getVIOH().take_input();
+            std::string input = m_interpreter.getVisualModeManager().getVIOH().take_input();
             v = std::stod(input);
         }
         else

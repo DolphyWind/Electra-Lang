@@ -42,8 +42,7 @@ SOFTWARE.
 #include <thirdparty/dylib/dylib.hpp>
 
 #ifdef HAS_VISUAL_MODE
-#include <visualmode/Camera.hpp>
-#include <visualmode/VisualInputOutputHandler.hpp>
+#include <visualmode/VisualModeManager.hpp>
 #endif
 
 
@@ -77,15 +76,19 @@ public:
     /// - Create new currents
     void mainLoop();
 
-    /// Returns true if visual mode is active
-    /// @return True if visual mode is active
-    bool hasVisualModeActive() const;
+    /// Returns the current source code
+    /// @return Current source code
+    const std::vector<std::u32string>& getSourceCode() const;
+
+    /// Returns a list of currents
+    /// @return A list of currents
+    const std::vector<Current::Ptr>& getCurrents() const;
 
 #ifdef HAS_VISUAL_MODE
 
-    /// Returns the visual input output handler
-    /// @return Visual input output handler
-    VisualInputOutputHandler& getVIOH();
+    /// Returns the visual mode manager
+    /// @return Visual mode manager
+    VisualModeManager& getVisualModeManager();
 #endif
 
 private:
@@ -167,11 +170,7 @@ private:
     static void sigHandler([[maybe_unused]] int signal);
 
     // Visual mode
-    bool m_visualModeActive = false;
 #ifdef HAS_VISUAL_MODE
-    Camera m_defaultCamera;
-    VisualInputOutputHandler m_vioh;
-    int m_visualModeSpeed = 3;
-    bool m_paused = false;
+    VisualModeManager m_visualModeManager;
 #endif
 };

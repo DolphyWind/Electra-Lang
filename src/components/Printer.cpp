@@ -57,43 +57,49 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
         {
             char charToPrint = static_cast<char>(top_character32);
 
-            if(!m_interpreter.hasVisualModeActive())
+#ifdef HAS_VISUAL_MODE
+            if(!m_interpreter.getVisualModeManager().isSetup())
             {
+#endif
                 std::cout << charToPrint << std::flush;
+#ifdef HAS_VISUAL_MODE
             }
             else
             {
-#ifdef HAS_VISUAL_MODE
-                m_interpreter.getVIOH().print(charToPrint);
-#endif
+                m_interpreter.getVisualModeManager().getVIOH().print(charToPrint);
             }
+#endif
         }
 
-        if(!m_interpreter.hasVisualModeActive())
+#ifdef HAS_VISUAL_MODE
+        if(!m_interpreter.getVisualModeManager().isSetup())
         {
+#endif
             std::cout << str_to_print << std::flush;
+#ifdef HAS_VISUAL_MODE
         }
         else
         {
-#ifdef HAS_VISUAL_MODE
-            m_interpreter.getVIOH().print(str_to_print);
-#endif
+            m_interpreter.getVisualModeManager().getVIOH().print(str_to_print);
         }
+#endif
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
         std::string str_to_print = sutil::format_variable(top);
-        if(!m_interpreter.hasVisualModeActive())
+#ifdef HAS_VISUAL_MODE
+        if(!m_interpreter.getVisualModeManager().isSetup())
         {
+#endif
             std::cout << str_to_print << std::flush;
+#ifdef HAS_VISUAL_MODE
         }
         else
         {
-#ifdef HAS_VISUAL_MODE
-            m_interpreter.getVIOH().print(str_to_print);
-#endif
+            m_interpreter.getVisualModeManager().getVIOH().print(str_to_print);
         }
+#endif
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     

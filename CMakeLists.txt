@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 set(CMAKE_CXX_STANDARD 20)
 set(TARGET_BINARY_NAME electra)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -69,6 +70,7 @@ if(ENABLE_VISUAL_MODE)
     list(APPEND SOURCE_FILES
         src/visualmode/Camera.cpp
         src/visualmode/VisualInputOutputHandler.cpp
+        src/visualmode/VisualModeManager.cpp
     )
 endif()
 
