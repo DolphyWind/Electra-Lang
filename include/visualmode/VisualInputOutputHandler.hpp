@@ -25,12 +25,14 @@ SOFTWARE.
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <ostream>
+#include <sstream>
 
 #include <Direction.hpp>
 #include <visualmode/Camera.hpp>
 #include <visualmode/curses.hpp>
 
-class VisualInputOutputHandler
+class VisualInputOutputHandler : public std::ostream, public std::stringbuf
 {
 public:
     VisualInputOutputHandler(Camera& cam, const Position& cursorPos);
@@ -44,6 +46,9 @@ public:
 
     void update();
     void setCursorPosition(const Position& newCursorPos);
+
+protected:
+    
 private:
     Camera& m_camera;
     Position m_cursorPosition;

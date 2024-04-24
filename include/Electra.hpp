@@ -85,10 +85,13 @@ public:
     const std::vector<Current::Ptr>& getCurrents() const;
 
 #ifdef HAS_VISUAL_MODE
+    constexpr static bool hasVisualModeSupport = true;
 
     /// Returns the visual mode manager
     /// @return Visual mode manager
     VisualModeManager& getVisualModeManager();
+#else
+    constexpr static bool hasVisualModeSupport = false;
 #endif
 
 private:

@@ -23,9 +23,15 @@ SOFTWARE.
 */
 
 #include <visualmode/Camera.hpp>
-#include <visualmode/curses.hpp>
 
-Camera::Camera()
+Camera::Camera():
+    m_wnd(stdscr)
+{
+    update();
+}
+
+Camera::Camera(WINDOW* targetWindow):
+    m_wnd(targetWindow)
 {
     update();
 }
@@ -56,6 +62,11 @@ void Camera::setPos(int x, int y)
 void Camera::move(int dx, int dy)
 {
     return setPos(m_x + dx, m_y + dy);
+}
+
+WINDOW* Camera::getWindow()
+{
+    return m_wnd;
 }
 
 int Camera::getX() const
@@ -97,7 +108,7 @@ void Camera::setBounds(int minX, int minY, int maxX, int maxY)
 
 void Camera::update()
 {
-    getmaxyx(stdscr, m_termHeight, m_termWidth);
+    getmaxyx(m_wnd, m_termHeight, m_termWidth);
 }
 
 void Camera::printChar(char c, int x, int y)
@@ -110,7 +121,7 @@ void Camera::printChar(char c, int x, int y)
         return;
     }
 
-    mvaddch(y_on_camera, x_on_camera, c);
+    mvwaddch(m_wnd, y_on_camera, x_on_camera, c);
 }
 
 void Camera::printChar(char32_t c32, int x, int y)
@@ -126,7 +137,7 @@ void Camera::printChar(char32_t c32, int x, int y)
     cchar_t out;
     auto wch = static_cast<wchar_t>(c32);
     setcchar(&out, &wch, A_NORMAL, 0, nullptr);
-    mvadd_wch(y_on_camera, x_on_camera, &out);
+    mvwadd_wch(m_wnd, y_on_camera, x_on_camera, &out);
 }
 
 void Camera::printString(const std::string& str, int x, int y)
@@ -150,5 +161,5 @@ void Camera::printString(const std::u32string& str, int x, int y)
 
 char Camera::getCharAt(int x, int y)
 {
-    return static_cast<char>(mvinch(y - getY(), x - getX()) & A_CHARTEXT);
+    return static_cast<char>(mvwinch(m_wnd, y - getY(), x - getX()) & A_CHARTEXT);
 }

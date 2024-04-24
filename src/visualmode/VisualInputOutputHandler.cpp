@@ -22,13 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <iostream>
-
 #include <thirdparty/utfcpp/utf8.h>
 #include <visualmode/VisualInputOutputHandler.hpp>
 
 VisualInputOutputHandler::VisualInputOutputHandler(Camera& cam, const Position& cursorPosition):
-    m_camera(cam), m_cursorPosition(cursorPosition)
+    std::ostream(this), m_camera(cam), m_cursorPosition(cursorPosition)
 {}
 
 void VisualInputOutputHandler::print(char c, attr_t attrs)

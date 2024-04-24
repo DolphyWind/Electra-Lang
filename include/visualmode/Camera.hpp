@@ -25,15 +25,18 @@ SOFTWARE.
 #pragma once
 #include <limits>
 #include <string>
+#include <visualmode/curses.hpp>
 
 class Camera
 {
 public:
     Camera();
+    Camera(WINDOW* targetWindow);
 
     void setPos(int x, int y);
     void move(int dx, int dy);
 
+    WINDOW* getWindow();
     int getX() const;
     int getY() const;
     int getTerminalWidth() const;
@@ -49,6 +52,8 @@ public:
     char getCharAt(int x, int y);
 
 private:
+    WINDOW* m_wnd;
+
     int m_x = 0;
     int m_y = 0;
 

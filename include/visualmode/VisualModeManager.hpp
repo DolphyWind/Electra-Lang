@@ -62,5 +62,5 @@ private:
     static constexpr int camSpeedY = 1;
     int m_currentChar = 0;
     int m_previousChar = 0;
-    VisualModeState m_state = VisualModeState::NORMAL;
+    VisualModeState m_state = VisualModeState::PAUSED;
 };

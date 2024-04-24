@@ -40,7 +40,7 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
 
     if(current->stackPtr->empty())
     {
-        return true;
+        return Cable::work(current, currentVector);
     }
     var_t top = Global::popStack(current->stackPtr);
 
@@ -48,7 +48,7 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
     {
         auto top_character32 = static_cast<char32_t>(top);
         std::u32string u32str(1, top_character32);
-        std::string str_to_print;
+    std::string str_to_print;
         try
         {
             utf8::utf32to8(u32str.begin(), u32str.end(), std::back_inserter(str_to_print));
