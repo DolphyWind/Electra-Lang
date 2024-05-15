@@ -40,7 +40,7 @@ bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVecto
 
     if(current->stackPtr->empty())
     {
-        return true;
+        return Cable::work(current, currentVector);
     }
     var_t top = Global::popStack(current->stackPtr);
 
