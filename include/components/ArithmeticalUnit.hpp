@@ -23,39 +23,22 @@ SOFTWARE.
 */
 
 #pragma once
-#include <memory>
-#include <optional>
+#include <functional>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+#include <components/Cable.hpp>
 
-// Instruction pointers of Electra
-class Current
+// Pops 2 values from current's stackPtr and passes them into m_func. Then pushes result back to the same stack.
+// The first parameter that is popped is the first argument of m_func
+// If there is less than two values or no values on current's stackPtr, it does nothing.
+class ArithmeticalUnit : public Cable
 {
 public:
-    typedef std::shared_ptr<Current> Ptr;
+    typedef std::function<var_t(var_t, var_t)> ArithmeticalFunc;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
+    ~ArithmeticalUnit() override = default;
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
+    ArithmeticalFunc m_func;
 };

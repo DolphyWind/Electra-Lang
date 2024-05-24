@@ -22,40 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <cstdlib>
 
-#include <Direction.hpp>
 #include <utility/Global.hpp>
 
-// Instruction pointers of Electra
-class Current
+namespace Global
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+var_t popStack(StackPtr stack, var_t defaultValue)
+{
+    if(stack->empty()) return defaultValue;
 
-    void setPosition(Position position);
-    Position getPosition();
+    var_t top = stack->top();
+    stack->pop();
+    return top;
+}
 
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
+void safe_exit(int exit_code)
+{
+    // There used to be some code here
 
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
+    std::exit(exit_code);
+}
 
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+} // namespace Global

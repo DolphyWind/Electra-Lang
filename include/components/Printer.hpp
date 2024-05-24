@@ -23,39 +23,17 @@ SOFTWARE.
 */
 
 #pragma once
-#include <memory>
-#include <optional>
+#include <components/Cable.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
-
-// Instruction pointers of Electra
-class Current
+// Pops the value on top of the current's stackPtr and prints it on screen as number. If m_printAsUchar is true it prints it as a char_t.
+// If there is no top value, it does nothing.
+class Printer : public Cable
 {
 public:
-    typedef std::shared_ptr<Current> Ptr;
+    Printer(const std::vector<Direction>& directions, bool printAsChar);
+    ~Printer() override = default;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
-
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
+    bool m_printAsChar = false;
 };

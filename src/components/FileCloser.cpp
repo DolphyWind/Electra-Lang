@@ -22,40 +22,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/FileCloser.hpp>
+#include <utility/FileDescriptorManager.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+FileCloser::FileCloser(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
 
-// Instruction pointers of Electra
-class Current
+bool FileCloser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    if(current->stackPtr->empty())
+    {
+        defaultLogger.log(LogType::WARNING, "(FileCloser) Stack is empty! There are no file id to close.");
+        return Cable::work(current, currentVector);
+    }
 
-    void setPosition(Position position);
-    Position getPosition();
+    std::size_t id = Global::popStack(current->stackPtr, 0);
+    if(!FileDescriptorManager::close(id))
+    {
+        defaultLogger.log(LogType::WARNING, "(FileCloser) Unable to close file with id {}. Pushing 0 to stack.", id);
+        current->stackPtr->push(0);
+    }
+    else
+    {
+        defaultLogger.log(LogType::INFO, "(FileCloser) Closed file with id {}.", id);
+    }
 
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    return Cable::work(current, currentVector);
+}

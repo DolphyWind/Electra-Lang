@@ -22,40 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/CloningDynamicComponent.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& directions, const CloningDynamicComponent::WorkFunctionType& workFunction):
+    Cable(directions), m_workFunc(workFunction)
+{}
 
-// Instruction pointers of Electra
-class Current
+bool CloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    std::vector<Current::Ptr> newCurrents;
+    bool result = m_workFunc(current, newCurrents);
+    currentVector.insert(currentVector.end(), std::make_move_iterator(newCurrents.begin()), std::make_move_iterator(newCurrents.end()));
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    return result && Cable::work(current, currentVector);
+}

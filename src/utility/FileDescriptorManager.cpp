@@ -22,40 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <utility/FileDescriptorManager.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+std::unordered_map<std::size_t, std::fstream> FileDescriptorManager::fstreamMap{};
 
-// Instruction pointers of Electra
-class Current
+std::optional<std::size_t> FileDescriptorManager::openFile(const std::string& name, std::ios_base::openmode openmode)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    static std::size_t id = 1;
+    fstreamMap[id].open(name, openmode);
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    if(fstreamMap[id].fail())
+    {
+        return std::nullopt;
+    }
 
-    void setPosition(Position position);
-    Position getPosition();
+    return id++;
+}
 
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
+bool FileDescriptorManager::write(std::size_t id, const std::string& msg)
+{
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
+    {
+        return false;
+    }
 
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
+    fstreamMap[id] << msg;
+    return true;
+}
 
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+bool FileDescriptorManager::close(std::size_t id)
+{
+    if(!fstreamMap.contains(id) || fstreamMap[id].fail())
+    {
+        return false;
+    }
+
+    fstreamMap[id].close();
+    return true;
+}

@@ -22,40 +22,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <utility/LineRange.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+LineRange::LineRange():
+    m_begin(1), m_end(std::numeric_limits<std::size_t>::max())
+{}
 
-// Instruction pointers of Electra
-class Current
+LineRange::LineRange(std::size_t begin, std::size_t end):
+    m_begin(begin), m_end(end)
+{}
+
+bool LineRange::intersects(const LineRange& other) const
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(other.getBegin() < m_begin) return other.intersects(*this);
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    return (m_begin <= other.getBegin() && other.getBegin() < m_end);
+}
 
-    void setPosition(Position position);
-    Position getPosition();
+std::size_t LineRange::getBegin() const
+{
+    return m_begin;
+}
 
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
+std::size_t LineRange::getEnd() const
+{
+    return m_end;
+}
 
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
+void LineRange::setBegin(std::size_t begin)
+{
+    m_begin = begin;
+    m_begin = (m_begin == 0 ? 1 : m_begin);
+    if(m_begin > m_end)
+    {
+        m_end = m_begin;
+    }
+}
 
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+void LineRange::setEnd(std::size_t end)
+{
+    m_end = end;
+    if(m_end < m_begin)
+    {
+        m_begin = m_end;
+    }
+}
+
+std::strong_ordering LineRange::operator<=>(const LineRange& other) const
+{
+    return m_begin <=> other.m_begin;
+}

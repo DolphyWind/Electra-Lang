@@ -23,39 +23,19 @@ SOFTWARE.
 */
 
 #pragma once
-#include <memory>
-#include <optional>
+#include <functional>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+#include <components/Cable.hpp>
 
-// Instruction pointers of Electra
-class Current
+class CloningDynamicComponent : public Cable
 {
 public:
-    typedef std::shared_ptr<Current> Ptr;
+    typedef std::function<bool(Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionType;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    CloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction);
+    ~CloningDynamicComponent() override = default;
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
+    WorkFunctionType m_workFunc;
 };

@@ -29,29 +29,29 @@ SOFTWARE.
 #include <thirdparty/dylib/dylib.hpp>
 
 #include <Electra.hpp>
-#include <ArgParser.hpp>
-#include <ArithmeticalUnit.hpp>
-#include <Bomb.hpp>
-#include <Cloner.hpp>
-#include <CloningDynamicComponent.hpp>
-#include <ConditionalUnit.hpp>
-#include <ConstantAdder.hpp>
-#include <ConstantPusher.hpp>
-#include <Eraser.hpp>
-#include <Key.hpp>
-#include <Logger.hpp>
-#include <NonCloningDynamicComponent.hpp>
-#include <Portal.hpp>
-#include <Printer.hpp>
-#include <Reader.hpp>
-#include <Reverser.hpp>
-#include <StackChecker.hpp>
-#include <StackSwitcher.hpp>
-#include <Swapper.hpp>
-#include <FileReader.hpp>
-#include <FileOpener.hpp>
-#include <FileWriter.hpp>
-#include <FileCloser.hpp>
+#include <utility/ArgParser.hpp>
+#include <components/ArithmeticalUnit.hpp>
+#include <components/Bomb.hpp>
+#include <components/Cloner.hpp>
+#include <components/CloningDynamicComponent.hpp>
+#include <components/ConditionalUnit.hpp>
+#include <components/ConstantAdder.hpp>
+#include <components/ConstantPusher.hpp>
+#include <components/Eraser.hpp>
+#include <components/Key.hpp>
+#include <utility/Logger.hpp>
+#include <components/NonCloningDynamicComponent.hpp>
+#include <components/Portal.hpp>
+#include <components/Printer.hpp>
+#include <components/Reader.hpp>
+#include <components/Reverser.hpp>
+#include <components/StackChecker.hpp>
+#include <components/StackSwitcher.hpp>
+#include <components/Swapper.hpp>
+#include <components/FileReader.hpp>
+#include <components/FileOpener.hpp>
+#include <components/FileWriter.hpp>
+#include <components/FileCloser.hpp>
 using namespace std::string_literals;
 
 Electra::Electra():

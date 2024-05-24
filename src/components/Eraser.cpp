@@ -22,40 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/Eraser.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+Eraser::Eraser(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
 
-// Instruction pointers of Electra
-class Current
+bool Eraser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    var_t popped_value = Global::popStack(current->stackPtr);
+    defaultLogger.log(LogType::INFO, "(Eraser) Removed {} from stack.", popped_value);
+    return Cable::work(current, currentVector);
+}

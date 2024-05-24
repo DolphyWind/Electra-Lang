@@ -23,39 +23,20 @@ SOFTWARE.
 */
 
 #pragma once
-#include <memory>
-#include <optional>
+#include <components/Cable.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
-
-// Instruction pointers of Electra
-class Current
+// Moves current's stackPtr pointer forwards or backwards.
+// If moveValue is true, it pops the top value before moving the stackPtr and pushes that value to the new stack after moving.
+// It does not push anything if there is nothing to pop.
+class StackSwitcher : public Cable
 {
 public:
-    typedef std::shared_ptr<Current> Ptr;
+    StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
+    ~StackSwitcher() override = default;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
-
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
+    std::vector<std::stack<var_t>>* m_stacks;
+    bool m_moveForward = true;
+    bool m_moveValue = false;
 };

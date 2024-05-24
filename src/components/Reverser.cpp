@@ -22,40 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/Reverser.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+Reverser::Reverser(const std::vector<Direction>& directions):
+    Cable(directions)
+{}
 
-// Instruction pointers of Electra
-class Current
+bool Reverser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
+    std::stack<var_t> newStack;
+    while(!current->stackPtr->empty())
+    {
+        newStack.push(current->stackPtr->top());
+        current->stackPtr->pop();
+    }
+    *(current->stackPtr) = std::move(newStack);
+    defaultLogger.log(LogType::INFO, "(Reverser) Reversed the entire stack.");
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    return Cable::work(current, currentVector);
+}

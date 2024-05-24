@@ -22,40 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/ConstantAdder.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+ConstantAdder::ConstantAdder(const std::vector<Direction>& directions, var_t constant):
+    Cable(directions), m_constant(constant)
+{}
 
-// Instruction pointers of Electra
-class Current
+bool ConstantAdder::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
+    if(current->stackPtr->empty())
+    {
+        return Cable::work(current, currentVector);
+    }
     
-    void setDirection(Direction direction);
-    Direction getDirection();
+    var_t var = Global::popStack(current->stackPtr);
+    var += m_constant;
+    current->stackPtr->push(var);
 
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    defaultLogger.log(LogType::INFO, "(ConstantAdder) Added {} to the top value.", m_constant);
+    return Cable::work(current, currentVector);
+}

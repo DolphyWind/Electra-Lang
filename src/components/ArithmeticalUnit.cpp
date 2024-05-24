@@ -22,40 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-#include <memory>
-#include <optional>
+#include <components/ArithmeticalUnit.hpp>
+#include <utility/Logger.hpp>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+ArithmeticalUnit::ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func):
+    Cable(directions), m_func(std::move(func))
+{}
 
-// Instruction pointers of Electra
-class Current
+bool ArithmeticalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
 {
-public:
-    typedef std::shared_ptr<Current> Ptr;
-
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
+    if(!Component::work(current, currentVector))
+    {
+        return false;
+    }
+    if(current->stackPtr->size() < 2)
+    {
+        return Cable::work(current, currentVector);
+    }
     
-    void setDirection(Direction direction);
-    Direction getDirection();
-
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
-private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
-};
+    var_t first, second;
+    first = Global::popStack(current->stackPtr);
+    second = Global::popStack(current->stackPtr);
+    var_t result = m_func(first, second);
+    current->stackPtr->push(result);
+    
+    defaultLogger.log(LogType::INFO, "(ArithmeticalUnit) Passing {} and {} into an arithmetical unit. The result is: {}", first, second, result);
+    return Cable::work(current, currentVector);
+}

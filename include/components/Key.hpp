@@ -23,39 +23,19 @@ SOFTWARE.
 */
 
 #pragma once
-#include <memory>
-#include <optional>
+#include <components/Cable.hpp>
+#include <string>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
-
-// Instruction pointers of Electra
-class Current
+// Holds flown currents still until it is activated. To activate a key, a current has to touch it from its activator directions.
+class Key : public Cable
 {
 public:
-    typedef std::shared_ptr<Current> Ptr;
+    Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo);
+    ~Key() override = default;
 
-    explicit Current(Direction direction);
-    Current(Direction direction, Position position, StackPtr stackPtr);
-    ~Current() = default;
-    
-    void setDirection(Direction direction);
-    Direction getDirection();
-
-    void setPosition(Position position);
-    Position getPosition();
-
-    void addVisitedPortal(Position position);
-    std::optional<Position> popLastPortal();
-
-    void setPortalStack(const std::stack<Position>& stack);
-    [[nodiscard]] const std::stack<Position>& getPortalStack() const;
-    [[nodiscard]] std::stack<Position>& getPortalStack();
-    void iterate();
-
-    StackPtr stackPtr{};
+    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
 private:
-    Direction m_direction = Direction::NONE;
-    Position m_position = {0, 0};
-    std::stack<Position> m_visitedPortalStack{};
+    std::vector<Direction> m_activatorDirections;
+    std::vector<std::u32string>& m_sourceCode;
+    char32_t m_transformTo;
 };
