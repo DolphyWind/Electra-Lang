@@ -404,6 +404,7 @@ void Electra::setupComponentsAndGenerators()
 
     m_components[U'*'] = std::make_unique<Cable>( bin2dir(0b11111111) );
     m_components[U'✱'] = std::make_unique<Cable>( bin2dir(0b11111111) );
+    m_components[U'✵'] = std::make_unique<Cable>( bin2dir(0b11111111) );
 
     m_components[U'╰'] = std::make_unique<Cable>( bin2dir(0b00000101) );
     m_components[U'└'] = std::make_unique<Cable>( bin2dir(0b00000101) );
