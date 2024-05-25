@@ -21,18 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
+#pragma once
+#include <functional>
+#include <stack>
 #include <vector>
 
-#include "Direction.hpp"
+#include "../Direction.hpp"
+#include "../utility/Global.hpp"
+#include "../Current.hpp"
+
+typedef std::function<bool(Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionType;
+typedef std::function<bool(std::vector<std::stack<var_t>>&, Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionWithStacksType;
+
+enum class ComponentType
+{
+    CLONING,
+    NON_CLONING
+};
 
 struct ComponentInformation
 {
     char32_t symbol = U'\0';
     std::vector<Direction> directions{};
-    enum class ComponentType
-    {
-        CLONING,
-        NON_CLONING
-    };
     ComponentType componentType{ComponentType::CLONING};
+    WorkFunctionWithStacksType workFuncWithStacks;
 };

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include <components/NonCloningDynamicComponent.hpp>
 
-NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Direction>& directions, const NonCloningDynamicComponent::WorkFunctionType& workFunction):
+NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction):
     Component(directions), m_workFunc(workFunction)
 {}
 

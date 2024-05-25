@@ -26,8 +26,8 @@ SOFTWARE.
 #include <memory>
 #include <optional>
 
-#include <Direction.hpp>
-#include <utility/Global.hpp>
+#include "Direction.hpp"
+#include "utility/Global.hpp"
 
 // Instruction pointers of Electra
 class Current

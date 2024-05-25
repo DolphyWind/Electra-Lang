@@ -25,7 +25,7 @@ SOFTWARE.
 #include <components/CloningDynamicComponent.hpp>
 #include <utility/Logger.hpp>
 
-CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& directions, const CloningDynamicComponent::WorkFunctionType& workFunction):
+CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction):
     Cable(directions), m_workFunc(workFunction)
 {}
 

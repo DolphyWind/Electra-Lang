@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "utility/ComponentInformation.hpp"
 #include <cmath>
 #include <sstream>
 
@@ -52,6 +53,7 @@ SOFTWARE.
 #include <components/FileOpener.hpp>
 #include <components/FileWriter.hpp>
 #include <components/FileCloser.hpp>
+#include <vector>
 using namespace std::string_literals;
 
 Electra::Electra():
@@ -315,8 +317,7 @@ std::vector<std::string> Electra::parseSourceCode(const fs::path& currentPath, c
 
         if(new_filename.ends_with(WIN_MAC_OTHER(".dll", ".dylib", ".so")))
         {
-            // It is a dynamic component
-            loadDynamicComponent(m_currentPath, new_filename);
+            loadPackage(m_currentPath, new_filename);
             continue;
         }
         std::string line_range_str = includePatternStr.substr(new_filename.size() + 2);
@@ -569,59 +570,33 @@ void Electra::mainLoop()
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
 }
 
-void Electra::loadDynamicComponent(const fs::path& path, const std::string& filename)
+void Electra::loadPackage(const fs::path& path, const std::string& filename)
 {
-    if(loadDynamicComponent(filename))
-    {
-        return;
-    }
-
     try
     {
         dylib lib(path.string(), filename, dylib::no_filename_decorations);
-        ComponentInformation componentInformation;
-        lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
-        auto workFuncWithStacksParam = lib.get_function<bool(std::vector<std::stack<var_t>>&, Current::Ptr, std::vector<Current::Ptr>&)>("work");
-        auto workFunc = std::bind(workFuncWithStacksParam, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
+        std::vector<ComponentInformation> componentInfos;
+        lib.get_function<void(std::vector<ComponentInformation>&)>("load")(componentInfos);
         m_dynamicLibraries.push_back(std::move(lib));
 
-        if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
+        for(auto& ci : componentInfos)
         {
-            m_components[componentInformation.symbol] = std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc);
-            return;
+            auto workFunc = std::bind(ci.workFuncWithStacks, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
+
+            if(ci.componentType == ComponentType::NON_CLONING)
+            {
+                m_components[ci.symbol] = std::make_unique<NonCloningDynamicComponent>(ci.directions, workFunc);
+                continue;
+            }
+            m_components[ci.symbol] = std::make_unique<CloningDynamicComponent>(ci.directions, workFunc);
         }
-        m_components[componentInformation.symbol] = std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc);
+        
     }
     catch(const std::exception& exception)
     {
         defaultLogger.log(LogType::ERROR, "Unable to load \"{}\". Error message: {}", filename, exception.what());
         std::cerr << "Unable to load \"" << filename << "\" Error message: " << exception.what() << std::endl;
         Global::safe_exit(1);
-    }
-}
-
-bool Electra::loadDynamicComponent(const std::string& filename)
-{
-    try
-    {
-        dylib lib(filename, dylib::no_filename_decorations);
-        ComponentInformation componentInformation;
-        lib.get_function<void(ComponentInformation&)>("load")(componentInformation);
-        auto workFuncWithStacksParam = lib.get_function<bool(std::vector<std::stack<var_t>>&, Current::Ptr, std::vector<Current::Ptr>&)>("work");
-        auto workFunc = std::bind(workFuncWithStacksParam, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
-        m_dynamicLibraries.push_back(std::move(lib));
-
-        if(componentInformation.componentType == ComponentInformation::ComponentType::NON_CLONING)
-        {
-            m_components[componentInformation.symbol] = std::make_unique<NonCloningDynamicComponent>(componentInformation.directions, workFunc);
-            return true;
-        }
-        m_components[componentInformation.symbol] = std::make_unique<CloningDynamicComponent>(componentInformation.directions, workFunc);
-        return true;
-    }
-    catch(const std::exception& exception)
-    {
-        return false;
     }
 }
 
