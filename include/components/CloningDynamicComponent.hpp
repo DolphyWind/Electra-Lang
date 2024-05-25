@@ -32,7 +32,7 @@ public:
     CloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction);
     ~CloningDynamicComponent() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     WorkFunctionType m_workFunc;
 };

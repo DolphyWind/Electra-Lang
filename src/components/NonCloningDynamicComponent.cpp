@@ -28,7 +28,7 @@ NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Directi
     Component(directions), m_workFunc(workFunction)
 {}
 
-bool NonCloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool NonCloningDynamicComponent::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

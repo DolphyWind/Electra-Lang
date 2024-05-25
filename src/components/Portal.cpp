@@ -29,7 +29,7 @@ Portal::Portal(Position originalPosition):
     Component({Direction::EAST, Direction::NORTHEAST, Direction::NORTH, Direction::NORTHWEST, Direction::WEST, Direction::SOUTHWEST, Direction::SOUTH, Direction::SOUTHEAST}), m_originalPosition(originalPosition)
 {}
 
-bool Portal::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Portal::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     Direction currentDirection = current->getDirection();
     Position currentPos = current->getPosition();

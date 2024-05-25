@@ -8,7 +8,7 @@
 extern "C"
 {
 
-bool work_9(std::vector<std::stack<var_t>>& stacks, Current::Ptr currentPtr, std::vector<Current::Ptr>& currentVector)
+bool work_9(std::vector<std::stack<var_t>>& stacks, Current::Ptr& currentPtr, std::vector<Current::Ptr>& currentVector)
 {
     for(int i = 99; i > 1; --i)
     {
@@ -24,7 +24,7 @@ bool work_9(std::vector<std::stack<var_t>>& stacks, Current::Ptr currentPtr, std
     return true;
 }
 
-bool work_h(std::vector<std::stack<var_t>>& stacks, Current::Ptr currentPtr, std::vector<Current::Ptr>& currentVector)
+bool work_h(std::vector<std::stack<var_t>>& stacks, Current::Ptr& currentPtr, std::vector<Current::Ptr>& currentVector)
 {
     std::cout << "hello world\n";
     return true;

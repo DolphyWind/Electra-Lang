@@ -33,7 +33,7 @@ public:
     Printer(const std::vector<Direction>& directions, bool printAsChar);
     ~Printer() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_printAsChar = false;
 };

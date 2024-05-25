@@ -29,7 +29,7 @@ StackChecker::StackChecker(const std::vector<Direction>& directions, bool passIf
     Cable(directions), m_passIfEmpty(passIfEmpty)
 {}
 
-bool StackChecker::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool StackChecker::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

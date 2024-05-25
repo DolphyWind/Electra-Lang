@@ -33,5 +33,5 @@ public:
     explicit Swapper(const std::vector<Direction>& directions);
     ~Swapper() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 };

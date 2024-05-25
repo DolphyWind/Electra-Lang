@@ -29,7 +29,7 @@ Reverser::Reverser(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Reverser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Reverser::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

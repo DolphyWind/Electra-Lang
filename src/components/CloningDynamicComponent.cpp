@@ -29,7 +29,7 @@ CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& d
     Cable(directions), m_workFunc(workFunction)
 {}
 
-bool CloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool CloningDynamicComponent::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

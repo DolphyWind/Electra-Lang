@@ -32,7 +32,7 @@ Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
     Cable(directions), m_getInputAsChar(getInputAsChar)
 {}
 
-bool Reader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Reader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

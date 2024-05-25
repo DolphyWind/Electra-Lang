@@ -29,7 +29,7 @@ Swapper::Swapper(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Swapper::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Swapper::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

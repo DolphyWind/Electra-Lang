@@ -31,7 +31,7 @@ StackSwitcher::StackSwitcher(const std::vector<Direction>& directions, bool move
     Cable(directions), m_moveForward(moveForward), m_stacks(stacks), m_moveValue(moveValue)
 {}
 
-bool StackSwitcher::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool StackSwitcher::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

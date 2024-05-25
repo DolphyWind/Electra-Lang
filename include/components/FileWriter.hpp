@@ -30,5 +30,5 @@ public:
     explicit FileWriter(const std::vector<Direction>& directions);
     ~FileWriter() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 };

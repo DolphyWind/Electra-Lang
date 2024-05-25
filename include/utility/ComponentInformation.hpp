@@ -31,8 +31,8 @@ SOFTWARE.
 #include "../utility/Global.hpp"
 #include "../Current.hpp"
 
-typedef std::function<bool(Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionType;
-typedef std::function<bool(std::vector<std::stack<var_t>>&, Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionWithStacksType;
+typedef std::function<bool(Current::Ptr& current, std::vector<Current::Ptr>&)> WorkFunctionType;
+typedef std::function<bool(std::vector<std::stack<var_t>>&, Current::Ptr& current, std::vector<Current::Ptr>&)> WorkFunctionWithStacksType;
 
 enum class ComponentType
 {

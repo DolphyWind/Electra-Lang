@@ -32,7 +32,7 @@ FileReader::FileReader(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool FileReader::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool FileReader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

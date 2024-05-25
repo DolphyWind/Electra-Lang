@@ -32,7 +32,7 @@ public:
     explicit Component(const std::vector<Direction>& directions);
     virtual ~Component() = default;
 
-    virtual bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector);
+    virtual bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector);
 protected:
     std::vector<Direction> m_directions;
 };

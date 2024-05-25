@@ -32,5 +32,5 @@ public:
     explicit Eraser(const std::vector<Direction>& directions);
     ~Eraser() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 };

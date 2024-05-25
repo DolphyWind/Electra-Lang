@@ -29,7 +29,7 @@ Eraser::Eraser(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Eraser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Eraser::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

@@ -30,7 +30,7 @@ FileOpener::FileOpener(const std::vector<Direction>& directions, bool appendMode
     Cable(directions), m_appendMode(appendMode)
 {}
 
-bool FileOpener::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool FileOpener::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

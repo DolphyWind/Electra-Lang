@@ -29,7 +29,7 @@ Key::Key(const std::vector<Direction>& directions, const std::vector<Direction>&
     Cable(directions), m_activatorDirections(activatorDirections), m_sourceCode(sourceCode), m_transformTo(transformTo)
 {}
 
-bool Key::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Key::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     bool inActivatorDirections = false;
     Position curPos = current->getPosition();

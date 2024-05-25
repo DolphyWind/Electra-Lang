@@ -30,7 +30,7 @@ FileCloser::FileCloser(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool FileCloser::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool FileCloser::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

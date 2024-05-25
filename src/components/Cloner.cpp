@@ -29,7 +29,7 @@ Cloner::Cloner(const std::vector<Direction>& directions):
     Cable(directions)
 {}
 
-bool Cloner::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Cloner::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
