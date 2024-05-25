@@ -45,5 +45,5 @@ struct ComponentInformation
     char32_t symbol = U'\0';
     std::vector<Direction> directions{};
     ComponentType componentType{ComponentType::CLONING};
-    WorkFunctionWithStacksType workFuncWithStacks;
+    WorkFunctionWithStacksType workFunc;
 };

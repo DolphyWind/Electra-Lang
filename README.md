@@ -86,10 +86,10 @@ To include other files in your code, use quotation marks.
 "!foo.ec" 5:12 ? You can always do a force include ?
 ```
 
-But be careful, files ending with `.dll`, `.so` or `.dylib` will be treated as dynamic components
-This behavior depends on your platform, for example, on Windows only the `.dll` files will be treated as dynamic components, on Linux, it is `.so` files
+But be careful, files ending with `.dll`, `.so` or `.dylib` will be treated as packages.
+This behavior depends on your platform, for example, on Windows only the `.dll` files will be treated as packages, on Linux, it is `.so` files
 and on Mac it is the `.dylib` files.
-Dynamic components allow you to extend Electra using C++. For more info, click [here](ExtendingElectra.md).
+Packages allow you to extend Electra using C++. For more info, click [here](ExtendingElectra.md).
 
 ## **Currents**
 Currents are instruction pointers in Electra. They all have a direction, a position, a stack that holds visited portals and a stack pointer.

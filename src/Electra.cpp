@@ -582,7 +582,7 @@ void Electra::loadPackage(const fs::path& path, const std::string& filename)
 
         for(auto& ci : componentInfos)
         {
-            auto workFunc = std::bind(ci.workFuncWithStacks, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
+            auto workFunc = std::bind(ci.workFunc, std::ref(m_stacks), std::placeholders::_1, std::placeholders::_2);
 
             if(ci.componentType == ComponentType::NON_CLONING)
             {

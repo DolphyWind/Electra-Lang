@@ -36,13 +36,13 @@ void load(std::vector<ComponentInformation>& components)
         .symbol = U'9',
         .directions = {Direction::EAST, Direction::WEST},
         .componentType = ComponentType::CLONING,
-        .workFuncWithStacks = work_9
+        .workFunc = work_9
     });
     components.push_back({
         .symbol = U'η',
         .directions = {Direction::EAST, Direction::WEST},
         .componentType = ComponentType::CLONING,
-        .workFuncWithStacks = work_h
+        .workFunc = work_h
     });
 }
 
