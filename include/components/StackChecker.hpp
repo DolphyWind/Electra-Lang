@@ -32,7 +32,7 @@ public:
     StackChecker(const std::vector<Direction>& directions, bool passIfEmpty);
     ~StackChecker() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_passIfEmpty = false;
 };

@@ -29,7 +29,7 @@ ArithmeticalUnit::ArithmeticalUnit(const std::vector<Direction>& directions, Ari
     Cable(directions), m_func(std::move(func))
 {}
 
-bool ArithmeticalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool ArithmeticalUnit::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

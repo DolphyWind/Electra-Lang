@@ -23,15 +23,7 @@ SOFTWARE.
 */
 
 #pragma once
-#if __has_include(<filesystem>)
-  #include <filesystem>
-  namespace fs = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-  #include <experimental/filesystem>
-  namespace fs = std::experimental::filesystem;
-#else
-  #error "Missing the <filesystem> header."
-#endif
+#include <filesystem>
 #include <unordered_map>
 #include <set>
 
@@ -45,8 +37,9 @@ SOFTWARE.
 #include <visualmode/VisualModeManager.hpp>
 #endif
 
-
+namespace fs = std::filesystem;
 typedef std::vector<Direction> GeneratorData;
+
 class Electra
 {
 public:
@@ -115,15 +108,10 @@ private:
     /// @return Parsed source code
     [[nodiscard]] std::vector<std::string> parseSourceCode(const fs::path& currentPath, const std::string& sourceCode, LineRange lineRange=LineRange{});
 
-    /// @brief Loads a dynamic component
+    /// @brief Loads a package
     /// @param path Path to search in
     /// @param filename Name of the file
-    void loadDynamicComponent(const fs::path& path, const std::string& filename);
-
-    /// @brief Loads a dynamic component
-    /// @param filename Name of the so, dylib or dll file
-    /// @return true if loading was successful
-    bool loadDynamicComponent(const std::string& filename);
+    void loadPackage(const fs::path& path, const std::string& filename);
 
     /// @brief Creates generators from source code
     void createGenerators();
@@ -137,6 +125,9 @@ private:
     void interpretCurrents();
     void removeCurrents();
     void createCurrents();
+
+    // Dynamic libraries
+    std::vector<dylib> m_dynamicLibraries;
 
     // Maps some chars to corresponding components.
     std::unordered_map<char32_t, std::unique_ptr<Component>> m_components;
@@ -152,9 +143,6 @@ private:
     fs::path m_currentPath;
     std::vector<std::u32string> m_sourceCode;
     std::unordered_map<std::string, std::set<LineRange>> m_includedParts;
-
-    // Dynamic libraries
-    std::vector<dylib> m_dynamicLibraries;
 
     // Holds indexes of currents that are soon to be deleted. Gets cleared every loop.
     std::vector<std::size_t> m_deadCurrentIndices;

@@ -32,7 +32,7 @@ public:
     ConstantPusher(const std::vector<Direction>& directions, var_t constant);
     ~ConstantPusher() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     var_t m_constant;
 };

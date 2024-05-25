@@ -33,7 +33,7 @@ public:
     ConditionalUnit(const std::vector<Direction>& directions, var_t targetValue, bool isInverted, bool checkEqual, bool checkLess, bool checkGreater);
     ~ConditionalUnit() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     var_t m_targetValue;
     bool m_inverted;

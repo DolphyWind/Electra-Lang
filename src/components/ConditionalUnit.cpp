@@ -30,7 +30,7 @@ ConditionalUnit::ConditionalUnit(const std::vector<Direction>& directions, var_t
     Cable(directions), m_targetValue(targetValue), m_inverted(isInverted), m_checkEqual(checkEqual), m_checkLess(checkLess), m_checkGreater(checkGreater)
 {}
 
-bool ConditionalUnit::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool ConditionalUnit::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

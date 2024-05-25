@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include <sstream>
+
 #include <utility/Logger.hpp>
 
 Logger::Logger()

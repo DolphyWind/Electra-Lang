@@ -32,7 +32,7 @@ public:
     explicit Portal(Position originalPosition);
     ~Portal() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     Position m_originalPosition;
 };

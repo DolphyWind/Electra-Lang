@@ -33,7 +33,7 @@ public:
     Key(const std::vector<Direction>& directions, const std::vector<Direction>& activatorDirections, std::vector<std::u32string>& sourceCode, char32_t transformTo);
     ~Key() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     std::vector<Direction> m_activatorDirections;
     std::vector<std::u32string>& m_sourceCode;

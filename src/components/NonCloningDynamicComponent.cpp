@@ -21,13 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 #include <components/NonCloningDynamicComponent.hpp>
 
-NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Direction>& directions, const NonCloningDynamicComponent::WorkFunctionType& workFunction):
+NonCloningDynamicComponent::NonCloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction):
     Component(directions), m_workFunc(workFunction)
 {}
 
-bool NonCloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool NonCloningDynamicComponent::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

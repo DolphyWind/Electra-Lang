@@ -1,5 +1,4 @@
-"lib99bottles.so"
-"libhelloworld.so"
+"libhq9plus.so"
 
 ? Uses 4 stacks ?
 ? First three are for the source code, the last one is for the accumulator ?

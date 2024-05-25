@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 #include <components/FileOpener.hpp>
 #include <utility/FileDescriptorManager.hpp>
 #include <utility/Logger.hpp>
@@ -29,7 +30,7 @@ FileOpener::FileOpener(const std::vector<Direction>& directions, bool appendMode
     Cable(directions), m_appendMode(appendMode)
 {}
 
-bool FileOpener::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool FileOpener::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

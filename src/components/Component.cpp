@@ -28,7 +28,7 @@ Component::Component(const std::vector<Direction>& directions):
     m_directions(directions)
 {};
 
-bool Component::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Component::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     for(auto &d : m_directions)
     {

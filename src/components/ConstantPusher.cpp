@@ -29,7 +29,7 @@ ConstantPusher::ConstantPusher(const std::vector<Direction>& directions, var_t c
     Cable(directions), m_constant(constant)
 {}
 
-bool ConstantPusher::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool ConstantPusher::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

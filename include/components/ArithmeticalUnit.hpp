@@ -38,7 +38,7 @@ public:
     ArithmeticalUnit(const std::vector<Direction>& directions, ArithmeticalFunc func);
     ~ArithmeticalUnit() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     ArithmeticalFunc m_func;
 };

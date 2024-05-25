@@ -30,5 +30,5 @@ public:
     explicit FileCloser(const std::vector<Direction>& directions);
     ~FileCloser() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 };

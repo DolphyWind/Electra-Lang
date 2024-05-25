@@ -32,7 +32,7 @@ public:
     explicit Cable(const std::vector<Direction>& directions, bool is_one_directional=false);
     ~Cable() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_is_one_directional = false;
 };

@@ -29,7 +29,7 @@ ConstantAdder::ConstantAdder(const std::vector<Direction>& directions, var_t con
     Cable(directions), m_constant(constant)
 {}
 
-bool ConstantAdder::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool ConstantAdder::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

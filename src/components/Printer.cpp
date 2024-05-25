@@ -31,7 +31,7 @@ Printer::Printer(const std::vector<Direction>& directions, bool printAsChar, Ele
     Cable(directions), m_printAsChar(printAsChar), m_interpreter(electra)
 {}
 
-bool Printer::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Printer::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

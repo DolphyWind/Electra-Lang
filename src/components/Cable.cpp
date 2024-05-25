@@ -29,7 +29,7 @@ Cable::Cable(const std::vector<Direction>& directions, bool is_one_directional):
     Component(directions), m_is_one_directional(is_one_directional)
 {}
 
-bool Cable::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool Cable::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {

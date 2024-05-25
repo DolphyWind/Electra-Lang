@@ -23,19 +23,16 @@ SOFTWARE.
 */
 
 #pragma once
-#include <functional>
-
 #include <components/Component.hpp>
+#include <utility/ComponentInformation.hpp>
 
 class NonCloningDynamicComponent : public Component
 {
 public:
-    typedef std::function<bool(Current::Ptr current, std::vector<Current::Ptr>&)> WorkFunctionType;
-
     NonCloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction);
     ~NonCloningDynamicComponent() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     WorkFunctionType m_workFunc;
 };

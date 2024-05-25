@@ -30,7 +30,7 @@ public:
     explicit FileOpener(const std::vector<Direction>& directions, bool appendMode);
     ~FileOpener() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_appendMode;
 };

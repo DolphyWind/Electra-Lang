@@ -34,7 +34,7 @@ public:
     StackSwitcher(const std::vector<Direction>& directions, bool moveForward, std::vector<std::stack<var_t>>* stacks, bool moveValue);
     ~StackSwitcher() override = default;
 
-    bool work(Current::Ptr current, std::vector<Current::Ptr>& currentVector) override;
+    bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     std::vector<std::stack<var_t>>* m_stacks;
     bool m_moveForward = true;

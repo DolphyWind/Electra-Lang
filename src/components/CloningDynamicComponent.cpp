@@ -21,14 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 #include <components/CloningDynamicComponent.hpp>
 #include <utility/Logger.hpp>
 
-CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& directions, const CloningDynamicComponent::WorkFunctionType& workFunction):
+CloningDynamicComponent::CloningDynamicComponent(const std::vector<Direction>& directions, const WorkFunctionType& workFunction):
     Cable(directions), m_workFunc(workFunction)
 {}
 
-bool CloningDynamicComponent::work(Current::Ptr current, std::vector<Current::Ptr>& currentVector)
+bool CloningDynamicComponent::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
 {
     if(!Component::work(current, currentVector))
     {
