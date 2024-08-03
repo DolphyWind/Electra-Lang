@@ -28,6 +28,9 @@ SOFTWARE.
 
 int main(int argc, char *argv[])
 {
+    std::ios::sync_with_stdio(false);
+    setvbuf(stdin, nullptr, _IOFBF, 1024 * 1024);
+
 	std::cout << std::setprecision(15);
     std::vector<std::string> args;
     args.reserve(argc);
