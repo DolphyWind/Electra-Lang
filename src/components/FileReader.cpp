@@ -55,7 +55,7 @@ bool FileReader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentV
     std::ifstream ifs(filename, std::ios::binary);
     if(ifs.fail())
     {
-        defaultLogger.log(LogType::WARNING, "(FileReader) Unable to open \"{}\". Pushing 0 to stack.", filename);
+        defaultLogger.log(LogType::WARNING, "(FileReader) Unable to open \"{}\".", filename);
         current->stackPtr->push(0);
         return Cable::work(current, currentVector);
     }
@@ -65,11 +65,11 @@ bool FileReader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentV
     ifs.close();
     std::string fileContent = ss.str();
 
-    while(!fileContent.empty())
+    for(auto it = fileContent.rbegin(); it != fileContent.rend(); ++it)
     {
-        current->stackPtr->push(static_cast<var_t>( fileContent[fileContent.length() - 1] ));
-        fileContent.pop_back();
+        current->stackPtr->push(static_cast<var_t>(*it));
     }
+    current->stackPtr->push(static_cast<var_t>( fileContent.length() ));
     defaultLogger.log(LogType::INFO, "(FileReader) Read \"{}\".", filename);
 
     return Cable::work(current, currentVector);

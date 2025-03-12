@@ -25,10 +25,11 @@ SOFTWARE.
 #pragma once
 
 #define ELECTRA_VERSION_MAJOR 2
-#define ELECTRA_VERSION_MINOR 2
-#define ELECTRA_VERSION_PATCH 1
+#define ELECTRA_VERSION_MINOR 3
+#define ELECTRA_VERSION_PATCH 0
 
 #include <vector>
+#include <string>
 #include <unordered_map>
 
 // Simple argument parser
