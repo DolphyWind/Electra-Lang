@@ -7,7 +7,45 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 project(ElectraLang VERSION 1.0.0)
 
-file(GLOB SOURCE_FILES "./src/*.cpp")
+set(SOURCE_FILES
+    src/components/ArithmeticalUnit.cpp
+    src/components/Bomb.cpp
+    src/components/Cable.cpp
+    src/components/Cloner.cpp
+    src/components/CloningDynamicComponent.cpp
+    src/components/Component.cpp
+    src/components/ConditionalUnit.cpp
+    src/components/ConstantAdder.cpp
+    src/components/ConstantPusher.cpp
+    src/components/Eraser.cpp
+    src/components/FileCloser.cpp
+    src/components/FileOpener.cpp
+    src/components/FileReader.cpp
+    src/components/FileWriter.cpp
+    src/components/Key.cpp
+    src/components/NonCloningDynamicComponent.cpp
+    src/components/Portal.cpp
+    src/components/Printer.cpp
+    src/components/Reader.cpp
+    src/components/Reverser.cpp
+    src/components/StackChecker.cpp
+    src/components/StackSwitcher.cpp
+    src/components/Swapper.cpp
+
+    src/utility/Argparser.cpp
+    src/utility/FileDescriptorManager.cpp
+    src/utility/Global.cpp
+    src/utility/LineRange.cpp
+    src/utility/Logger.cpp
+    src/utility/StringUtilities.cpp
+
+    src/Current.cpp
+    src/Direction.cpp
+    src/Electra.cpp
+    src/Generator.cpp
+    src/main.cpp
+)
+
 add_executable(${TARGET_BINARY_NAME} ${SOURCE_FILES})
 
 target_include_directories(${TARGET_BINARY_NAME} PUBLIC include)

@@ -23,7 +23,7 @@ SOFTWARE.
 */
 
 #include <Generator.hpp>
-#include <Logger.hpp>
+#include <utility/Logger.hpp>
 
 Generator::Generator(const std::vector<Direction>& directions, Position position):
     m_directions(directions), m_position(position)

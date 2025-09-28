@@ -1,5 +1,5 @@
 "sad_face.ec"
-? Appends 'A' to file with given filename ?
+? Appends 'A' to file with given filename. Press Ctrl-D after entering the filename. ?
 
 +->--+
 |    &

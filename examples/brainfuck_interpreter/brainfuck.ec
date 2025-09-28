@@ -2,7 +2,10 @@
 ? It uses total of seven stacks. So please make sure your stack count is greater than or equal to this value
 ? This program reads the code from stdin. Please put ! to indicate the end of the code.
 ? The code gets executed after ! symbol.
+
 ? Contains a bug. I have no idea what the bug is but some code straight up don't work
+? Update: I think the "bug" is not really a bug but rather an OS limitation. Because I realised std::cin
+? cannot read more than 4095 characters on a line. Same behavior is present in python but not in python REPL
 
 ? Stacks are used for these purposes:
 ? First two stacks are used for storing code.
@@ -49,28 +52,28 @@
        | +-+  I     |   +----+
        |      I     |        |
        B      I     I        S
-       B      I +-M-+      +-#-+
+       B      I +-M-+      +-#-+ ? "+"
        |      I I          ]   [
        I      #-+   +------+   |
        E            |          #-F+
        |            +ψ+           I
        B              |           #-b-+
        B              |               S
-       B              |             +-#-+
+       B              |             +-#-+ ? ","
        |              |             ]   [
        +{-------------+     +-------+   |
        n                    |           #-F+
        |                    +ω+            I
        |                      |            #-b-+
        +{---------------------+                S
-       n                                     +-#-+
+       n                                     +-#-+ ? "-"
        |                                     ]   [
        |                          +----------+   |
        |                          |              #-F+
        |                          +δ+               I
        |                            |               #-b-+
        +{---------------------------+                   S
-       n                                              +-#-+
+       n                                              +-#-+ ? "."
        |                                              ]   [
        |                               +--------------+   |
        |                               |                  #-F+
@@ -81,13 +84,13 @@
        |                                                     #-+       I
        |                                                               #-b-+
        |                                                                   S
-       |                                                                 +-#-+
+       |                                                                 +-#-+ ? "<"
        |                                                                 ]   [
        |                                                          +------+   |
        |                                                          |          #-F+
        |                                                          +λ+           I
        |                                                            |           I
-       +{-----------------------------------------------------------+           #-b-+
+       +{-----------------------------------------------------------+           #-b-+ ? ">"
        n                                                                            S
        |                                                                          +-#-+
        |                                                                          ]   [         A
