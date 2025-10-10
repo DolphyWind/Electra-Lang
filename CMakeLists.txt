@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(TARGET_BINARY_NAME electra)
 
@@ -6,6 +7,10 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 project(ElectraLang VERSION 1.0.0)
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+    set(WASM TRUE)
+endif()
 
 set(SOURCE_FILES
     src/components/ArithmeticalUnit.cpp
@@ -47,15 +52,25 @@ set(SOURCE_FILES
 )
 
 add_executable(${TARGET_BINARY_NAME} ${SOURCE_FILES})
-
 target_include_directories(${TARGET_BINARY_NAME} PUBLIC include)
-
 set(BOOST_REGEX_STANDALONE ON)
 add_subdirectory(include/thirdparty/regex)
 target_link_libraries(${TARGET_BINARY_NAME} PRIVATE Boost::regex)
 
-if(MSVC)
-    target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
-endif()
+if (WASM)
+    set(CMAKE_EXECUTABLE_SUFFIX ".js")
+    target_link_options(${TARGET_BINARY_NAME} PRIVATE
+        -sMODULARIZE=1
+        -sEXPORT_ES6=1
+        -sALLOW_MEMORY_GROWTH=1
+        -sENVIRONMENT=web
+        -sEXPORTED_RUNTIME_METHODS=run
+    )
+    target_link_options(${TARGET_BINARY_NAME} PRIVATE --bind)
+else()
+    if(MSVC)
+        target_compile_options(${TARGET_BINARY_NAME} PRIVATE /utf-8)
+    endif()
 
-install(TARGETS ${TARGET_BINARY_NAME} DESTINATION bin)
+    install(TARGETS ${TARGET_BINARY_NAME} DESTINATION bin)
+endif()

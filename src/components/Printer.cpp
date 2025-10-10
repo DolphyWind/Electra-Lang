@@ -27,8 +27,8 @@ SOFTWARE.
 #include <components/Printer.hpp>
 #include <utility/Logger.hpp>
 
-Printer::Printer(const std::vector<Direction>& directions, bool printAsChar):
-    Cable(directions), m_printAsChar(printAsChar)
+Printer::Printer(const std::vector<Direction>& directions, bool printAsChar, std::ostream** out):
+    Cable(directions), m_printAsChar(printAsChar), m_out(out)
 {}
 
 bool Printer::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
@@ -55,15 +55,15 @@ bool Printer::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVect
         }
         catch(const utf8::invalid_code_point& invalidCodePoint)
         {
-            std::cout << static_cast<char>(top_character32);
+            (**m_out) << static_cast<char>(top_character32);
         }
 
-        std::cout << str_to_print << std::flush;
+        (**m_out) << str_to_print << std::flush;
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", std::u32string(1, static_cast<char32_t>(top)));
     }
     else
     {
-        std::cout << sutil::format_variable(top) << std::flush;
+        (**m_out) << sutil::format_variable(top) << std::flush;
         defaultLogger.log(LogType::INFO, "Printed {} to screen.", top);
     }
     

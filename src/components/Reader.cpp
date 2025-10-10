@@ -28,8 +28,8 @@ SOFTWARE.
 #include <components/Reader.hpp>
 #include <utility/Logger.hpp>
 
-Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar):
-    Cable(directions), m_getInputAsChar(getInputAsChar)
+Reader::Reader(const std::vector<Direction>& directions, bool getInputAsChar, std::istream** in):
+    Cable(directions), m_getInputAsChar(getInputAsChar), m_in(in)
 {}
 
 bool Reader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
@@ -45,8 +45,8 @@ bool Reader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVecto
         std::u32string combinedStr;
 
         char firstChar;
-        std::cin >> firstChar;
-        if (std::cin.eof())
+        (**m_in) >> firstChar;
+        if ((**m_in).eof())
         {
             current->stackPtr->push(0);
             return Cable::work(current, currentVector);
@@ -58,21 +58,21 @@ bool Reader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVecto
             if (firstChar >= -64)
             {
                 char secondChar;
-                std::cin >> secondChar;
+                (**m_in) >> secondChar;
 
                 readSS << secondChar;
             }
             if (firstChar >= -32)
             {
                 char thirdChar;
-                std::cin >> thirdChar;
+                (**m_in) >> thirdChar;
 
                 readSS << thirdChar;
             }
             if (firstChar >= -16)
             {
                 char fourthChar;
-                std::cin >> fourthChar;
+                (**m_in) >> fourthChar;
 
                 readSS << fourthChar;
             }
@@ -87,8 +87,8 @@ bool Reader::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVecto
     else
     {
         var_t v;
-        std::cin >> v;
-        if(std::cin.eof())
+        (**m_in) >> v;
+        if((**m_in).eof())
         {
             v = 0;
         }

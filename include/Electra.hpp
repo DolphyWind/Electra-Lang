@@ -24,6 +24,7 @@ SOFTWARE.
 
 #pragma once
 #include <filesystem>
+#include <iostream>
 #include <unordered_map>
 #include <set>
 
@@ -46,6 +47,14 @@ public:
     /// @brief Parses command line arguments, and sets up components and generators.
     explicit Electra(const std::vector<std::string>& args);
 
+    Electra(Electra& other) = default;
+
+    Electra& operator=(Electra& other) = default;
+
+    Electra(Electra&& other) = default;
+
+    Electra& operator=(Electra&& other) = default;
+
     ~Electra() = default;
 
     /// @brief Set the source code of the electra interpreter
@@ -65,6 +74,18 @@ public:
     /// - Create new currents
     void mainLoop();
 
+    // One step
+    void step();
+
+    // Obvious
+    bool has_currents();
+
+    // Generate current from generators
+    void generateFromGenerators();
+
+    // Input/Output streams
+    std::ostream* m_out = &std::cout;
+    std::istream* m_in = &std::cin;
 private:
     void setupComponentsAndGenerators();
     static void setupSignalHandlers();
@@ -99,7 +120,6 @@ private:
 
     // Methods for mainLoop() method.
     void moveCurrents();
-    void generateFromGenerators();
     void interpretCurrents();
     void removeCurrents();
     void createCurrents();

@@ -29,10 +29,11 @@ SOFTWARE.
 class Reader : public Cable
 {
 public:
-    Reader(const std::vector<Direction>& directions, bool getInputAsChar);
+    Reader(const std::vector<Direction>& directions, bool getInputAsChar, std::istream** in);
     ~Reader() override = default;
 
     bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_getInputAsChar = false;
+    std::istream** m_in;
 };

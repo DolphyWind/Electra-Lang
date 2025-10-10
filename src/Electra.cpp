@@ -428,8 +428,8 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'n'] = std::make_unique<Cable>( bin2dir(0b01000000), true );
 
     // Sets up Printers
-    m_components[U'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false);
-    m_components[U'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true);
+    m_components[U'N'] = std::make_unique<Printer>( bin2dir(0b10111011), false, &m_out);
+    m_components[U'P'] = std::make_unique<Printer>( bin2dir(0b00111111), true, &m_out);
 
     // Sets up Arithmetical Units
     m_components[U'A'] = std::make_unique<ArithmeticalUnit>( bin2dir(0b10100100), [](var_t x, var_t y){return x + y;} );
@@ -449,8 +449,8 @@ void Electra::setupComponentsAndGenerators()
     m_components[U'O'] = std::make_unique<ConstantPusher>( bin2dir(0b11111111), 0);
 
     // Sets up readers
-    m_components[U'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false);
-    m_components[U'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true);
+    m_components[U'@'] = std::make_unique<Reader>( bin2dir(0b01111111), false, &m_in);
+    m_components[U'&'] = std::make_unique<Reader>( bin2dir(0b11100101), true, &m_in);
 
     // Sets up swapper
     m_components[U'$'] = std::make_unique<Swapper>( bin2dir(0b01100110) );
@@ -559,16 +559,24 @@ void Electra::mainLoop()
     do
     {
         defaultLogger.log(LogType::INFO, "Tick: {}", tickCount);
-
-        interpretCurrents();
-        moveCurrents();
-        removeCurrents();    
-        createCurrents();
-
+        step();
         tickCount ++;
-    }while (!m_currents.empty());
+    }while (has_currents());
 
     defaultLogger.log(LogType::INFO, "Program finished. Total ticks: {}", tickCount);
+}
+
+void Electra::step()
+{
+    interpretCurrents();
+    moveCurrents();
+    removeCurrents();    
+    createCurrents();
+}
+
+bool Electra::has_currents()
+{
+    return !m_currents.empty();
 }
 
 void Electra::loadPackage(const fs::path& path, const std::string& filename)

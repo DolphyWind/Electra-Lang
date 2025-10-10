@@ -23,8 +23,68 @@ SOFTWARE.
 */
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <Electra.hpp>
+
+// #define __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
+#include <emscripten/bind.h>
+
+Electra interpreter;
+std::ostringstream oss;
+std::istringstream iss;
+
+void init(std::string input)
+{
+    if(!input.ends_with('\n'))
+    {
+        input = input + '\n';
+    }
+
+    interpreter = Electra();
+    oss = std::ostringstream();
+    iss = std::istringstream(input);
+
+    interpreter.m_out = &oss;
+    interpreter.m_in = &iss;
+}
+
+void set_source_code(const std::string& code)
+{
+    interpreter.setSourceCode(code);
+}
+
+std::string get_output()
+{
+    return oss.str();
+}
+
+void step()
+{
+    interpreter.step();
+}
+
+bool has_currents()
+{
+    return interpreter.has_currents();
+}
+
+void generate()
+{
+    interpreter.generateFromGenerators();
+}
+
+EMSCRIPTEN_BINDINGS(electra) {
+    emscripten::function("init", &init);
+    emscripten::function("set_source_code", set_source_code);
+    emscripten::function("get_output", &get_output);
+    emscripten::function("step", step);
+    emscripten::function("has_currents", has_currents);
+    emscripten::function("generate", generate);
+}
+
+#else
 
 int main(int argc, char *argv[])
 {
@@ -39,23 +99,9 @@ int main(int argc, char *argv[])
         args.emplace_back(argv[i]);
     }
 
-	//Electra electraInterpreter(args);
-	
-    Electra electraInterpreter;
-    electraInterpreter.setSourceCode(R"(
-
-    >O    +-+     +-+     +-+                                     Q-PO
-     I    I I   #P+ I     I I                                     $  I
-     I +MPO I   I   I     O I                                     I  I +P
-     I I    I #M+   I     | $                                     I  I I
-     I I    I I     I   #P# QDDDDD#P+DDDO                         I  #M+
-     I O    I I     I   I               I    #PDDDDDD#PDDDDDDDD#PDO    
-     I |    I I     I   I               I    I
-     #M+    +-+     I   I               I    I
-                    ##PP+               $    I
-                                        +MP#P+
-    )");
-
+	Electra electraInterpreter(args);
 	electraInterpreter.mainLoop();
 	return 0;
 }
+
+#endif

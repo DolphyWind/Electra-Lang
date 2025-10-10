@@ -30,10 +30,11 @@ SOFTWARE.
 class Printer : public Cable
 {
 public:
-    Printer(const std::vector<Direction>& directions, bool printAsChar);
+    Printer(const std::vector<Direction>& directions, bool printAsChar, std::ostream** out);
     ~Printer() override = default;
 
     bool work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector) override;
 private:
     bool m_printAsChar = false;
+    std::ostream** m_out;
 };
