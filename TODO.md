@@ -11,7 +11,7 @@
     - A standard library for electra for common tasks.
 + [] Visual Mode: See your code in action!
     - I need to implement [yacw](https://github.com/DolphyWind/yacw) first, because there are no ncurses libraries for my needs. Which is unfortunately not gonna be soon, I have many things to do.
-+ [] Electra on the web: Compile and run Electra code in the browser
++ [X] Electra on the web: Compile and run Electra code in the browser
     - Either compile the code to webassembly or write another interpreter in javascript. Probably the former.
 + [X] Code cleanup
 
