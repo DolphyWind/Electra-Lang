@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Electra</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #222;
+    --accent: #0077cc;
+    --accent-stop: #cc0000;
+    --border: #ddd;
+    --code-bg: #ffffff;
+    --output-bg: #f3f3f3;
+    --font: "JetBrains Mono", monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #121212;
+    --fg: #eaeaea;
+    --accent: #4da3ff;
+    --accent-stop: #ff5555;
+    --border: #333;
+    --code-bg: #1e1e1e;
+    --output-bg: #2a2a2a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    padding: 2rem;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    transition: background .3s, color .3s;
+  }
+
+  header {
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  /* Align toggle with right edge of code area */
+  #theme-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--output-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .35rem .6rem;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 1rem;
+    color: var(--fg);
+    transition: background .3s, color .3s, border-color .3s;
+  }
+
+  #theme-toggle:hover {
+    border-color: var(--accent);
+  }
+
+  header h1 {
+    font-size: 2rem;
+    margin-bottom: .5rem;
+  }
+
+  header p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  header a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  header a:hover {
+    text-decoration: underline;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .section-title {
+    font-weight: bold;
+    margin-bottom: .25rem;
+  }
+
+  textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    padding: .5rem;
+    font-family: var(--font);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--fg);
+    background: var(--code-bg);
+    resize: none;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+
+  #code {
+    min-height: 250px;
+    resize: vertical;
+    white-space: pre;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  #input-output {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  #input, #output {
+    height: 200px;
+  }
+
+  #output {
+    background: var(--output-bg);
+    overflow: auto;
+  }
+
+  #controls {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  #runstop-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: .5rem 1rem;
+    font-family: var(--font);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background .15s;
+  }
+
+  #runstop-btn.running {
+    background: var(--accent-stop);
+  }
+
+  nav {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    font-size: .9rem;
+  }
+
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s;
+  }
+
+  nav a:hover {
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 700px) {
+    #input-output {
+      grid-template-columns: 1fr;
+    }
+    #theme-toggle {
+      right: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Electra</h1>
+    <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+    <p>
+      Electra is an esoteric programming language that lets you program like an electrician.
+      You can check the
+      <a href="https://github.com/DolphyWind/Electra-Lang" target="_blank">GitHub Page</a>
+      for the interpreter, specification and more details.
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-title">Code</div>
+      <textarea id="code" placeholder="Write your esolang code here..."></textarea>
+    </section>
+
+    <section id="input-output">
+      <div>
+        <div class="section-title">Input</div>
+        <textarea id="input" placeholder="Program input..."></textarea>
+      </div>
+      <div>
+        <div class="section-title">Output</div>
+        <textarea id="output" readonly></textarea>
+      </div>
+    </section>
+  </main>
+
+  <div id="controls">
+    <button id="runstop-btn">Run</button>
+  </div>
+
+  <nav>
+    <a href="https://esolangs.org/wiki/Electra" target="_blank">Esolangs.org</a>
+    <a href="https://github.com/DolphyWind/Electra-Lang" target="_blank">GitHub</a>
+  </nav>
+
+  <script type="text/javascript">
+    const btn = document.getElementById('runstop-btn');
+    const codeEl = document.getElementById('code');
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const themeBtn = document.getElementById('theme-toggle');
+    let worker = null;
+
+    function appendOutput(text) {
+      outputEl.value += text;
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function setOutput(text) {
+      outputEl.value = text;
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function resetButton() {
+      btn.textContent = 'Run';
+      btn.classList.remove('running');
+    }
+
+    btn.addEventListener('click', () => {
+      if (btn.textContent === 'Run') {
+        worker = new Worker("worker.js", { type: "module" });
+        outputEl.value = '';
+        worker.postMessage({
+          type: 'start',
+          data: {
+            code: codeEl.value,
+            input: inputEl.value
+          }
+        });
+        worker.onmessage = (e) => {
+          const { type, data } = e.data;
+          if (type === 'output') setOutput(String(data));
+          else if (type === 'log') console.log(data);
+          else if (type === 'final') { appendOutput(data); resetButton(); }
+        };
+        worker.onerror = (e) => appendOutput('Error: ' + e.message + '\n');
+        btn.textContent = 'Stop';
+        btn.classList.add('running');
+      } else {
+        worker.terminate();
+        worker = null;
+        appendOutput('\n[Execution stopped]\n');
+        resetButton();
+      }
+    });
+
+    // --- THEME HANDLING ---
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', theme);
+    }
+
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      setTheme(saved);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  </script>
+</body>
+</html>
