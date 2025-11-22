@@ -13,7 +13,9 @@ onmessage = async (e) => {
     input = data.input;
 
     if(!Electra) {
+      postMessage({ type: "log", data: "[Initializing the interpreter]\n" });
       Electra = await createModule();
+      postMessage({ type: "clear", data: "" });
     }
 
     loop();

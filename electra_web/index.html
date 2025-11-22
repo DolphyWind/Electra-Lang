@@ -244,15 +244,27 @@
     const outputEl = document.getElementById('output');
     const themeBtn = document.getElementById('theme-toggle');
     let worker = null;
-
-    function appendOutput(text) {
-      outputEl.value += text;
-      outputEl.scrollTop = outputEl.scrollHeight;
-    }
+    let programOutput = '';
 
     function setOutput(text) {
       outputEl.value = text;
       outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function appendOutput(text) {
+      // outputEl.value += text;
+      // outputEl.scrollTop = outputEl.scrollHeight;
+      setOutput(outputEl.value + text);
+    }
+
+    function appendProgramOutput(text) {
+      appendOutput(text.slice(programOutput.length));
+      programOutput = text;
+    }
+
+    function clearOutput() {
+      programOutput = '';
+      setOutput(programOutput);
     }
 
     function resetButton() {
@@ -264,6 +276,7 @@
       if (btn.textContent === 'Run') {
         worker = new Worker("worker.js", { type: "module" });
         outputEl.value = '';
+        programOutput = '';
         worker.postMessage({
           type: 'start',
           data: {
@@ -273,8 +286,10 @@
         });
         worker.onmessage = (e) => {
           const { type, data } = e.data;
-          if (type === 'output') setOutput(String(data));
-          else if (type === 'log') console.log(data);
+          if (type === 'output') appendProgramOutput(String(data));
+          else if (type === 'clog') console.log(data);
+          else if (type === 'log') appendOutput(data);
+          else if (type === 'clear') clearOutput();
           else if (type === 'final') { appendOutput(data); resetButton(); }
         };
         worker.onerror = (e) => appendOutput('Error: ' + e.message + '\n');
