@@ -56,7 +56,7 @@ bool Key::work(Current::Ptr& current, std::vector<Current::Ptr>& currentVector)
         return false;
     }
 
-    // If not in activator directions move the current back
+    // If not in activator directions move the current back, neat trick for keeping them in-place
     Position newPos = curPos + directionToPosition(curDirInv);
     current->setPosition(newPos);
     defaultLogger.log(LogType::INFO, "(Key) Key at ({}, {}) is not activated. The current is being moved to ({}, {})", curPos.x, curPos.y, newPos.x, newPos.y);

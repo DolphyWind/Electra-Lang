@@ -29,8 +29,8 @@ any component with the same symbol.
 - The `directions` field is a list of supported directions.
 - The `componentType` field specifies the component's type. The `componentType` can take
 two values: `ComponentType::CLONING` or `ComponentType::NON_CLONING`. `NON_CLONING` components
-do not clone the current after they've done their job, like portals. And as you may guess,
-`CLONING` components do clone the current after they've done their job like any other component in Electra.
+do not clone the current after they've done their work, like portals. And as you may guess,
+`CLONING` components do clone the current after they've done their work like any other component in Electra.
 - The `workFunc` field is the function that gets triggered when a current touches it. If it returns false
 the current dies. Its signature should be, `bool(std::vector<std::stack<var_t>>&, Current::Ptr&, std::vector<Current::Ptr>&)`
 
