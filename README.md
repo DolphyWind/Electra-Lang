@@ -275,7 +275,7 @@ directions".
 >**Vertical Key (!):** Supports north and south directions. Becomes a vertical cable when activated. Gets activated when a current touches it from east and west directions.
 
 ### **Reverser (R)**
-Supports north, east, northeast northwest, southwest and southeast directions. Reverses the current stack.
+Supports east, northeast, north, northwest, west, southwest and southeast directions. Reverses the current stack.
 
 ### **Eraser (E)**
 Supports all eight directions. Pops the top value off from the current stack. 
@@ -298,11 +298,12 @@ with file. They push zero on failure.
 >**File Append Opener(a):** Supports east, northeast, north, northwest, west, southwest, south and southeast directions. Opens the file in append binary mode and pushes its id to the stack.
 
 ### **File Writer (W)**
-File writer first pops the value on top of the stack, interpreting it as a file id. Then, constructs a string just like how the File Reader constructs a filename. Finally it writes the constructed
-string to the file. It pushes zero on failure.
+Supports northeast, north, northwest, southwest and southeast directions. Pops a file id and a length, then pops elements to construct a string of that length (or pops the entire stack if
+length is negative). If the stack gets empty before enough elements are collected, popping stops and the partial string is used. Writes the string to the specified file and pushes zero on failure.
 
 ### **File Closer (C)**
-File closer pops the value on top of the stack, interprets it as a file id and closes the file associated with that id. It pushes zero on failure.
+Supports northeast, north, Northwest, west, southwest, south and southeast directions. File closer pops the value on top of the stack, interprets it as a file id and closes the file associated
+with that id. Pushes zero on failure.
 
 ### **Portals**
 Every other character in Electra is a portal. Portals support all eight directions. They are used for teleporting currents. When Electra reads the source code, it marks the first instance

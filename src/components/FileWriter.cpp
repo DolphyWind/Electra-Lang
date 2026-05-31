@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "utility/Global.hpp"
 #include <components/FileWriter.hpp>
 #include <utility/FileDescriptorManager.hpp>
 #include <utility/Logger.hpp>
@@ -43,18 +44,16 @@ bool FileWriter::work(Current::Ptr& current, std::vector<Current::Ptr>& currentV
         return Cable::work(current, currentVector);
     }
     std::size_t fileId = Global::popStack(current->stackPtr, 0);
+    int file_len = Global::popStack(current->stackPtr, 0);
+    int written = 0;
 
     std::string content;
-    while(!current->stackPtr->empty())
+    while(!current->stackPtr->empty() && (file_len < 0 || written < file_len) )
     {
         char current_char = static_cast<char>(current->stackPtr->top());
         current->stackPtr->pop();
-
-        if(current_char == 0)
-        {
-            break;
-        }
         content.push_back(static_cast<char>(current_char));
+        ++written;
     }
     defaultLogger.log(LogType::INFO, "(FileWriter) \"{}\" will be written to file with id {}.", content, fileId);
 
